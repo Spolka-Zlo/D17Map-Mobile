@@ -8,6 +8,7 @@ import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import React, { useEffect } from 'react'
+import { StyleSheet } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
@@ -66,7 +67,7 @@ function RootLayoutNav() {
                     headerTitle: () => (
                         <Image
                             source={require('../assets/images/logo.png')}
-                            style={{ width: 50, height: 50 }}
+                            style={styles.image}
                         />
                     ),
                 }}
@@ -81,3 +82,11 @@ function RootLayoutNav() {
         </ThemeProvider>
     )
 }
+
+
+const styles = StyleSheet.create({
+    image: {
+        width: 50,
+        height: 50,
+    },
+})
