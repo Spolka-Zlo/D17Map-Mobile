@@ -64,16 +64,11 @@ function RootLayoutNav() {
                         backgroundColor: Colors.primary,
                     },
                     headerTitle: () => (
-                        <div
-                            style={{ flexDirection: 'row', flexWrap: 'nowrap' }}
-                        >
-                            <Image
-                                source={require('../assets/images/logo.png')}
-                                style={{ width: 50, height: 50 }}
-                            />
-                        </div>
+                        <Image
+                            source={require('../assets/images/logo.png')}
+                            style={{ width: 50, height: 50 }}
+                        />
                     ),
-                    headerLeft: () => <></>,
                 }}
             >
                 <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
