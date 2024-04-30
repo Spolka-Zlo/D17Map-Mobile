@@ -7,9 +7,12 @@ import {
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 import { useColorScheme } from '@/components/useColorScheme'
+import Colors from '@/constants/Colors'
+import { Image } from 'react-native'
+import { Text } from 'react-native'
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -55,16 +58,30 @@ function RootLayoutNav() {
         <ThemeProvider
             value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
         >
-            <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: Colors.primary,
+                    },
+                    headerTitle: () => (
+                        <div
+                            style={{ flexDirection: 'row', flexWrap: 'nowrap' }}
+                        >
+                            <Image
+                                source={require('../assets/images/logo.png')}
+                                style={{ width: 50, height: 50 }}
+                            />
+                        </div>
+                    ),
+                    headerLeft: () => <></>,
+                }}
+            >
+                <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
                 <Stack.Screen
                     name="modal"
                     options={{ presentation: 'modal' }}
                 />
-                <Stack.Screen
-                    name="reservation/[roomId]"
-                    options={{ headerTitle: 'Reservation' }}
-                />
+                <Stack.Screen name="reservation/[roomId]" />
             </Stack>
         </ThemeProvider>
     )
