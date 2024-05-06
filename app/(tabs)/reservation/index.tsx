@@ -11,8 +11,8 @@ export default function Reservations() {
             />
             <Text>
                 Choose a room:
-                <Link href="/reservation/1">Room 1</Link>
-                <Link href="/reservation/2">Room 2</Link>
+                <Link href="/(tabs)/reservation/1">Room 1</Link>
+                <Link href="/(tabs)/reservation/2">Room 2</Link>
             </Text>
         </View>
     )
