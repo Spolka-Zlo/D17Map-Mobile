@@ -77,7 +77,6 @@ function RootLayoutNav() {
                     name="modal"
                     options={{ presentation: 'modal' }}
                 />
-                <Stack.Screen name="reservation/[roomId]" />
             </Stack>
         </ThemeProvider>
     )

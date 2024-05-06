@@ -48,7 +48,7 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="reservation"
+                name="reservation/index"
                 options={{
                     title: 'Reservation',
                     tabBarIcon: () => (
@@ -60,6 +60,22 @@ export default function TabLayout() {
                     ),
                 }}
             />
+             <Tabs.Screen
+                name="reservation/[roomId]"
+                options={{
+                    title: 'Reservation',
+                    tabBarIcon: () => (
+                        <FontAwesome
+                            size={28}
+                            name="book"
+                            color={Colors.secondary}
+                        />
+                    ),
+                    href: null
+                }}
+            />
+
+            
         </Tabs>
     )
 }
