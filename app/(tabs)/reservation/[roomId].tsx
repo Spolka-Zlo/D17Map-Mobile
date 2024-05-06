@@ -1,12 +1,14 @@
 import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
 
-export default function Home() {
+import { Text, View } from '@/components/Themed'
+import { useLocalSearchParams } from 'expo-router'
+
+export default function Reservations() {
+    const { roomId } = useLocalSearchParams()
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Home</Text>
-            <View
-            />
+            <Text style={styles.title}>Reservation {roomId}</Text>
+            <View/>
         </View>
     )
 }

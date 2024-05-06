@@ -1,12 +1,19 @@
 import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
+import { Link } from 'expo-router'
 
-export default function Home() {
+export default function Reservations() {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Home</Text>
+            <Text style={styles.title}>Reservations</Text>
             <View
+                style={styles.separator}
             />
+            <Text>
+                Choose a room:
+                <Link href="/(tabs)/reservation/1">Room 1</Link>
+                <Link href="/(tabs)/reservation/2">Room 2</Link>
+            </Text>
         </View>
     )
 }
