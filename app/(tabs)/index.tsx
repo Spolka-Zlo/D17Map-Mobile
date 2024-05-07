@@ -1,20 +1,21 @@
 import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
 import { OrangeButton } from '@/components/OrangeButton'
+import ListElement from '@/components/ListElement'
+import Dropdown from '@/components/Dropdown'
+import { useState } from 'react'
+import Colors from '@/constants/Colors'
 
 export default function TabOneScreen() {
+    const [selected, setSelected] = useState("Option 1");
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Tab One</Text>
-            <View
-                style={styles.separator}
-                lightColor="#eee"
-                darkColor="rgba(255,255,255,0.1)"
-            />
-            <OrangeButton
-                text="Hello World"
-                onPress={() => alert('Hello!')}
-                textClassName={{ color: 'white' }}
+            <ListElement text="Event number one" onPress={() => {}} />
+            <OrangeButton text="Click Me" onPress={() => {}} />
+            <Dropdown
+                options={["Option 1", "Option 2", "Option 3"]}
+                selected={selected}
+                setSelected={setSelected}
             />
         </View>
     )
@@ -25,6 +26,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: Colors.mapGrey,
     },
     title: {
         fontSize: 20,

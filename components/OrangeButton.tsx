@@ -3,7 +3,7 @@ import React from 'react'
 import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { TextStyle } from 'react-native'
 
-interface ButtonProps {
+type ButtonProps = {
     text: string
     textClassName?: TextStyle
     onPress: () => void
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     button: {
         paddingHorizontal: 16,
         paddingVertical: 8,
-        backgroundColor: '#f0b429',
+        backgroundColor: Colors.secondary,
         borderRadius: 8,
         shadowColor: '#000',
         shadowOffset: {
@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 16,
-        fontWeight: 'bold',
-        color: '#000', // Black color in Tailwind CSS
+        fontWeight: "800",
     },
 })
