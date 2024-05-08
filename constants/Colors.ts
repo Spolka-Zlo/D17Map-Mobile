@@ -1,8 +1,9 @@
 const tintColorLight = '#2f95dc';
 const tintColorDark = '#fff';
-const primary = "#003F52";
+const primary = "#002B38";
 const secondary = "#F6A200";
-const mapGrey =  "#A3BAC3";
+const mapGrey = "#A3BAC3";
+const mapLightGrey= "#D0DCE1";
 const white = "#FFFFFF";
 
 export default {
