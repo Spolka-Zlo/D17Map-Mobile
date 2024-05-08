@@ -1,5 +1,4 @@
-import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { StyleSheet, View, Text } from 'react-native'
 import { OrangeButton } from '@/components/OrangeButton'
 import ListElement from '@/components/ListElement'
 import Dropdown from '@/components/Dropdown'

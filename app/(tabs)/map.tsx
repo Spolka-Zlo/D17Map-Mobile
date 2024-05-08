@@ -1,11 +1,11 @@
-import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { Styles } from '@/constants/Styles'
+import { StyleSheet, View, Text } from 'react-native'
 
 export default function Map() {
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Map</Text>
-            <View/>
+        <View style={Styles.background}>
+            <Text style={Styles.h1}>Map</Text>
+            
         </View>
     )
 }
@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+
     },
     title: {
         fontSize: 20,

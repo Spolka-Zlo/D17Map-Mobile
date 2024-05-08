@@ -63,17 +63,22 @@ export default function TabLayout() {
              <Tabs.Screen
                 name="reservation/[roomId]"
                 options={{
-                    title: 'Reservation',
-                    tabBarIcon: () => (
-                        <FontAwesome
-                            size={28}
-                            name="book"
-                            color={Colors.secondary}
-                        />
-                    ),
                     href: null
                 }}
             />
+            <Tabs.Screen
+                name="reservation/components/ReservationList"
+                options={{
+                    href: null
+                }}
+            />
+            <Tabs.Screen
+                name="reservation/components/ReservationManager"
+                options={{
+                    href: null
+                }}
+            />
+
 
             
         </Tabs>
