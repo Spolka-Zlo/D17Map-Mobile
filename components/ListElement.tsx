@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: Colors.primary,
         borderRadius: 8,
-        // dodaj kolor na przytrzymanie
         shadowColor: Colors.primary,
     },
     pointerCursor: {

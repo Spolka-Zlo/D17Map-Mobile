@@ -1,11 +1,11 @@
 import Colors from '@/constants/Colors';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 type DropdownProps = {
   options: string[];
   selected: string;
-  setSelected: (value: string) => void;
+  setSelected: Dispatch<SetStateAction<string>>;
 };
 
 export default function Dropdown({ options, selected, setSelected }: DropdownProps) {
