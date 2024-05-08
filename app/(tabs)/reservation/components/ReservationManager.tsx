@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { Reservation } from '..'
 import Colors from '@/constants/Colors'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Styles } from '@/constants/Styles'
 
 type ReservationManagerProps = {
     reservation: Reservation
@@ -18,13 +19,11 @@ export default function ReservationManager({
             onPress={() => setReservation(null)}
             style={styles.container}
         >
-                <View
-                    style={styles.box}
-                    onTouchStart={(e) => e.stopPropagation()}
-                >
-                    <Text>Reservation Manager</Text>
-                    <Text>{reservation?.name}</Text>
+            <View style={styles.flex} onTouchStart={(e) => e.stopPropagation()}>
+                <View style={styles.box}>
+                    <Text style={Styles.h2}>{reservation?.name}</Text>
                 </View>
+            </View>
         </TouchableOpacity>
     )
 }
@@ -32,15 +31,20 @@ export default function ReservationManager({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.white,
         position: 'absolute',
-        top: 40,
-        left: 30,
-        right: 30,
+        width: '100%',
+        height: '100%',
     },
-    box: {},
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
+    flex: {
+        padding: 30,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    box: {
+        backgroundColor: Colors.white,
+        borderRadius: 10,
+        padding: 20,
+        // width: '90%',
     },
 })

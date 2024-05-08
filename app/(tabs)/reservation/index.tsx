@@ -137,7 +137,7 @@ export default function Reservations() {
     ]
     const [reservation, setReservation] = useState<Reservation | null>(null)
     return (
-        <View>
+        <View onTouchStart={() => setReservation(null)}>
             <ScrollView>
                 <View style={Styles.background}>
                     <Text style={[Styles.h1, styles.title]}>
