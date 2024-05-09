@@ -1,13 +1,14 @@
 import { StyleSheet, View, Text, ScrollView } from 'react-native'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
 import { Styles } from '@/constants/Styles'
 import ReservationList from './components/ReservationList'
 import ReservationManager from './components/ReservationManager'
 import { useState } from 'react'
+import { OrangeAddButton } from '@/components/OrangeAddButton'
 
 export type Reservation = {
     id: number
-    classRoomId: number
+    room: string
     name: string
     date: string
     startTime: string
@@ -28,7 +29,7 @@ export default function Reservations() {
     const reservations: Reservation[] = [
         {
             id: 1,
-            classRoomId: 1,
+            room: 'sala 1',
             name: 'Kolokwium ASD',
             date: '2022-01-01',
             startTime: '12:00',
@@ -37,7 +38,7 @@ export default function Reservations() {
         },
         {
             id: 2,
-            classRoomId: 2,
+            room: 'sala 1',
             name: 'Konsultacje z ASD',
             date: '2022-01-01',
             startTime: '14:00',
@@ -46,7 +47,7 @@ export default function Reservations() {
         },
         {
             id: 3,
-            classRoomId: 3,
+            room: 'sala 1',
             name: 'Spotkanie klubu studentów',
             date: '2022-01-01',
             startTime: '16:00',
@@ -55,7 +56,7 @@ export default function Reservations() {
         },
         {
             id: 4,
-            classRoomId: 4,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '18:00',
@@ -64,7 +65,7 @@ export default function Reservations() {
         },
         {
             id: 5,
-            classRoomId: 5,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '20:00',
@@ -73,7 +74,7 @@ export default function Reservations() {
         },
         {
             id: 6,
-            classRoomId: 6,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '22:00',
@@ -82,7 +83,7 @@ export default function Reservations() {
         },
         {
             id: 7,
-            classRoomId: 7,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '00:00',
@@ -91,7 +92,7 @@ export default function Reservations() {
         },
         {
             id: 8,
-            classRoomId: 8,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '02:00',
@@ -100,7 +101,7 @@ export default function Reservations() {
         },
         {
             id: 9,
-            classRoomId: 9,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '04:00',
@@ -109,7 +110,7 @@ export default function Reservations() {
         },
         {
             id: 10,
-            classRoomId: 10,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '06:00',
@@ -118,7 +119,7 @@ export default function Reservations() {
         },
         {
             id: 11,
-            classRoomId: 11,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '08:00',
@@ -127,7 +128,7 @@ export default function Reservations() {
         },
         {
             id: 12,
-            classRoomId: 12,
+            room: 'sala 1',
             name: 'Wykład z ASD',
             date: '2022-01-01',
             startTime: '10:00',
@@ -152,6 +153,11 @@ export default function Reservations() {
                     setReservation={setReservation}
                 />
             )}
+            <OrangeAddButton onPress={
+                () => {
+                    router.push('/reservation/newReservation')
+                }
+            } />
         </View>
     )
 }

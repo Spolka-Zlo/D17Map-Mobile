@@ -60,27 +60,30 @@ export default function TabLayout() {
                     ),
                 }}
             />
-             <Tabs.Screen
+            <Tabs.Screen
                 name="reservation/[roomId]"
                 options={{
-                    href: null
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="reservation/newReservation"
+                options={{
+                    href: null,
                 }}
             />
             <Tabs.Screen
                 name="reservation/components/ReservationList"
                 options={{
-                    href: null
+                    href: null,
                 }}
             />
             <Tabs.Screen
                 name="reservation/components/ReservationManager"
                 options={{
-                    href: null
+                    href: null,
                 }}
             />
-
-
-            
         </Tabs>
     )
 }

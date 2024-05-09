@@ -22,6 +22,10 @@ export default function ReservationManager({
             <View style={styles.flex} onTouchStart={(e) => e.stopPropagation()}>
                 <View style={styles.box}>
                     <Text style={Styles.h2}>{reservation?.name}</Text>
+                    <Text>{reservation?.room}</Text>
+                    <Text>
+                        {reservation?.date} {reservation?.startTime}-{reservation?.endTime}
+                    </Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -34,6 +38,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         width: '100%',
         height: '100%',
+        backgroundColor: Colors.primary + '80',
+        zIndex: 1,
     },
     flex: {
         padding: 30,
@@ -45,6 +51,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         borderRadius: 10,
         padding: 20,
-        // width: '90%',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 })
