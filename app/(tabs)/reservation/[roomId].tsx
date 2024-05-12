@@ -2,11 +2,12 @@ import { StyleSheet, View, Text } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function Reservations() {
+    console.log('TabReservationScreen')
     const { roomId } = useLocalSearchParams()
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Reservation {roomId}</Text>
-            <View/>
+            <View />
         </View>
     )
 }

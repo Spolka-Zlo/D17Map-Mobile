@@ -8,6 +8,7 @@ import Colors from '@/constants/Colors'
 export default function TabOneScreen() {
     const [selected, setSelected] = useState('Option 1')
     const [isOpen, setIsOpen] = useState(false)
+    console.log('TabOneScreen')
     return (
         <View
             style={styles.container}

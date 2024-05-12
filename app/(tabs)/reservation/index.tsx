@@ -26,6 +26,7 @@ enum ReservationType {
 }
 
 export default function Reservations() {
+    console.log('TabReservationsScreen')
     const reservations: Reservation[] = [
         {
             id: 1,
