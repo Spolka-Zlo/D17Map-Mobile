@@ -5,6 +5,7 @@ import {
     ThemeProvider,
 } from '@react-navigation/native'
 import { Stack } from 'expo-router'
+import 'react-native-reanimated'
 import * as SplashScreen from 'expo-splash-screen'
 import React, { useEffect } from 'react'
 import { StyleSheet } from 'react-native'

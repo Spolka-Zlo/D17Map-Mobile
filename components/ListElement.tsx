@@ -1,6 +1,12 @@
 import Colors from '@/constants/Colors'
 import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, TextStyle } from 'react-native'
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    TextStyle,
+} from 'react-native'
 
 type ListElementProps = {
     text: string
@@ -43,8 +49,7 @@ const styles = StyleSheet.create({
     textStyle: {
         fontSize: 16,
         color: Colors.white,
-        fontWeight: "800",
+        fontWeight: '800',
         textAlign: 'center',
     },
 })
-

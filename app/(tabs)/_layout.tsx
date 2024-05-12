@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, Tabs } from 'expo-router'
 import { Pressable } from 'react-native'
 import { StyleSheet } from 'react-native'
-
+import 'react-native-reanimated'
 import Colors from '@/constants/Colors'
 import { useColorScheme } from '@/components/useColorScheme'
 import { useClientOnlyValue } from '@/components/useClientOnlyValue'
