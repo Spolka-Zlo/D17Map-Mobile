@@ -2,10 +2,11 @@ import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
 
 export default function Map() {
+    console.log('MapScreen')
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Map</Text>
-            <View/>
+            <View />
         </View>
     )
 }

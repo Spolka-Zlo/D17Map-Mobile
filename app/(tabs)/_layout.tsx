@@ -1,12 +1,14 @@
 import React from 'react'
-import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Link, Tabs } from 'expo-router'
 import { Pressable } from 'react-native'
 import { StyleSheet } from 'react-native'
-
+import 'react-native-reanimated'
 import Colors from '@/constants/Colors'
 import { useColorScheme } from '@/components/useColorScheme'
 import { useClientOnlyValue } from '@/components/useClientOnlyValue'
+
+// temp const out to prevent errors in the app waiting for the icons to be fixed by the expo team
+const FontAwesome5 = (a: any) => <></>
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 
@@ -26,7 +28,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Map',
                     tabBarIcon: () => (
-                        <FontAwesome
+                        <FontAwesome5
                             size={28}
                             name="map-marker"
                             color={Colors.secondary}
@@ -39,7 +41,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Home',
                     tabBarIcon: () => (
-                        <FontAwesome
+                        <FontAwesome5
                             size={28}
                             name="home"
                             color={Colors.secondary}
@@ -52,7 +54,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Reservation',
                     tabBarIcon: () => (
-                        <FontAwesome
+                        <FontAwesome5
                             size={28}
                             name="book"
                             color={Colors.secondary}
@@ -60,22 +62,20 @@ export default function TabLayout() {
                     ),
                 }}
             />
-             <Tabs.Screen
+            <Tabs.Screen
                 name="reservation/[roomId]"
                 options={{
                     title: 'Reservation',
                     tabBarIcon: () => (
-                        <FontAwesome
+                        <FontAwesome5
                             size={28}
                             name="book"
                             color={Colors.secondary}
                         />
                     ),
-                    href: null
+                    href: null,
                 }}
             />
-
-            
         </Tabs>
     )
 }
