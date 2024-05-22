@@ -1,13 +1,14 @@
 import { StyleSheet, View, Text, ScrollView, TextInput } from 'react-native'
 import { Styles } from '@/constants/Styles'
-import { useForm, Controller } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Calendar from './components/Calendar';
 
 export default function Reservations() {
     return (
         <SafeAreaView style={Styles.background}>
-            <Text style={Styles.h1}>New Reservation</Text>
-            <Text style={Styles.h2}>Room</Text>
+            <Text style={Styles.h1}>Nowa rezerwacja</Text>
+            
+            <Calendar/>
         </SafeAreaView>
     )
 }
