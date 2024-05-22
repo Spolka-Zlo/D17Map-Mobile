@@ -46,13 +46,17 @@ const customDatesStyles = [
     // },
 ]
 
-export default function Calendar() {
+type CalendarProps = {
+    setSelectedDate: (date: Date) => void
+}
+
+export default function Calendar({ setSelectedDate }: CalendarProps) {
     return (
         <View style={styles.containerStyle}>
             <View style={styles.calendarStyle}>
                 <CalendarPicker
                     onDateChange={(date: Date) => {
-                        console.log(date)
+                        setSelectedDate(date)
                     }}
                     weekdays={['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nie']}
                     months={[

@@ -12,7 +12,7 @@ export const Styles = StyleSheet.create({
     h1: {
         fontSize: 32,
         fontWeight: 'bold',
-        paddingVertical: 16,
+        paddingVertical: 10,
         color: Colors.primary,
     },
     h2: {

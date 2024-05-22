@@ -86,12 +86,6 @@ export default function TabLayout() {
                     href: null,
                 }}
             />
-            <Tabs.Screen
-                name="reservation/components/Calendar"
-                options={{
-                    href: null,
-                }}
-            />
         </Tabs>
     )
 }
