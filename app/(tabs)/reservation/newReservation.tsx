@@ -25,17 +25,17 @@ export default function Reservations() {
         if (!isDateSelected) {
             text = 'Proszę wybrać datę.'
         }
-        if (!isTimeSelected) {
+        else if (!isTimeSelected) {
             text = 'Proszę wybrać godziny.'
         }
-        if (!isValidTimeRange) {
+        else if (!isValidTimeRange) {
             text =
                 'Godzina rozpoczęcia musi być wcześniejsza niż godzina zakończenia.'
         }
-        if (!isRoomSelected) {
+        else if (!isRoomSelected) {
             text = 'Proszę wybrać salę.'
         }
-        if (text === '') {
+        else if (text === '') {
             return null
         }
         return <Text style={styles.error}>{text}</Text>
