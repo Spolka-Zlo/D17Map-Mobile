@@ -24,6 +24,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
     },
+    headText: {
+        color: Colors.primary,
+        fontWeight: 'bold',
+        fontSize: 20,
+        textAlign: 'center',
+        marginBottom: 10,
+    },
 })
 
 type TimePickerProps = {
@@ -44,6 +51,7 @@ export default function TimePicker({
 
     return (
         <View style={styles.container}>
+            <Text style={styles.headText}>Wprowadź godziny rezerwacji</Text>
             <TouchableOpacity
                 style={styles.picker}
                 onPress={() => setStartShow(true)}
