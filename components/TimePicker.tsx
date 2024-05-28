@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { useEffect, useState, Dispatch, SetStateAction } from 'react'
 import { StyleSheet, View, Text } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import Colors from '@/constants/Colors'
 import { Picker } from '@react-native-picker/picker'
 import { Styles } from '@/constants/Styles'
@@ -18,16 +19,71 @@ export default function TimePicker({
     const [selectedEndHour, setSelectedEndHour] = useState('7')
     const [selectedEndMinute, setSelectedEndMinute] = useState('15')
 
-    const startHours = []
-    for (let i = 7; i <= 21; i++) {
-        startHours.push(i.toString())
-    }
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const startHour =
+                    await AsyncStorage.getItem('selectedStartHour')
+                const startMinute = await AsyncStorage.getItem(
+                    'selectedStartMinute'
+                )
+                const endHour = await AsyncStorage.getItem('selectedEndHour')
+                const endMinute =
+                    await AsyncStorage.getItem('selectedEndMinute')
 
+                if (startHour !== null) setSelectedStartHour(startHour)
+                if (startMinute !== null) setSelectedStartMinute(startMinute)
+                if (endHour !== null) setSelectedEndHour(endHour)
+                if (endMinute !== null) setSelectedEndMinute(endMinute)
+
+                setStartTime(`${startHour || '7'}:${startMinute || '00'}`)
+                setEndTime(`${endHour || '7'}:${endMinute || '15'}`)
+            } catch (error) {
+                console.error('Failed to load time data', error)
+            }
+        }
+
+        loadData()
+    }, [setStartTime, setEndTime])
+
+    useEffect(() => {
+        const saveData = async () => {
+            try {
+                await AsyncStorage.setItem(
+                    'selectedStartHour',
+                    selectedStartHour
+                )
+                await AsyncStorage.setItem(
+                    'selectedStartMinute',
+                    selectedStartMinute
+                )
+                await AsyncStorage.setItem('selectedEndHour', selectedEndHour)
+                await AsyncStorage.setItem(
+                    'selectedEndMinute',
+                    selectedEndMinute
+                )
+            } catch (error) {
+                console.error('Failed to save time data', error)
+            }
+        }
+
+        saveData()
+    }, [
+        selectedStartHour,
+        selectedStartMinute,
+        selectedEndHour,
+        selectedEndMinute,
+    ])
+
+    const startHours = Array.from({ length: 15 }, (_, i) => (i + 7).toString())
     const minutes = ['00', '15', '30', '45']
 
     const endHours = []
     for (let i = parseInt(selectedStartHour); i <= 21; i++) {
-        if (parseInt(selectedStartMinute) !== 45 || i !== parseInt(selectedStartHour)){
+        if (
+            parseInt(selectedStartMinute) !== 45 ||
+            i !== parseInt(selectedStartHour)
+        ) {
             endHours.push(i.toString())
         }
     }
@@ -37,12 +93,12 @@ export default function TimePicker({
 
     const endMinutes = []
     if (selectedEndHour === selectedStartHour) {
-        minutes.forEach(minute => {
+        minutes.forEach((minute) => {
             if (parseInt(minute) > parseInt(selectedStartMinute)) {
                 endMinutes.push(minute)
             }
         })
-        if (selectedStartMinute==='45') {
+        if (selectedStartMinute === '45') {
             setSelectedEndHour((parseInt(selectedEndHour) + 1).toString())
             setSelectedEndMinute('00')
         }
@@ -56,7 +112,11 @@ export default function TimePicker({
         setSelectedStartHour(itemValue)
         setStartTime(`${itemValue}:${selectedStartMinute}`)
 
-        if (parseInt(itemValue) > parseInt(selectedEndHour) || (itemValue === selectedEndHour && parseInt(selectedStartMinute) >= parseInt(selectedEndMinute))) {
+        if (
+            parseInt(itemValue) > parseInt(selectedEndHour) ||
+            (itemValue === selectedEndHour &&
+                parseInt(selectedStartMinute) >= parseInt(selectedEndMinute))
+        ) {
             setSelectedEndHour(itemValue)
             setSelectedEndMinute('15')
             setEndTime(`${itemValue}:15`)
@@ -66,8 +126,11 @@ export default function TimePicker({
     const handleStartMinuteChange = (itemValue: string) => {
         setSelectedStartMinute(itemValue)
         setStartTime(`${selectedStartHour}:${itemValue}`)
-        
-        if (selectedStartHour === selectedEndHour && parseInt(itemValue) >= parseInt(selectedEndMinute)) {
+
+        if (
+            selectedStartHour === selectedEndHour &&
+            parseInt(itemValue) >= parseInt(selectedEndMinute)
+        ) {
             setSelectedEndMinute('15')
             setEndTime(`${selectedStartHour}:15`)
         }
@@ -78,7 +141,10 @@ export default function TimePicker({
         if (itemValue === '22') {
             setSelectedEndMinute('00')
             setEndTime(`${itemValue}:00`)
-        } else if (itemValue === selectedStartHour && parseInt(selectedStartMinute) >= parseInt(selectedEndMinute)) {
+        } else if (
+            itemValue === selectedStartHour &&
+            parseInt(selectedStartMinute) >= parseInt(selectedEndMinute)
+        ) {
             setSelectedEndMinute('15')
             setEndTime(`${itemValue}:15`)
         } else {

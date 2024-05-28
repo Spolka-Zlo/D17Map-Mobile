@@ -2,19 +2,94 @@ import { StyleSheet, View, Text, ScrollView } from 'react-native'
 import { Styles } from '@/constants/Styles'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Calendar from '@/components/Calendar'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import RoomDropdown from '@/components/RoomDropdown'
 import TimePicker from '@/components/TimePicker'
 import Colors from '@/constants/Colors'
 import { OrangeButton } from '@/components/OrangeButton'
 import { router } from 'expo-router'
-import { Reservation } from '.'
 import RoomAvailabilitySection from '@/components/RoomAvailabilitySection'
 import SearchByTermSection from '@/components/SearchByTermSection'
 
+export type Reservation = {
+    room: string
+    name: string
+    date: string
+    startTime: string
+    endTime: string
+}
+
+export type Room = {
+    name: string
+    numberOfSeats: number
+    equipment: string[]
+}
+
 async function getReservations() {
-    const response = await fetch('http://localhost:3000/reservations')
-    const data = await response.json()
+    // const response = await fetch('http://localhost:3000/reservations')
+    // const data = await response.json()
+    let data: Reservation[] = [
+        {
+            room: '1.38',
+            name: 'Kolokwium ASD',
+            date: '2024-05-31',
+            startTime: '12:00',
+            endTime: '13:00',
+        },
+        {
+            room: '2.41',
+            name: 'Konsultacje z ASD',
+            date: '2024-05-31',
+            startTime: '14:00',
+            endTime: '15:00',
+        },
+        {
+            room: '1.38',
+            name: 'Spotkanie klubu studentów',
+            date: '2024-05-31',
+            startTime: '16:00',
+            endTime: '17:00',
+        },
+        {
+            room: '2.41',
+            name: 'Kolokwium ASD',
+            date: '2024-05-31',
+            startTime: '14:00',
+            endTime: '16:00',
+        },
+        {
+            room: '1.38',
+            name: 'Konsultacje z ASD',
+            date: '2024-05-31',
+            startTime: '14:00',
+            endTime: '15:00',
+        },
+        {
+            room: '2.41',
+            name: 'Spotkanie klubu studentów',
+            date: '2024-05-31',
+            startTime: '7:00',
+            endTime: '13:00',
+        },
+    ]
+    return data
+}
+
+async function fetchRooms() {
+    // const response = await fetch('http://localhost:3000/rooms')
+    // const data = await response.json()
+    let data: Room[] = [
+        {
+            name: '1.38',
+            numberOfSeats: 20,
+            equipment: ['Komputery'],
+        },
+        {
+            name: '2.41',
+            numberOfSeats: 30,
+            equipment: ['Komputery', 'Projektor'],
+        },
+    ]
     return data
 }
 
@@ -25,15 +100,23 @@ export default function Reservations() {
     const [endTime, setEndTime] = useState<string>('')
 
     const [reservations, setReservations] = useState<Reservation[]>([])
+    const [rooms, setRooms] = useState<Room[]>([])
 
     const [buttonsVisible, setButtonsVisible] = useState(false)
     const [roomPopupOpen, setRoomPopupOpen] = useState(false)
     const [termPopupOpen, setTimePopupOpen] = useState(false)
 
+    useEffect(() => {
+        const fetchData = async () => {
+            setRooms(await fetchRooms())
+        }
+        fetchData()
+    }, [])
+
     async function onDateChange(date: Date) {
         setSelectedDate(date)
         setButtonsVisible(true)
-        // setReservations(await getReservations())
+        setReservations(await getReservations())
     }
 
     function handleRoomPopup() {
@@ -53,9 +136,7 @@ export default function Reservations() {
                 <Calendar onDateChange={onDateChange} />
 
                 {!buttonsVisible && (
-                    <Text style={Styles.h2}>
-                        Wybierz datę, aby kontynuować
-                    </Text>
+                    <Text style={Styles.h2}>Wybierz datę, aby kontynuować</Text>
                 )}
 
                 {buttonsVisible && (
@@ -63,26 +144,32 @@ export default function Reservations() {
                         <OrangeButton
                             text="Wybieraj po salach"
                             onPress={handleRoomPopup}
-                            textClassName={{textAlign: 'center', color:Colors.primary}}
-                            buttonStyle={{width: 170, alignContent: 'center'}}
+                            textClassName={{
+                                textAlign: 'center',
+                                color: Colors.primary,
+                            }}
+                            buttonStyle={{ width: 170, alignContent: 'center' }}
                         />
                         <OrangeButton
                             text="Wybieraj po godzinach"
                             onPress={handleTimePopup}
-                            textClassName={{textAlign: 'center', color:Colors.primary}}
-                            buttonStyle={{width: 170}}
+                            textClassName={{
+                                textAlign: 'center',
+                                color: Colors.primary,
+                            }}
+                            buttonStyle={{ width: 170 }}
                         />
                     </View>
                 )}
 
-                {roomPopupOpen && (
-                    <RoomAvailabilitySection/>
-                )}
+                {roomPopupOpen && <RoomAvailabilitySection />}
 
                 {termPopupOpen && (
-                    <SearchByTermSection/>
+                    <SearchByTermSection
+                        reservations={reservations}
+                        rooms={rooms}
+                    />
                 )}
-                
 
                 {/* <RoomDropdown setSelectedRooms={setSelectedRooms} />
                 <TimePicker
@@ -109,6 +196,5 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         marginTop: 10,
         width: '90%',
-        
     },
 })

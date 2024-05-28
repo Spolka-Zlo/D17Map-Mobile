@@ -1,86 +1,178 @@
-import { StyleSheet, View, Text, TextInput } from 'react-native'
+import {
+    StyleSheet,
+    View,
+    Text,
+    TextInput,
+    Pressable,
+    Touchable,
+    Button,
+    TouchableOpacity,
+} from 'react-native'
 import { Styles } from '@/constants/Styles'
 import CheckBox from 'expo-checkbox'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import Colors from '@/constants/Colors'
 import TimePicker from './TimePicker'
-import { Reservation } from '@/app/(tabs)/reservation'
-
-// przekazać tutaj wszsytkie rezerwacje i sale i na bieżąco filtrować
+import { Reservation, Room } from '@/app/(tabs)/reservation/newReservation'
 
 type SearchByTermSectionProps = {
     reservations: Reservation[]
+    rooms: Room[]
 }
 
-export default function SearchByTermSection() {
+async function fetchAllEquipmentOptions() {
+    // const response = await fetch('http://localhost:3000/equipmentOptions')
+    // const data = await response.json()
+    let data = [
+        'Komputery',
+        'Pracownia sieciowa',
+        'Terminale',
+        'routery',
+        'switch',
+        'Projektor',
+        'kable',
+        'inne',
+    ]
+    return data
+}
+
+export default function SearchByTermSection({
+    reservations,
+    rooms,
+}: SearchByTermSectionProps) {
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
-    const [computers, setComputers] = useState(false)
-    const [terminals, setTerminals] = useState(false)
-    const [networking, setNetworking] = useState(false)
-    const [minNuberOfSeats, setMinNumberOfSeats] = useState(0)
+    const [equipmentOptions, setEquipmentOptions] = useState<string[]>([])
+    const [selectedEquipment, setSelectedEquipment] = useState<string[]>([])
+    const [minNumberOfSeats, setMinNumberOfSeats] = useState(0)
+
+    const [availableRooms, setAvailableRooms] = useState<Room[]>([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setEquipmentOptions(await fetchAllEquipmentOptions())
+        }
+        fetchData()
+    }, [])
 
     const handleChange = (text: string) => {
-        const numericValue = text.replace(/[^0-9]/g, ' ')
-        if (numericValue === '') {
-            setMinNumberOfSeats(0)
-            return
-        }
-        setMinNumberOfSeats(parseInt(numericValue))
+        const numericValue = text.replace(/[^0-9]/g, '')
+        setMinNumberOfSeats(numericValue === '' ? 0 : parseInt(numericValue))
     }
 
+    useEffect(() => {
+        availableRoomsHandler()
+    }, [minNumberOfSeats, startTime, endTime, selectedEquipment])
+
+    const availableRoomsHandler = async () => {
+        const filteredRooms = rooms.filter((room) => {
+            if (room.numberOfSeats < minNumberOfSeats) return false
+
+            if (selectedEquipment.length > 0) {
+                const hasAllEquipment = selectedEquipment.every((equipment) =>
+                    room.equipment.includes(equipment)
+                )
+                if (!hasAllEquipment) return false
+            }
+
+            const isAvailable = reservations.every((reservation) => {
+                if (reservation.room !== room.name) return true
+
+                const startTimeInt =
+                    parseInt(startTime.split(':')[0]) * 60 +
+                    parseInt(startTime.split(':')[1])
+                const endTimeInt =
+                    parseInt(endTime.split(':')[0]) * 60 +
+                    parseInt(endTime.split(':')[1])
+                const reservationStartTimeInt =
+                    parseInt(reservation.startTime.split(':')[0]) * 60 +
+                    parseInt(reservation.startTime.split(':')[1])
+                const reservationEndTimeInt =
+                    parseInt(reservation.endTime.split(':')[0]) * 60 +
+                    parseInt(reservation.endTime.split(':')[1])
+
+                // Check for overlapping times
+                if (
+                    (startTimeInt >= reservationStartTimeInt &&
+                        startTimeInt < reservationEndTimeInt) ||
+                    (endTimeInt > reservationStartTimeInt &&
+                        endTimeInt <= reservationEndTimeInt) ||
+                    (startTimeInt >= reservationStartTimeInt &&
+                        endTimeInt <= reservationEndTimeInt) ||
+                    (startTimeInt <= reservationStartTimeInt &&
+                        endTimeInt >= reservationEndTimeInt)
+                ) {
+                    return false
+                }
+
+                return true
+            })
+
+            return isAvailable
+        })
+
+        setAvailableRooms(filteredRooms)
+    }
 
     return (
-        <View style={styles.containter}>
+        <View style={styles.container}>
             <TimePicker setStartTime={setStartTime} setEndTime={setEndTime} />
             <View style={styles.checkboxSection}>
-                <View style={styles.singleCheckBox}>
-                    <CheckBox
-                        style={styles.checkbox}
-                        value={computers}
-                        onValueChange={setComputers}
-                        color={computers ? Colors.secondary : undefined}
-                    />
-                    <Text style={styles.label}>Komputery</Text>
-                </View>
-                <View style={styles.singleCheckBox}>
-                    <CheckBox
-                        style={styles.checkbox}
-                        value={terminals}
-                        onValueChange={setTerminals}
-                        color={terminals ? Colors.secondary : undefined}
-                    />
-                    <Text style={styles.label}>Pracownia sieciowa</Text>
-                </View>
-                <View style={styles.singleCheckBox}>
-                    <CheckBox
-                        style={styles.checkbox}
-                        value={networking}
-                        onValueChange={setNetworking}
-                        color={networking ? Colors.secondary : undefined}
-                    />
-                    <Text style={styles.label}>Terminale</Text>
-                </View>
+                {equipmentOptions.map((option, index) => {
+                    return (
+                        <View key={index} style={styles.singleCheckBox}>
+                            <CheckBox
+                                style={styles.checkbox}
+                                value={selectedEquipment.includes(option)}
+                                color={
+                                    selectedEquipment.includes(option)
+                                        ? Colors.secondary
+                                        : undefined
+                                }
+                                onValueChange={() => {
+                                    setSelectedEquipment((prevState) =>
+                                        prevState.includes(option)
+                                            ? prevState.filter(
+                                                  (item) => item !== option
+                                              )
+                                            : [...prevState, option]
+                                    )
+                                }}
+                            />
+                            <Text style={styles.label}>{option}</Text>
+                        </View>
+                    )
+                })}
             </View>
-            <View style={styles.containter}>
+            <View style={styles.container}>
                 <Text style={Styles.h2}>Minimalna liczba miejsc:</Text>
                 <TextInput
                     style={styles.input}
-                    value={minNuberOfSeats.toString()}
+                    value={minNumberOfSeats.toString()}
                     onChangeText={handleChange}
                     keyboardType="numeric"
                     placeholder="0"
                 />
             </View>
-            <Text style={Styles.h2}>Wybrane zasoby:</Text>
-            <Text style={Styles.h2}>Od: {startTime}</Text>
-            <Text style={Styles.h2}>Do: {endTime}</Text>
+            <Text style={Styles.h2}>Dostępne pokoje:</Text>
+            <View style={styles.availableRoomsContainer}>
+                {availableRooms.map((room, index) => {
+                    return (
+                        <TouchableOpacity style={styles.availableRoom} key={index} onPress={() => console.log(room)}
+                        onLongPress={() => console.log('long pressssssss') }>
+                            <Text style={styles.label}>{room.name}</Text>
+                        </TouchableOpacity>
+                    )
+                })}
+            </View>
+            <Text style={Styles.h2}>{selectedEquipment}</Text>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    containter: {
+    container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -99,6 +191,8 @@ const styles = StyleSheet.create({
         width: 35,
         height: 35,
         borderColor: Colors.primary,
+        borderRadius: 10,
+        backgroundColor: Colors.primary,
     },
     label: {
         fontSize: 18,
@@ -116,6 +210,29 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         color: Colors.primary,
         backgroundColor: Colors.secondary,
-
+    },
+    availableRoomsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+    },
+    availableRoom: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 14,
+        backgroundColor: Colors.secondary,
+        shadowColor: '#000',
+        marginTop: 8,
+        marginRight: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 1.41,
+        elevation: 2,
     },
 })

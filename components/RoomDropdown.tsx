@@ -4,12 +4,6 @@ import { StyleSheet, View, TouchableOpacity, Text } from 'react-native'
 import { MultiSelect } from 'react-native-element-dropdown'
 // import AntDesign from '@expo/vector-icons/AntDesign'  // this import makes mistake fontFamily "anticon" is not a system font and has not been loaded through expo-font.
 
-async function fetchRooms() {
-    const response = await fetch('http://localhost:3000/rooms')
-    const data = await response.json()
-    return data
-}
-
 type RoomDropdownProps = {
     setSelectedRooms: React.Dispatch<React.SetStateAction<string[]>>
 }
@@ -17,8 +11,8 @@ type RoomDropdownProps = {
 const RoomDropdown = ({ setSelectedRooms }: RoomDropdownProps) => {
     const [selected, setSelected] = useState([''])
     const [rooms, setRooms] = useState([
-        { label: 'Sala 1' },
-        { label: 'Sala 2' },
+        { label: '1.38' },
+        { label: '2.41' },
         { label: 'Sala 3' },
         { label: 'Sala 4' },
         { label: 'Sala 5' },
@@ -47,9 +41,6 @@ const RoomDropdown = ({ setSelectedRooms }: RoomDropdownProps) => {
         )
     }
 
-    useEffect(() => {
-        fetchRooms()
-    }, [])
 
     return (
         <View style={styles.container}>
@@ -167,8 +158,8 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     textSelectedStyle: {
-        marginRight: 5,
-        fontSize: 16,
+        // marginRight: 5,
+        fontSize: 18,
         color: Colors.primary,
         fontWeight: 'bold',
     },
