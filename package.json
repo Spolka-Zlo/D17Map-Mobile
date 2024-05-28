@@ -14,9 +14,11 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
+    "@react-native-picker/picker": "^2.7.6",
     "@react-navigation/native": "^6.0.2",
     "@types/react-native-calendar-picker": "^8.0.0",
     "expo": "latest",
+    "expo-checkbox": "~3.0.0",
     "expo-font": "^12.0.5",
     "expo-linking": "~6.3.1",
     "expo-router": "~3.5.11",

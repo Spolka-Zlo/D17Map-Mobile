@@ -1,26 +1,33 @@
 import Colors from '@/constants/Colors'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native'
 import { MultiSelect } from 'react-native-element-dropdown'
 // import AntDesign from '@expo/vector-icons/AntDesign'  // this import makes mistake fontFamily "anticon" is not a system font and has not been loaded through expo-font.
 
-const data = [
-    { label: 'Sala 1'},
-    { label: 'Sala 2'},
-    { label: 'Sala 3'},
-    { label: 'Sala 4'},
-    { label: 'Sala 5'},
-    { label: 'Sala 6'},
-    { label: 'Sala 7'},
-    { label: 'Sala 8'},
-]
+async function fetchRooms() {
+    const response = await fetch('http://localhost:3000/rooms')
+    const data = await response.json()
+    return data
+}
 
 type RoomDropdownProps = {
     setSelectedRooms: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const RoomDropdown = ({ setSelectedRooms }: RoomDropdownProps) => {
-    const [selected, setSelected] = useState([])
+    const [selected, setSelected] = useState([''])
+    const [rooms, setRooms] = useState([
+        { label: 'Sala 1' },
+        { label: 'Sala 2' },
+        { label: 'Sala 3' },
+        { label: 'Sala 4' },
+        { label: 'Sala 5' },
+        { label: 'Sala 6' },
+        { label: 'Sala 7' },
+        { label: 'Sala 8' },
+        { label: 'Sala 9' },
+        { label: 'Sala 10' },
+    ])
 
     const renderItem = (item: {
         label:
@@ -36,15 +43,13 @@ const RoomDropdown = ({ setSelectedRooms }: RoomDropdownProps) => {
         return (
             <View style={styles.item}>
                 <Text style={styles.selectedTextStyle}>{item.label}</Text>
-                {/* <AntDesign
-                    style={styles.icon}
-                    color="black"
-                    name="Safety"
-                    size={20}
-                /> */}
             </View>
         )
     }
+
+    useEffect(() => {
+        fetchRooms()
+    }, [])
 
     return (
         <View style={styles.container}>
@@ -54,7 +59,7 @@ const RoomDropdown = ({ setSelectedRooms }: RoomDropdownProps) => {
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
                 iconStyle={styles.iconStyle}
-                data={data}
+                data={rooms}
                 containerStyle={styles.containerStyle}
                 labelField="label"
                 valueField="label"
