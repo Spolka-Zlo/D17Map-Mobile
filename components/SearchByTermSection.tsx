@@ -11,11 +11,11 @@ import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Colors from '@/constants/Colors'
 import TimePicker from './TimePicker'
-import { Reservation, Room } from '@/app/(tabs)/reservation/newReservation'
+import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
 import CompleteReservationPopUp from './CompleteReservationPopUp'
 
 type SearchByTermSectionProps = {
-    reservations: Reservation[]
+    reservations: DayReservation[]
     rooms: Room[]
     date: Date | null
     setScrollAvailable: React.Dispatch<React.SetStateAction<boolean>>
@@ -71,7 +71,7 @@ export default function SearchByTermSection({
 
     const availableRoomsHandler = async () => {
         const filteredRooms = rooms.filter((room) => {
-            if (room.numberOfSeats < minNumberOfSeats) return false
+            if (room.capacity < minNumberOfSeats) return false
 
             if (selectedEquipment.length > 0) {
                 const hasAllEquipment = selectedEquipment.every((equipment) =>
@@ -81,7 +81,7 @@ export default function SearchByTermSection({
             }
 
             const isAvailable = reservations.every((reservation) => {
-                if (reservation.room !== room.name) return true
+                if (reservation.classroom.name !== room.name) return true
 
                 const startTimeInt =
                     parseInt(startTime.split(':')[0]) * 60 +
@@ -175,11 +175,21 @@ export default function SearchByTermSection({
                     )
                 })}
             </View>
-            <Text style={Styles.h2}>{selectedEquipment}</Text>
-            {selectedRoom && (
-                <CompleteReservationPopUp setSelectedRoom={setSelectedRoom}
-                setScrollAvailable={setScrollAvailable} />
+            {availableRooms.length === 0 && (
+                <Text style={Styles.h2}>Brak dostępnych pokoi</Text>
             )}
+            {/* <Text style={Styles.h2}>{selectedEquipment}</Text> */}
+            {selectedRoom && (
+                <CompleteReservationPopUp
+                    setSelectedRoom={setSelectedRoom}
+                    setScrollAvailable={setScrollAvailable}
+                    room={selectedRoom}
+                    date={date}
+                    startTime={startTime}
+                    endTime={endTime}
+                />
+            )}
+            
         </View>
     )
 }

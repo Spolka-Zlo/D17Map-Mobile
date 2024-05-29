@@ -12,13 +12,28 @@ import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Colors from '@/constants/Colors'
 import TimePicker from './TimePicker'
-import { Reservation, Room } from '@/app/(tabs)/reservation/newReservation'
+import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
 import Animated from 'react-native-reanimated'
 import Dropdown from './Dropdown'
+import { router } from 'expo-router'
+
+type Reservation = {
+    name: string
+    type: string
+    userId: number
+    date: string
+    startTime: string
+    endTime: string
+    classroomId: number
+}
 
 type CompleteReservationPopUpProps = {
     setSelectedRoom: (room: Room | null) => void
     setScrollAvailable: React.Dispatch<React.SetStateAction<boolean>>
+    room: Room
+    date: Date | null
+    startTime: string
+    endTime: string
 }
 
 async function fetchReservationTypes() {
@@ -31,11 +46,17 @@ async function fetchReservationTypes() {
 export default function CompleteReservationPopUp({
     setSelectedRoom,
     setScrollAvailable,
+    room,
+    date,
+    startTime,
+    endTime,
 }: CompleteReservationPopUpProps) {
     const [isDropDownOpen, setIsDropDownOpen] = useState(false)
-    const [selectedReservationType, setSelectedReservationType] = useState('')
     const [name, setName] = useState('')
     const [reservationTypes, setReservationTypes] = useState<string[]>([])
+    const [selectedReservationType, setSelectedReservationType] = useState(
+        'Wybierz typ rezerwacji'
+    )
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,6 +64,28 @@ export default function CompleteReservationPopUp({
         }
         fetchData()
     }, [])
+
+    const handleSubmit = () => {
+        console.log('submit', selectedReservationType)
+        if (selectedReservationType === 'Wybierz typ rezerwacji') {
+            return
+        }
+        const reservation: Reservation = {
+            type: selectedReservationType,
+            name: name,
+            userId: 1,
+            date: date?.toISOString().split('T')[0] || '',
+            startTime: startTime,
+            endTime: endTime,
+            classroomId: room.id,
+        }
+        console.log(reservation)
+        setName('')
+        setSelectedReservationType('Wybierz typ rezerwacji')
+        setScrollAvailable(true)
+        setSelectedRoom(null)
+        router.navigate('reservation')
+    }
 
     return (
         <TouchableOpacity
@@ -54,15 +97,43 @@ export default function CompleteReservationPopUp({
         >
             <View style={styles.flex} onTouchStart={(e) => e.stopPropagation()}>
                 <View style={styles.box}>
-                    <TextInput placeholder="Nazwa rezerwacji" onChangeText={setName} value={name}/>
-                    <Dropdown
-                        options={reservationTypes}
-                        selected={selectedReservationType}
-                        setSelected={setSelectedReservationType}
-                        isOpen={isDropDownOpen}
-                        setIsOpen={setIsDropDownOpen}
+                    <TextInput
+                        placeholder="Nazwa rezerwacji"
+                        onChangeText={setName}
+                        value={name}
+                        style={styles.input}
                     />
-                    <Text>zxcv</Text>
+                    <View style={{ zIndex: 2 }}>
+                        <Dropdown
+                            options={reservationTypes}
+                            selected={selectedReservationType}
+                            setSelected={setSelectedReservationType}
+                            isOpen={isDropDownOpen}
+                            setIsOpen={setIsDropDownOpen}
+                        />
+                    </View>
+                    {date && (
+                        <Text>{date?.toISOString().split('T')[0] || ''}</Text>
+                    )}
+                    <Text>{room.name}</Text>
+                    <Text>{room.capacity} miejsc</Text>
+                    <Text>{room.equipment.join(', ')}</Text>
+                    {selectedReservationType === 'Wybierz typ rezerwacji' && (
+                        <Text style={styles.error}>Wybierz typ rezerwacji</Text>
+                    )}
+                    {name === '' && (
+                        <Text style={styles.error}>Podaj nazwę rezerwacji</Text>
+                    )}
+                    {name !== '' &&
+                        selectedReservationType !==
+                            'Wybierz typ rezerwacji' && (
+                            <TouchableOpacity
+                                onPress={handleSubmit}
+                                style={styles.submit}
+                            >
+                                <Text>Rezerwuj</Text>
+                            </TouchableOpacity>
+                        )}
                 </View>
             </View>
         </TouchableOpacity>
@@ -90,5 +161,30 @@ const styles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    input: {
+        backgroundColor: Colors.secondary,
+        borderRadius: 10,
+        padding: 10,
+        marginBottom: 20,
+        width: 200,
+        color: Colors.primary,
+    },
+    error: {
+        color: 'red',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    submit: {
+        backgroundColor: Colors.secondary,
+        borderRadius: 10,
+        padding: 10,
+        width: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: Colors.primary,
     },
 })

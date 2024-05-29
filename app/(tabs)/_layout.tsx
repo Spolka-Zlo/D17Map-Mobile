@@ -87,12 +87,6 @@ export default function TabLayout() {
                     href: null,
                 }}
             />
-            <Tabs.Screen
-                name="reservation/completeReservation"
-                options={{
-                    href: null,
-                }}
-            />
         </Tabs>
     )
 }

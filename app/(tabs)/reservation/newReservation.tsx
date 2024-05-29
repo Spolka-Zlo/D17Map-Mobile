@@ -11,82 +11,83 @@ import { router } from 'expo-router'
 import RoomAvailabilitySection from '@/components/RoomAvailabilitySection'
 import SearchByTermSection from '@/components/SearchByTermSection'
 
-export type Reservation = {
-    room: string
+type RooomReservation = {
+    id: number
     name: string
-    date: string
+}
+
+export type DayReservation = {
+    id: number
+    type: string
     startTime: string
     endTime: string
+    classroom: RooomReservation
 }
 
 export type Room = {
+    id: number
     name: string
-    numberOfSeats: number
+    capacity: number
     equipment: string[]
 }
 
 async function getReservations() {
     // const response = await fetch('http://localhost:3000/reservations')
     // const data = await response.json()
-    let data: Reservation[] = [
+    let data: DayReservation[] = [
         {
-            room: '1.38',
-            name: 'Kolokwium ASD',
-            date: '2024-05-31',
+            id: 1,
+            type: 'Kolokwium ASD',
             startTime: '12:00',
             endTime: '13:00',
+            classroom: { id: 1, name: '1.38' },
         },
         {
-            room: '2.41',
-            name: 'Konsultacje z ASD',
-            date: '2024-05-31',
+            id: 2,
+            type: 'Konsultacje',
             startTime: '14:00',
             endTime: '15:00',
+            classroom: { id: 2, name: '2.41' },
         },
         {
-            room: '1.38',
-            name: 'Spotkanie klubu studentów',
-            date: '2024-05-31',
+            id: 3,
+            type: 'Spotkanie',
+            startTime: '15:00',
+            endTime: '16:00',
+            classroom: { id: 1, name: '1.38' },
+        },
+        {
+            id: 4,
+            type: 'Inne',
             startTime: '16:00',
             endTime: '17:00',
+            classroom: { id: 2, name: '2.41' },
         },
         {
-            room: '2.41',
-            name: 'Kolokwium ASD',
-            date: '2024-05-31',
-            startTime: '14:00',
-            endTime: '16:00',
-        },
-        {
-            room: '1.38',
-            name: 'Konsultacje z ASD',
-            date: '2024-05-31',
-            startTime: '14:00',
-            endTime: '15:00',
-        },
-        {
-            room: '2.41',
-            name: 'Spotkanie klubu studentów',
-            date: '2024-05-31',
-            startTime: '7:00',
-            endTime: '13:00',
-        },
+            id: 5,
+            type: 'Kolokwium ASD',
+            startTime: '17:00',
+            endTime: '18:00',
+            classroom: { id: 1, name: '1.38' },
+        }
     ]
     return data
 }
 
 async function fetchRooms() {
-    // const response = await fetch('http://localhost:3000/rooms')
+    // const response = await fetch('http://localhost:3000/classrooms')
     // const data = await response.json()
     let data: Room[] = [
         {
+            id: 1,
             name: '1.38',
-            numberOfSeats: 20,
+            capacity: 20,
             equipment: ['Komputery'],
         },
         {
+            id: 2,
             name: '2.41',
-            numberOfSeats: 30,
+            capacity: 30,
             equipment: ['Komputery', 'Projektor'],
         },
     ]
@@ -96,7 +97,7 @@ async function fetchRooms() {
 export default function newReservation() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
-    const [reservations, setReservations] = useState<Reservation[]>([])
+    const [reservations, setReservations] = useState<DayReservation[]>([])
     const [rooms, setRooms] = useState<Room[]>([])
 
     const [buttonsVisible, setButtonsVisible] = useState(false)
