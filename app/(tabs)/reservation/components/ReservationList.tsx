@@ -6,7 +6,7 @@ import Colors from '@/constants/Colors'
 import ReservationManager from './ReservationManager'
 
 type ReservationListProps = {
-    reservations: Reservation[],
+    reservations: Reservation[]
     setReservation: (reservation: Reservation) => void
 }
 
@@ -17,17 +17,20 @@ export default function ReservationList({
     return (
         <View>
             <ScrollView>
-            <View style={styles.container}>
-            {reservations.map((reservation) => (
-                <ListElement
-                key={reservation.id}
-                text={`${reservation.name} - ${reservation.date} ${reservation.startTime}-${reservation.endTime}`}
-                onPress={() => setReservation(reservation)}
-                textStyle={{ fontSize: 16, color: Colors.secondary}}
-                />
-            ))}
-        </View>
-        </ScrollView>
+                <View style={styles.container}>
+                    {reservations.map((reservation) => (
+                        <ListElement
+                            key={reservation.id}
+                            text={`${reservation.name} - ${reservation.date} ${reservation.startTime}-${reservation.endTime}`}
+                            onPress={() => setReservation(reservation)}
+                            textStyle={{
+                                fontSize: 16,
+                                color: Colors.secondary,
+                            }}
+                        />
+                    ))}
+                </View>
+            </ScrollView>
         </View>
     )
 }

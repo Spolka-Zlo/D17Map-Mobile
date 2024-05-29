@@ -3,22 +3,22 @@ import {
     View,
     Text,
     TextInput,
-    Pressable,
-    Touchable,
-    Button,
     TouchableOpacity,
 } from 'react-native'
 import { Styles } from '@/constants/Styles'
 import CheckBox from 'expo-checkbox'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Colors from '@/constants/Colors'
 import TimePicker from './TimePicker'
 import { Reservation, Room } from '@/app/(tabs)/reservation/newReservation'
+import CompleteReservationPopUp from './CompleteReservationPopUp'
 
 type SearchByTermSectionProps = {
     reservations: Reservation[]
     rooms: Room[]
+    date: Date | null
+    setScrollAvailable: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 async function fetchAllEquipmentOptions() {
@@ -40,6 +40,8 @@ async function fetchAllEquipmentOptions() {
 export default function SearchByTermSection({
     reservations,
     rooms,
+    date,
+    setScrollAvailable,
 }: SearchByTermSectionProps) {
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
@@ -48,6 +50,8 @@ export default function SearchByTermSection({
     const [minNumberOfSeats, setMinNumberOfSeats] = useState(0)
 
     const [availableRooms, setAvailableRooms] = useState<Room[]>([])
+
+    const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -91,8 +95,6 @@ export default function SearchByTermSection({
                 const reservationEndTimeInt =
                     parseInt(reservation.endTime.split(':')[0]) * 60 +
                     parseInt(reservation.endTime.split(':')[1])
-
-                // Check for overlapping times
                 if (
                     (startTimeInt >= reservationStartTimeInt &&
                         startTimeInt < reservationEndTimeInt) ||
@@ -159,14 +161,25 @@ export default function SearchByTermSection({
             <View style={styles.availableRoomsContainer}>
                 {availableRooms.map((room, index) => {
                     return (
-                        <TouchableOpacity style={styles.availableRoom} key={index} onPress={() => console.log(room)}
-                        onLongPress={() => console.log('long pressssssss') }>
+                        <TouchableOpacity
+                            style={styles.availableRoom}
+                            key={index}
+                            onPress={() => {
+                                setSelectedRoom(room)
+                                setScrollAvailable(false)
+                            }}
+                            onLongPress={() => console.log('long pressssssss')}
+                        >
                             <Text style={styles.label}>{room.name}</Text>
                         </TouchableOpacity>
                     )
                 })}
             </View>
             <Text style={Styles.h2}>{selectedEquipment}</Text>
+            {selectedRoom && (
+                <CompleteReservationPopUp setSelectedRoom={setSelectedRoom}
+                setScrollAvailable={setScrollAvailable} />
+            )}
         </View>
     )
 }

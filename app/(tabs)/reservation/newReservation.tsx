@@ -93,18 +93,17 @@ async function fetchRooms() {
     return data
 }
 
-export default function Reservations() {
+export default function newReservation() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-    const [selectedRooms, setSelectedRooms] = useState<string[]>([])
-    const [startTime, setStartTime] = useState<string>('')
-    const [endTime, setEndTime] = useState<string>('')
 
     const [reservations, setReservations] = useState<Reservation[]>([])
     const [rooms, setRooms] = useState<Room[]>([])
 
     const [buttonsVisible, setButtonsVisible] = useState(false)
-    const [roomPopupOpen, setRoomPopupOpen] = useState(false)
-    const [termPopupOpen, setTimePopupOpen] = useState(false)
+    const [roomSectionOpen, setRoomSectionOpen] = useState(false)
+    const [termSectionOpen, setTimeSectionOpen] = useState(false)
+
+    const [scrollAvailable, setScrollAvailable] = useState(true)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -119,18 +118,18 @@ export default function Reservations() {
         setReservations(await getReservations())
     }
 
-    function handleRoomPopup() {
-        setTimePopupOpen(false)
-        setRoomPopupOpen(true)
+    function handleRoomSection() {
+        setTimeSectionOpen(false)
+        setRoomSectionOpen(true)
     }
 
-    function handleTimePopup() {
-        setRoomPopupOpen(false)
-        setTimePopupOpen(true)
+    function handleTimeSection() {
+        setRoomSectionOpen(false)
+        setTimeSectionOpen(true)
     }
 
     return (
-        <ScrollView style={styles.background}>
+        <ScrollView style={styles.background} scrollEnabled={scrollAvailable}>
             <SafeAreaView style={Styles.background}>
                 <Text style={[Styles.h1, styles.h1]}>Nowa rezerwacja</Text>
                 <Calendar onDateChange={onDateChange} />
@@ -143,7 +142,7 @@ export default function Reservations() {
                     <View style={styles.buttons}>
                         <OrangeButton
                             text="Wybieraj po salach"
-                            onPress={handleRoomPopup}
+                            onPress={handleRoomSection}
                             textClassName={{
                                 textAlign: 'center',
                                 color: Colors.primary,
@@ -152,7 +151,7 @@ export default function Reservations() {
                         />
                         <OrangeButton
                             text="Wybieraj po godzinach"
-                            onPress={handleTimePopup}
+                            onPress={handleTimeSection}
                             textClassName={{
                                 textAlign: 'center',
                                 color: Colors.primary,
@@ -162,12 +161,14 @@ export default function Reservations() {
                     </View>
                 )}
 
-                {roomPopupOpen && <RoomAvailabilitySection />}
+                {roomSectionOpen && <RoomAvailabilitySection />}
 
-                {termPopupOpen && (
+                {termSectionOpen && (
                     <SearchByTermSection
                         reservations={reservations}
                         rooms={rooms}
+                        date={selectedDate}
+                        setScrollAvailable={setScrollAvailable}
                     />
                 )}
 
