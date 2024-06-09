@@ -88,14 +88,14 @@ export default function CompleteReservationPopUp({
     }
 
     return (
-        <TouchableOpacity
-            onPress={() => {
-                setSelectedRoom(null)
-                setScrollAvailable(true)
-            }}
+        <View
+            // onPress={() => {
+            //     setSelectedRoom(null)
+            //     setScrollAvailable(true)
+            // }}
             style={styles.container}
         >
-            <View style={styles.flex} onTouchStart={(e) => e.stopPropagation()}>
+            <View style={styles.flex}>
                 <View style={styles.box}>
                     <TextInput
                         placeholder="Nazwa rezerwacji"
@@ -131,12 +131,21 @@ export default function CompleteReservationPopUp({
                                 onPress={handleSubmit}
                                 style={styles.submit}
                             >
-                                <Text>Rezerwuj</Text>
+                                <Text style={styles.label}>Rezerwuj</Text>
                             </TouchableOpacity>
                         )}
+                    <TouchableOpacity
+                        onPress={() => {
+                            setSelectedRoom(null)
+                            setScrollAvailable(true)
+                        }}
+                        style={styles.cancel}
+                    >
+                        <Text style={styles.label}>Zamknij</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
-        </TouchableOpacity>
+        </View>
     )
 }
 
@@ -175,6 +184,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
+    cancel: {
+        backgroundColor: Colors.secondary,
+        borderRadius: 10,
+        padding: 10,
+        width: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+    },
     submit: {
         backgroundColor: Colors.secondary,
         borderRadius: 10,
@@ -183,6 +201,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: Colors.primary,
+    },
+    label: {
         fontSize: 18,
         fontWeight: 'bold',
         color: Colors.primary,

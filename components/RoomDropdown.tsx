@@ -1,3 +1,4 @@
+import { Room } from '@/app/(tabs)/reservation/newReservation'
 import Colors from '@/constants/Colors'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native'
@@ -5,23 +6,25 @@ import { MultiSelect } from 'react-native-element-dropdown'
 // import AntDesign from '@expo/vector-icons/AntDesign'  // this import makes mistake fontFamily "anticon" is not a system font and has not been loaded through expo-font.
 
 type RoomDropdownProps = {
-    setSelectedRooms: React.Dispatch<React.SetStateAction<string[]>>
+    setSelectedRooms: React.Dispatch<React.SetStateAction<number[]>>
+    rooms: Room[]
 }
 
-const RoomDropdown = ({ setSelectedRooms }: RoomDropdownProps) => {
+type RoomDropdown = {
+    value: number
+    label: string
+}
+
+const RoomDropdown = ({ setSelectedRooms, rooms }: RoomDropdownProps) => {
     const [selected, setSelected] = useState([''])
-    const [rooms, setRooms] = useState([
-        { label: '1.38' },
-        { label: '2.41' },
-        { label: 'Sala 3' },
-        { label: 'Sala 4' },
-        { label: 'Sala 5' },
-        { label: 'Sala 6' },
-        { label: 'Sala 7' },
-        { label: 'Sala 8' },
-        { label: 'Sala 9' },
-        { label: 'Sala 10' },
-    ])
+
+    const [roomsList, setRoomsList] = useState<RoomDropdown[]>([])
+
+    useEffect(() => {
+        setRoomsList(
+            rooms.map((room) => ({ value: room.id, label: room.name }))
+        )
+    }, [rooms])
 
     const renderItem = (item: {
         label:
@@ -41,7 +44,6 @@ const RoomDropdown = ({ setSelectedRooms }: RoomDropdownProps) => {
         )
     }
 
-
     return (
         <View style={styles.container}>
             <MultiSelect
@@ -50,27 +52,21 @@ const RoomDropdown = ({ setSelectedRooms }: RoomDropdownProps) => {
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
                 iconStyle={styles.iconStyle}
-                data={rooms}
+                data={roomsList}
                 containerStyle={styles.containerStyle}
                 labelField="label"
-                valueField="label"
+                valueField="value"
                 placeholder="Wybierz salę"
                 value={selected}
                 search
                 searchPlaceholder="Wyszukaj..."
-                onChange={(item: string[]) => {
-                    setSelected(item)
-                    setSelectedRooms(item)
+                onChange={(value) => {
+                    setSelected(value)
+                    setSelectedRooms(
+                        value.map(Number).filter((num) => num !== 0)
+                    )
                 }}
                 selectedStyle={{ backgroundColor: 'red' }}
-                // renderLeftIcon={() => (
-                //     // <AntDesign
-                //     //     style={styles.icon}
-                //     //     color="black"
-                //     //     name="Safety"
-                //     //     size={20}
-                //     // />
-                // )}
                 renderItem={renderItem}
                 renderSelectedItem={(item, unSelect) => (
                     <TouchableOpacity

@@ -69,7 +69,7 @@ async function getReservations() {
             startTime: '17:00',
             endTime: '18:00',
             classroom: { id: 1, name: '1.38' },
-        }
+        },
     ]
     return data
 }
@@ -90,6 +90,18 @@ async function fetchRooms() {
             capacity: 30,
             equipment: ['Komputery', 'Projektor'],
         },
+        {
+            id: 3,
+            name: '3.14',
+            capacity: 25,
+            equipment: ['Projektor'],
+        },
+        {
+            id: 4,
+            name: '4.20',
+            capacity: 15,
+            equipment: ['Komputery'],
+        }
     ]
     return data
 }
@@ -162,7 +174,13 @@ export default function newReservation() {
                     </View>
                 )}
 
-                {roomSectionOpen && <RoomAvailabilitySection />}
+                {roomSectionOpen && (
+                    <RoomAvailabilitySection
+                        reservations={reservations}
+                        rooms={rooms}
+                        date={selectedDate}
+                    />
+                )}
 
                 {termSectionOpen && (
                     <SearchByTermSection
