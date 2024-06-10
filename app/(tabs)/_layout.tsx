@@ -6,10 +6,10 @@ import 'react-native-reanimated'
 import Colors from '@/constants/Colors'
 import { useColorScheme } from '@/components/useColorScheme'
 import { useClientOnlyValue } from '@/components/useClientOnlyValue'
-import { FontAwesome5 } from '@expo/vector-icons'
+// import { FontAwesome5 } from '@expo/vector-icons'
 
 // temp const out to prevent errors in the app waiting for the icons to be fixed by the expo team
-// const FontAwesome5 = (a: any) => <></>
+const FontAwesome5 = (a: any) => <></>
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 

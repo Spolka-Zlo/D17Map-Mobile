@@ -1,13 +1,14 @@
 import { Room } from '@/app/(tabs)/reservation/newReservation'
 import Colors from '@/constants/Colors'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native'
+import { StyleSheet, View, TouchableOpacity, Text, TextInput, Alert } from 'react-native'
 import { MultiSelect } from 'react-native-element-dropdown'
 // import AntDesign from '@expo/vector-icons/AntDesign'  // this import makes mistake fontFamily "anticon" is not a system font and has not been loaded through expo-font.
 
 type RoomDropdownProps = {
-    setSelectedRooms: React.Dispatch<React.SetStateAction<number[]>>
-    rooms: Room[]
+    setSelectedRooms: React.Dispatch<React.SetStateAction<number[]>>,
+    selectedRooms: number[],
+    rooms: Room[],
 }
 
 type RoomDropdown = {
@@ -15,8 +16,9 @@ type RoomDropdown = {
     label: string
 }
 
-const RoomDropdown = ({ setSelectedRooms, rooms }: RoomDropdownProps) => {
+const RoomDropdown = ({ setSelectedRooms, selectedRooms, rooms }: RoomDropdownProps) => {
     const [selected, setSelected] = useState([''])
+    const [searchText, setSearchText] = useState('')
 
     const [roomsList, setRoomsList] = useState<RoomDropdown[]>([])
 
@@ -25,6 +27,10 @@ const RoomDropdown = ({ setSelectedRooms, rooms }: RoomDropdownProps) => {
             rooms.map((room) => ({ value: room.id, label: room.name }))
         )
     }, [rooms])
+
+    const filteredRooms = roomsList.filter((room) =>
+        room.label.toLowerCase().includes(searchText.toLowerCase())
+    )
 
     const renderItem = (item: {
         label:
@@ -52,7 +58,7 @@ const RoomDropdown = ({ setSelectedRooms, rooms }: RoomDropdownProps) => {
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
                 iconStyle={styles.iconStyle}
-                data={roomsList}
+                data={filteredRooms}
                 containerStyle={styles.containerStyle}
                 labelField="label"
                 valueField="value"
@@ -61,12 +67,15 @@ const RoomDropdown = ({ setSelectedRooms, rooms }: RoomDropdownProps) => {
                 search
                 searchPlaceholder="Wyszukaj..."
                 onChange={(value) => {
-                    setSelected(value)
-                    setSelectedRooms(
-                        value.map(Number).filter((num) => num !== 0)
-                    )
+                    if (value.length <= 4) {
+                        setSelected(value)
+                        setSelectedRooms(
+                            value.map(Number).filter((num) => num !== 0)
+                        )
+                    } else {
+                        Alert.alert('Limit reached', 'You can select up to 3 rooms only.')
+                    }
                 }}
-                selectedStyle={{ backgroundColor: 'red' }}
                 renderItem={renderItem}
                 renderSelectedItem={(item, unSelect) => (
                     <TouchableOpacity
@@ -80,6 +89,26 @@ const RoomDropdown = ({ setSelectedRooms, rooms }: RoomDropdownProps) => {
                         </View>
                     </TouchableOpacity>
                 )}
+                renderInputSearch={() => (
+                    <TextInput
+                      style={{
+                        borderWidth: 0.5,
+                        borderColor: '#DDDDDD',
+                        paddingHorizontal: 8,
+                        marginBottom: 5,
+                        margin: 6,
+                        height: 45,
+                        borderRadius: 5,
+                        color: Colors.secondary,
+                      }}
+                      value={searchText}
+                      onChangeText={e => {
+                        setSearchText(e);
+                      }}
+                      placeholder="Search..."
+                      placeholderTextColor={Colors.secondary}
+                    />
+                  )}
             />
         </View>
     )

@@ -178,7 +178,6 @@ export default function SearchByTermSection({
             {availableRooms.length === 0 && (
                 <Text style={Styles.h2}>Brak dostępnych pokoi</Text>
             )}
-            {/* <Text style={Styles.h2}>{selectedEquipment}</Text> */}
             {selectedRoom && (
                 <CompleteReservationPopUp
                     setSelectedRoom={setSelectedRoom}

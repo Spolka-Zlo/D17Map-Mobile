@@ -66,10 +66,17 @@ async function getReservations() {
         {
             id: 5,
             type: 'Kolokwium ASD',
-            startTime: '17:00',
-            endTime: '18:00',
+            startTime: '16:00',
+            endTime: '17:00',
             classroom: { id: 1, name: '1.38' },
         },
+        {
+            id: 6,
+            type: 'Konsultacje',
+            startTime: '12:30',
+            endTime: '18:30',
+            classroom: { id: 3, name: '3.14' },
+        }
     ]
     return data
 }
@@ -179,6 +186,7 @@ export default function newReservation() {
                         reservations={reservations}
                         rooms={rooms}
                         date={selectedDate}
+                        setScrollAvailable={setScrollAvailable}
                     />
                 )}
 

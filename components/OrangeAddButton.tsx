@@ -1,10 +1,11 @@
 import Colors from '@/constants/Colors'
-import { FontAwesome } from '@expo/vector-icons'
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { TextStyle } from 'react-native'
+import { StyleSheet, View, TouchableOpacity } from 'react-native'
 
 const buttonSize = 80; // Stała rozmiaru przycisku
+const lineThickness = 8; // Grubość linii plusa
+const lineLength = buttonSize / 2; // Długość linii plusa
+
 type AddButtonProps = {
     onPress: () => void
 }
@@ -12,11 +13,13 @@ type AddButtonProps = {
 export function OrangeAddButton({ onPress }: AddButtonProps) {
     return (
         <TouchableOpacity style={styles.button} onPress={onPress}>
-            <FontAwesome name="plus" size={buttonSize/2} color={Colors.white} style={styles.plusIcon} />
+            <View style={styles.plusContainer}>
+                <View style={[styles.line, styles.horizontalLine]} />
+                <View style={[styles.line, styles.verticalLine]} />
+            </View>
         </TouchableOpacity>
     )
 }
-
 
 const styles = StyleSheet.create({
     button: {
@@ -29,10 +32,30 @@ const styles = StyleSheet.create({
         height: buttonSize,
         justifyContent: 'center', 
         alignItems: 'center',
-        // borderColor: Colors.primary,
-        // borderWidth: 5,
     },
-    plusIcon: {
-        marginLeft: 2,
+    plusContainer: {
+        position: 'relative',
+        width: lineLength,
+        height: lineLength,
+    },
+    line: {
+        position: 'absolute',
+        backgroundColor: Colors.white,
+        width: lineThickness,
+        height: lineLength,
+    },
+    horizontalLine: {
+        left: '90%',
+        marginLeft: -lineLength / 2,
+        transform: [{ rotate: '0deg' }],
+    },
+    verticalLine: {
+        top: '50%',
+        left: '50%',
+        marginTop: -lineLength / 2,
+        marginLeft: -lineThickness / 2,
+        transform: [{ rotate: '90deg' }],
     },
 });
+
+export default OrangeAddButton;

@@ -63,6 +63,7 @@ export default function CompleteReservationPopUp({
             setReservationTypes(await fetchReservationTypes())
         }
         fetchData()
+        setScrollAvailable(false)
     }, [])
 
     const handleSubmit = () => {
@@ -115,6 +116,9 @@ export default function CompleteReservationPopUp({
                     {date && (
                         <Text>{date?.toISOString().split('T')[0] || ''}</Text>
                     )}
+                    <Text>
+                        {startTime} - {endTime}
+                    </Text>
                     <Text>{room.name}</Text>
                     <Text>{room.capacity} miejsc</Text>
                     <Text>{room.equipment.join(', ')}</Text>
@@ -154,9 +158,13 @@ const styles = StyleSheet.create({
         flex: 1,
         position: 'absolute',
         width: '100%',
-        height: '100%',
+        height: 733,
         backgroundColor: Colors.primary + '80',
+        // transform: [{ translateX: -50 }, { translateY: -50 }],
+        // top: '25%',
+        // left: '50%',
         zIndex: 1,
+        bottom: '0%',
     },
     flex: {
         padding: 30,

@@ -23,5 +23,10 @@ export default {
   primary: primary,
   secondary: secondary,
   mapGrey: mapGrey,
-  white: white
+  white: white,
+  roomColors: [
+    secondary,
+    mapGrey,
+    primary,
+  ],
 };

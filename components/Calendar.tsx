@@ -2,7 +2,6 @@ import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import CalendarPicker from 'react-native-calendar-picker'
 import Colors from '@/constants/Colors'
-import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors'
 
 const styles = StyleSheet.create({
     customContainer: {
