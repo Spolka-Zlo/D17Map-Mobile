@@ -32,8 +32,6 @@ export default function TimeSlotPicker({
     }>({})
     const [roomColors, setRoomColors] = useState<{ [key: number]: string }>({})
 
-    let selectedRoomId: number = selectedRoomsId[0]
-
     const getSlotId = (time: string): number => {
         const [hours, minutes] = time.split(':').map((x) => parseInt(x))
         return (hours - 7) * 4 + Math.floor(minutes / 15)
@@ -120,16 +118,30 @@ export default function TimeSlotPicker({
     const handleConfirm = () => {
         if (firstSelectedSlot !== null && secondSelectedSlot !== null) {
             setStartTime(
-                `${Math.floor(firstSelectedSlot / 4) + 7}:${
-                    String((firstSelectedSlot % 4) * 15).padStart(2, '0')
-                }`
-            );
+                `${Math.floor(firstSelectedSlot / 4) + 7}:${String(
+                    (firstSelectedSlot % 4) * 15
+                ).padStart(2, '0')}`
+            )
             setEndTime(
-                `${Math.floor((secondSelectedSlot + 1) / 4) + 7}:${
-                    String(((secondSelectedSlot + 1) % 4) * 15).padStart(2, '0')
-                }`
-            );
+                `${Math.floor((secondSelectedSlot + 1) / 4) + 7}:${String(
+                    ((secondSelectedSlot + 1) % 4) * 15
+                ).padStart(2, '0')}`
+            )
             setSelectedRoom(
+                rooms.find((room) => {
+                    for (
+                        let i = firstSelectedSlot;
+                        i <= secondSelectedSlot;
+                        i++
+                    ) {
+                        if (!RoomAvailabilityBySlots[i].includes(room.id)) {
+                            return false
+                        }
+                    }
+                    return true
+                }) ?? null
+            )
+            console.log(
                 rooms.find(
                     (room) =>
                         RoomAvailabilityBySlots[firstSelectedSlot].includes(
@@ -138,17 +150,8 @@ export default function TimeSlotPicker({
                         RoomAvailabilityBySlots[secondSelectedSlot].includes(
                             room.id
                         )
-                ) ?? null
+                )
             )
-            console.log(rooms.find(
-                (room) =>
-                    RoomAvailabilityBySlots[firstSelectedSlot].includes(
-                        room.id
-                    ) &&
-                    RoomAvailabilityBySlots[secondSelectedSlot].includes(
-                        room.id
-                    )
-            ))
         }
     }
 
