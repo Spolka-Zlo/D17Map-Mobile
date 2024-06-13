@@ -26,11 +26,16 @@ export default function RoomAvailabilitySection({
 
     return (
         <View style={styles.background}>
-            <RoomDropdown
-                setSelectedRooms={setSelectedRoomsId}
-                selectedRooms={selectedRoomsId}
-                rooms={rooms}
-            />
+            <View style={[
+                styles.container,
+                { marginBottom: selectedRoomsId.length === 0 ? 600 : 0 }
+            ]}>
+                <RoomDropdown
+                    setSelectedRooms={setSelectedRoomsId}
+                    selectedRooms={selectedRoomsId}
+                    rooms={rooms}
+                />
+            </View>
             {selectedRoomsId.length > 0 && (
                 <TimeSlotPicker
                     reservations={reservations}
@@ -61,6 +66,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         backgroundColor: Colors.mapGrey,
+        width: '100%',
+    },
+    container: {
+        alignItems: 'center',
         width: '100%',
     },
 })

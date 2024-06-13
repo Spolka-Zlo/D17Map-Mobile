@@ -73,7 +73,7 @@ const RoomDropdown = ({ setSelectedRooms, selectedRooms, rooms }: RoomDropdownPr
                             value.map(Number).filter((num) => num !== 0)
                         )
                     } else {
-                        Alert.alert('Limit reached', 'You can select up to 3 rooms only.')
+                        Alert.alert('Osiągnięto limit', 'Możesz wybrać na raz tylko 3 pokoje')
                     }
                 }}
                 renderItem={renderItem}

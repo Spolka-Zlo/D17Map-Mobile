@@ -115,6 +115,24 @@ export default function TimeSlotPicker({
         return slotId === firstSelectedSlot
     }
 
+    const darkenColor = (color: string, factor: number): string => {
+        const hex = color.replace('#', '')
+        const r = parseInt(hex.substring(0, 2), 16)
+        const g = parseInt(hex.substring(2, 4), 16)
+        const b = parseInt(hex.substring(4, 6), 16)
+
+        const newR = Math.floor(r * factor)
+        const newG = Math.floor(g * factor)
+        const newB = Math.floor(b * factor)
+
+        const toHex = (value: number): string => {
+            const hex = value.toString(16)
+            return hex.length === 1 ? '0' + hex : hex
+        }
+
+        return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`
+    }
+
     const handleConfirm = () => {
         if (firstSelectedSlot !== null && secondSelectedSlot !== null) {
             setStartTime(
@@ -202,8 +220,15 @@ export default function TimeSlotPicker({
                                                         height: '100%',
                                                         width: `${100 / colors.length}%`,
                                                     },
-                                                    isBlockSelected(slotId) &&
-                                                        styles.selectedBlock,
+                                                    isBlockSelected(slotId) && [
+                                                        {
+                                                            backgroundColor:
+                                                                darkenColor(
+                                                                    color,
+                                                                    0.25
+                                                                ),
+                                                        },
+                                                    ],
                                                 ]}
                                             />
                                         ))}
@@ -266,9 +291,6 @@ const styles = StyleSheet.create({
     colorContainer: {
         flexDirection: 'row',
         height: '98%',
-    },
-    selectedBlock: {
-        backgroundColor: '#000000',
     },
     blockUnavailable: {
         backgroundColor: '#d60202',

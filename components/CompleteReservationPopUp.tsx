@@ -90,10 +90,6 @@ export default function CompleteReservationPopUp({
 
     return (
         <View
-            // onPress={() => {
-            //     setSelectedRoom(null)
-            //     setScrollAvailable(true)
-            // }}
             style={styles.container}
         >
             <View style={styles.flex}>
@@ -103,6 +99,7 @@ export default function CompleteReservationPopUp({
                         onChangeText={setName}
                         value={name}
                         style={styles.input}
+                        placeholderTextColor={Colors.secondary}
                     />
                     <View style={{ zIndex: 2 }}>
                         <Dropdown
@@ -160,9 +157,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 733,
         backgroundColor: Colors.primary + '80',
-        // transform: [{ translateX: -50 }, { translateY: -50 }],
-        // top: '25%',
-        // left: '50%',
         zIndex: 1,
         bottom: '0%',
     },
@@ -180,12 +174,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     input: {
-        backgroundColor: Colors.secondary,
+        backgroundColor: Colors.primary,
+        fontWeight: 'bold',
+        color: Colors.secondary,
         borderRadius: 10,
         padding: 10,
         marginBottom: 20,
         width: 200,
-        color: Colors.primary,
     },
     error: {
         color: 'red',

@@ -1,8 +1,16 @@
-import { StyleSheet, View, Text, ScrollView } from 'react-native'
+import {
+    StyleSheet,
+    View,
+    Text,
+    ScrollView,
+    Pressable,
+    Touchable,
+    TouchableOpacity,
+} from 'react-native'
 import { Styles } from '@/constants/Styles'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Calendar from '@/components/Calendar'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import RoomDropdown from '@/components/RoomDropdown'
 import TimePicker from '@/components/TimePicker'
 import Colors from '@/constants/Colors'
@@ -76,7 +84,7 @@ async function getReservations() {
             startTime: '12:30',
             endTime: '18:30',
             classroom: { id: 3, name: '3.14' },
-        }
+        },
     ]
     return data
 }
@@ -108,6 +116,78 @@ async function fetchRooms() {
             name: '4.20',
             capacity: 15,
             equipment: ['Komputery'],
+        },
+        {
+            id: 5,
+            name: '5.12',
+            capacity: 10,
+            equipment: ['Komputery'],
+        },
+        {
+            id: 6,
+            name: '6.11',
+            capacity: 35,
+            equipment: ['Projektor'],
+        },
+        {
+            id: 7,
+            name: '7.22',
+            capacity: 40,
+            equipment: ['Komputery', 'Projektor'],
+        },
+        {
+            id: 8,
+            name: '8.15',
+            capacity: 50,
+            equipment: ['Komputery', 'Projektor'],
+        },
+        {
+            id: 9,
+            name: '9.18',
+            capacity: 20,
+            equipment: ['Komputery'],
+        },
+        {
+            id: 10,
+            name: '10.41',
+            capacity: 30,
+            equipment: ['Komputery', 'Projektor'],
+        },
+        {
+            id: 11,
+            name: '11.14',
+            capacity: 25,
+            equipment: ['Projektor'],
+        },
+        {
+            id: 12,
+            name: '12.20',
+            capacity: 15,
+            equipment: ['Komputery'],
+        },
+        {
+            id: 13,
+            name: '13.12',
+            capacity: 10,
+            equipment: ['Komputery'],
+        },
+        {
+            id: 14,
+            name: '14.11',
+            capacity: 35,
+            equipment: ['Projektor'],
+        },
+        {
+            id: 15,
+            name: '15.22',
+            capacity: 40,
+            equipment: ['Komputery', 'Projektor'],
+        },
+        {
+            id: 16,
+            name: '16.15',
+            capacity: 50,
+            equipment: ['Komputery', 'Projektor'],
         }
     ]
     return data
@@ -124,6 +204,7 @@ export default function newReservation() {
     const [termSectionOpen, setTimeSectionOpen] = useState(false)
 
     const [scrollAvailable, setScrollAvailable] = useState(true)
+    const scrollViewRef = useRef<ScrollView>(null)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -141,6 +222,7 @@ export default function newReservation() {
     function handleRoomSection() {
         setTimeSectionOpen(false)
         setRoomSectionOpen(true)
+        scrollToPosition(378)
     }
 
     function handleTimeSection() {
@@ -148,8 +230,16 @@ export default function newReservation() {
         setTimeSectionOpen(true)
     }
 
+    function scrollToPosition(position: number) {
+        scrollViewRef.current?.scrollTo({ y: position, animated: true })
+    }
+
     return (
-        <ScrollView style={styles.background} scrollEnabled={scrollAvailable}>
+        <ScrollView
+            style={styles.background}
+            scrollEnabled={scrollAvailable}
+            ref={scrollViewRef}
+        >
             <SafeAreaView style={Styles.background}>
                 <Text style={[Styles.h1, styles.h1]}>Nowa rezerwacja</Text>
                 <Calendar onDateChange={onDateChange} />
@@ -198,14 +288,6 @@ export default function newReservation() {
                         setScrollAvailable={setScrollAvailable}
                     />
                 )}
-
-                {/* <RoomDropdown setSelectedRooms={setSelectedRooms} />
-                <TimePicker
-                    startTime={startTime}
-                    endTime={endTime}
-                    setStartTime={setStartTime}
-                    setEndTime={setEndTime}
-                /> */}
             </SafeAreaView>
         </ScrollView>
     )

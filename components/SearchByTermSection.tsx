@@ -168,7 +168,6 @@ export default function SearchByTermSection({
                                 setSelectedRoom(room)
                                 setScrollAvailable(false)
                             }}
-                            onLongPress={() => console.log('long pressssssss')}
                         >
                             <Text style={styles.label}>{room.name}</Text>
                         </TouchableOpacity>
@@ -237,6 +236,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
+        marginBottom: 25,
     },
     availableRoom: {
         flexDirection: 'row',
