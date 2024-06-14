@@ -57,5 +57,3 @@ const styles = StyleSheet.create({
         transform: [{ rotate: '90deg' }],
     },
 });
-
-export default OrangeAddButton;

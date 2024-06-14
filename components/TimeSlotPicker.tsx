@@ -51,10 +51,13 @@ export default function TimeSlotPicker({
             for (let slotId = 0; slotId < 60; slotId++) {
                 roomAvailabilityBySlots[slotId] = selectedRoomsId
             }
+            console.log(reservations)
             reservations.forEach((reservation) => {
                 const startSlotId = getSlotId(reservation.startTime)
                 const endSlotId = getSlotId(reservation.endTime) - 1
                 for (let slotId = startSlotId; slotId <= endSlotId; slotId++) {
+                    console.log(reservation.classroom.id)
+                    console.log(roomAvailabilityBySlots[slotId])
                     roomAvailabilityBySlots[slotId] = roomAvailabilityBySlots[
                         slotId
                     ].filter((roomId) => roomId !== reservation.classroom.id)

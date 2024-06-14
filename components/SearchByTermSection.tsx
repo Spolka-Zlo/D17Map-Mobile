@@ -13,6 +13,7 @@ import Colors from '@/constants/Colors'
 import TimePicker from './TimePicker'
 import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
 import CompleteReservationPopUp from './CompleteReservationPopUp'
+import { ipaddress } from '@/constants/IP'
 
 type SearchByTermSectionProps = {
     reservations: DayReservation[]
@@ -22,19 +23,14 @@ type SearchByTermSectionProps = {
 }
 
 async function fetchAllEquipmentOptions() {
-    // const response = await fetch('http://localhost:3000/equipmentOptions')
-    // const data = await response.json()
-    let data = [
-        'Komputery',
-        'Pracownia sieciowa',
-        'Terminale',
-        'routery',
-        'switch',
-        'Projektor',
-        'kable',
-        'inne',
-    ]
-    return data
+    try {
+        const response = await fetch(ipaddress + 'equipments')
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error(error)
+    }
+    return []
 }
 
 export default function SearchByTermSection({
