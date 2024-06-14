@@ -24,7 +24,7 @@ type Reservation = {
     date: string
     startTime: string
     endTime: string
-    classroomId: number
+    classroomId: string
 }
 
 type CompleteReservationPopUpProps = {

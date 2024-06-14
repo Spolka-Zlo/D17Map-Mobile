@@ -18,12 +18,12 @@ import SearchByTermSection from '@/components/SearchByTermSection'
 import { ipaddress } from '@/constants/IP'
 
 type RooomReservation = {
-    id: number
+    id: string
     name: string
 }
 
 export type DayReservation = {
-    id: number
+    id: string
     type: string
     startTime: string
     endTime: string
@@ -31,7 +31,7 @@ export type DayReservation = {
 }
 
 export type Room = {
-    id: number
+    id: string
     name: string
     capacity: number
     equipment: string[]

@@ -6,7 +6,7 @@ import { OrangeButton } from './OrangeButton'
 
 interface TimeSlotPickerProps {
     reservations: DayReservation[]
-    selectedRoomsId: number[]
+    selectedRoomsId: string[]
     rooms: Room[]
     setStartTime: React.Dispatch<React.SetStateAction<string>>
     setEndTime: React.Dispatch<React.SetStateAction<string>>
@@ -28,9 +28,9 @@ export default function TimeSlotPicker({
         null
     )
     const [RoomAvailabilityBySlots, setRoomAvailabilityBySlots] = useState<{
-        [key: number]: number[]
+        [key: number]: string[]
     }>({})
-    const [roomColors, setRoomColors] = useState<{ [key: number]: string }>({})
+    const [roomColors, setRoomColors] = useState<{ [key: string]: string }>({})
 
     const getSlotId = (time: string): number => {
         const [hours, minutes] = time.split(':').map((x) => parseInt(x))
@@ -38,7 +38,8 @@ export default function TimeSlotPicker({
     }
 
     useEffect(() => {
-        const roomColors: { [key: number]: string } = {}
+        const roomColors: { [key: string]: string } = {}
+        console.log(selectedRoomsId)
         for (let i = 0; i < rooms.length; i++) {
             roomColors[selectedRoomsId[i]] = Colors.roomColors[i]
         }
@@ -46,8 +47,8 @@ export default function TimeSlotPicker({
     }, [selectedRoomsId])
 
     useEffect(() => {
-        const getRoomAvailabilityBySlots = (): { [key: number]: number[] } => {
-            const roomAvailabilityBySlots: { [key: number]: number[] } = {}
+        const getRoomAvailabilityBySlots = (): { [key: number]: string[] } => {
+            const roomAvailabilityBySlots: { [key: number]: string[] } = {}
             for (let slotId = 0; slotId < 60; slotId++) {
                 roomAvailabilityBySlots[slotId] = selectedRoomsId
             }
@@ -56,8 +57,6 @@ export default function TimeSlotPicker({
                 const startSlotId = getSlotId(reservation.startTime)
                 const endSlotId = getSlotId(reservation.endTime) - 1
                 for (let slotId = startSlotId; slotId <= endSlotId; slotId++) {
-                    console.log(reservation.classroom.id)
-                    console.log(roomAvailabilityBySlots[slotId])
                     roomAvailabilityBySlots[slotId] = roomAvailabilityBySlots[
                         slotId
                     ].filter((roomId) => roomId !== reservation.classroom.id)
@@ -187,7 +186,6 @@ export default function TimeSlotPicker({
                             const slotId = i * 4 + j
                             let colors: string[] = []
                             let disabled = false
-
                             if (RoomAvailabilityBySlots[slotId] !== undefined) {
                                 RoomAvailabilityBySlots[slotId].map(
                                     (roomId) => {

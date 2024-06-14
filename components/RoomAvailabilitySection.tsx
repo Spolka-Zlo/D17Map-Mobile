@@ -19,7 +19,7 @@ export default function RoomAvailabilitySection({
     date,
     setScrollAvailable,
 }: RoomAvailabilitySectionProps) {
-    const [selectedRoomsId, setSelectedRoomsId] = useState<number[]>([])
+    const [selectedRoomsId, setSelectedRoomsId] = useState<string[]>([])
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)

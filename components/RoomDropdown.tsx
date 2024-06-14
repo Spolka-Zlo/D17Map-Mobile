@@ -6,13 +6,13 @@ import { MultiSelect } from 'react-native-element-dropdown'
 // import AntDesign from '@expo/vector-icons/AntDesign'  // this import makes mistake fontFamily "anticon" is not a system font and has not been loaded through expo-font.
 
 type RoomDropdownProps = {
-    setSelectedRooms: React.Dispatch<React.SetStateAction<number[]>>,
-    selectedRooms: number[],
+    setSelectedRooms: React.Dispatch<React.SetStateAction<string[]>>,
+    selectedRooms: string[],
     rooms: Room[],
 }
 
 type RoomDropdown = {
-    value: number
+    value: string
     label: string
 }
 
@@ -69,9 +69,7 @@ const RoomDropdown = ({ setSelectedRooms, selectedRooms, rooms }: RoomDropdownPr
                 onChange={(value) => {
                     if (value.length <= 4) {
                         setSelected(value)
-                        setSelectedRooms(
-                            value.map(Number).filter((num) => num !== 0)
-                        )
+                        setSelectedRooms(value.filter((room) => room !== ''))
                     } else {
                         Alert.alert('Osiągnięto limit', 'Możesz wybrać na raz tylko 3 pokoje')
                     }
