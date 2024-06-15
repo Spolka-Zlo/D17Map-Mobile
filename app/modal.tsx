@@ -1,7 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import { Platform, StyleSheet } from 'react-native'
-
-import { Text, View } from '@/components/Themed'
+import { Platform, StyleSheet, View, Text } from 'react-native'
 
 export default function ModalScreen() {
     return (
@@ -9,8 +7,6 @@ export default function ModalScreen() {
             <Text style={styles.title}>Modal</Text>
             <View
                 style={styles.separator}
-                lightColor="#eee"
-                darkColor="rgba(255,255,255,0.1)"
             />
 
             {/* Use a light status bar on iOS to account for the black space above the modal */}
