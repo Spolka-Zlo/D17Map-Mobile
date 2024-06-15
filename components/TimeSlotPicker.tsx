@@ -39,7 +39,6 @@ export default function TimeSlotPicker({
 
     useEffect(() => {
         const roomColors: { [key: string]: string } = {}
-        console.log(selectedRoomsId)
         for (let i = 0; i < rooms.length; i++) {
             roomColors[selectedRoomsId[i]] = Colors.roomColors[i]
         }
@@ -52,7 +51,6 @@ export default function TimeSlotPicker({
             for (let slotId = 0; slotId < 60; slotId++) {
                 roomAvailabilityBySlots[slotId] = selectedRoomsId
             }
-            console.log(reservations)
             reservations.forEach((reservation) => {
                 const startSlotId = getSlotId(reservation.startTime)
                 const endSlotId = getSlotId(reservation.endTime) - 1
