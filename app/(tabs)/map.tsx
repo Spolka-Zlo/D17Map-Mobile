@@ -1,39 +1,25 @@
-import { Suspense, useRef, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
-import * as THREE from 'three' // Add this line
-import { Mesh } from 'three'
+import React, { Suspense } from 'react'
+import { useFrame, Canvas } from '@react-three/fiber/native'
+import { useGLTF, Environment } from '@react-three/drei/native'
+import Floor1 from '../../assets/models/floor3D21.glb';
 
-function Laptop() {
-    const { nodes, materials } = useGLTF('../assets/models/1floor3D2.glb')
-    const meshRefs = useRef<{ [key: string]: Mesh }>({});
-    return (
-        <group>
-      {Object.entries(nodes).map(([key, node]) => (
-        <mesh
-          key={key}
-          ref={(el) => {
-            meshRefs.current[key] = el!;
-          }}
-          geometry={(node as Mesh).geometry}
-          material={(node as Mesh).material}
-          position={node.position}
-          rotation={node.rotation}
-          scale={node.scale}
-        />
-      ))}
-    </group>
-    )
+function Model() {
+  const { scene } = useGLTF(Floor1)
+  useFrame(() => (scene.rotation.y += 0.01))
+  return <primitive object={scene} />
 }
 
 export default function Home() {
-    return (
-        <Canvas camera={{ position: [0, 2, 5], fov: 50 }}>
-            <ambientLight intensity={0.5} />
-            <pointLight position={[10, 10, 10]} />
-            <Laptop />
-            <PerspectiveCamera makeDefault position={[0, 2, 15]} />
-            <OrbitControls />
-        </Canvas>
-    )
+  return (
+    <Canvas camera={{ position: [-6, 0, 16], fov: 100 }}>
+      <color attach="background" args={[0xe2f4df]} />
+      <ambientLight />
+      <directionalLight intensity={1.1} position={[0.5, 0, 0.866]} />
+      <directionalLight intensity={0.8} position={[-6, 2, 2]} />
+      <Suspense>
+        <Environment preset="park" />
+        <Model/>
+      </Suspense>
+    </Canvas>
+  )
 }
