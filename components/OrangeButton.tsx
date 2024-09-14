@@ -1,6 +1,6 @@
 import Colors from '@/constants/Colors'
 import React from 'react'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native'
 import { TextStyle } from 'react-native'
 
 type ButtonProps = {
@@ -35,5 +35,6 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 16,
         fontWeight: '800',
+        textAlign: 'center',
     },
 })

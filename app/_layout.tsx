@@ -14,6 +14,7 @@ import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
 import { Image } from 'react-native'
 import { Text } from 'react-native'
+import { AuthProvider } from '@/providers/AuthProvider'
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -56,29 +57,34 @@ function RootLayoutNav() {
     const colorScheme = useColorScheme()
 
     return (
-        <ThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-        >
-            <Stack
-                screenOptions={{
-                    headerStyle: {
-                        backgroundColor: Colors.primary,
-                    },
-                    headerTitle: () => (
-                        <Image
-                            source={require('../assets/images/logo.png')}
-                            style={styles.image}
-                        />
-                    ),
-                }}
+        <AuthProvider>
+            <ThemeProvider
+                value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
             >
-                <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
-                <Stack.Screen
-                    name="modal"
-                    options={{ presentation: 'modal' }}
-                />
-            </Stack>
-        </ThemeProvider>
+                <Stack
+                    screenOptions={{
+                        headerStyle: {
+                            backgroundColor: Colors.primary,
+                        },
+                        headerTitle: () => (
+                            <Image
+                                source={require('../assets/images/logo.png')}
+                                style={styles.image}
+                            />
+                        ),
+                    }}
+                >
+                    <Stack.Screen
+                        name="(tabs)"
+                        options={{ headerShown: true }}
+                    />
+                    <Stack.Screen
+                        name="modal"
+                        options={{ presentation: 'modal' }}
+                    />
+                </Stack>
+            </ThemeProvider>
+        </AuthProvider>
     )
 }
 

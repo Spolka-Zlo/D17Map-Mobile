@@ -76,6 +76,18 @@ export default function TabLayout() {
                     href: null,
                 }}
             />
+            <Tabs.Screen
+                name="auth/loginPage"
+                options={{
+                    tabBarButton: () => null,
+                }}
+            />
+            <Tabs.Screen
+                name="auth/registerPage"
+                options={{
+                    tabBarButton: () => null,
+                }}
+            />
         </Tabs>
     )
 }

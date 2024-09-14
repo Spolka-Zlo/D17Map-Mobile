@@ -1,10 +1,12 @@
-import { StyleSheet } from 'react-native'
+import { Button, StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
 import { OrangeButton } from '@/components/OrangeButton'
 import ListElement from '@/components/ListElement'
 import Dropdown from '@/components/Dropdown'
 import { useState } from 'react'
+import { useAuth } from '@/providers/AuthProvider'
 import Colors from '@/constants/Colors'
+import { Link, router } from 'expo-router'
 
 export default function TabOneScreen() {
     const [selected, setSelected] = useState('Option 1')
@@ -17,6 +19,7 @@ export default function TabOneScreen() {
                 setIsOpen(false)
             }}
         >
+            <Link href="/auth/loginPage">Logowanie</Link>
             <ListElement text="Event number one" onPress={() => {}} />
             <OrangeButton text="Click Me" onPress={() => {}} />
             <Dropdown
