@@ -6,6 +6,7 @@ import 'react-native-reanimated'
 import Colors from '@/constants/Colors'
 import { useColorScheme } from '@/components/useColorScheme'
 import { useClientOnlyValue } from '@/components/useClientOnlyValue'
+// import { FontAwesome5 } from '@expo/vector-icons'
 
 // temp const out to prevent errors in the app waiting for the icons to be fixed by the expo team
 const FontAwesome5 = (a: any) => <></>
@@ -65,14 +66,24 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="reservation/[roomId]"
                 options={{
-                    title: 'Reservation',
-                    tabBarIcon: () => (
-                        <FontAwesome5
-                            size={28}
-                            name="book"
-                            color={Colors.secondary}
-                        />
-                    ),
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="reservation/newReservation"
+                options={{
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="reservation/components/ReservationList"
+                options={{
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="reservation/components/ReservationManager"
+                options={{
                     href: null,
                 }}
             />

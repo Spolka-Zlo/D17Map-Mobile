@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store'
 import axios from 'axios'
 import { createContext, useContext, useEffect, useState } from 'react'
+import { ipaddress } from '@/constants/IP'
 
 interface AuthProps {
     authState?: { token: string | null; authenticated: boolean | null }
@@ -11,7 +12,7 @@ interface AuthProps {
 
 const TOKEN_KEY = 'token'
 const USERID_KEY = 'userId'
-const API_URL = 'http://192.168.33.21:8000/api'
+const API_URL = ipaddress
 const AuthContext = createContext<AuthProps>({
     onRegister: function (email: string, password: string): Promise<any> {
         throw new Error('Function not implemented.')
