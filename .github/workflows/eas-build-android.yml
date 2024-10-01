@@ -1,0 +1,28 @@
+name: Build Android App on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Authenticate with Expo
+        run: eas login --non-interactive --token ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build Android APK
+        run: eas build -p android --profile preview

@@ -4,6 +4,8 @@ import { Reservation } from '..'
 import Colors from '@/constants/Colors'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Styles } from '@/constants/Styles'
+import { formatTime } from '@/app/utils/timeUtils'
+
 
 type ReservationManagerProps = {
     reservation: Reservation
@@ -21,10 +23,10 @@ export default function ReservationManager({
         >
             <View style={styles.flex} onTouchStart={(e) => e.stopPropagation()}>
                 <View style={styles.box}>
-                    <Text style={Styles.h2}>{reservation?.name}</Text>
+                    <Text style={Styles.h2}>{reservation?.title}</Text>
                     <Text>{reservation?.room}</Text>
                     <Text>
-                        {reservation?.date} {reservation?.startTime}-{reservation?.endTime}
+                        {reservation?.date} {formatTime(reservation?.startTime)}-{formatTime(reservation?.endTime)}
                     </Text>
                 </View>
             </View>

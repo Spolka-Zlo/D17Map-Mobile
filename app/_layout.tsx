@@ -4,17 +4,18 @@ import {
     DefaultTheme,
     ThemeProvider,
 } from '@react-navigation/native'
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import 'react-native-reanimated'
 import * as SplashScreen from 'expo-splash-screen'
-import React, { useEffect } from 'react'
-import { StyleSheet } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Button, StyleSheet } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
 import { Image } from 'react-native'
 import { Text } from 'react-native'
-import { AuthProvider } from '@/providers/AuthProvider'
+import { AuthProvider, useAuth } from '@/providers/AuthProvider'
+import { OrangeButton } from '@/components/OrangeButton'
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -50,41 +51,57 @@ export default function RootLayout() {
     //     return null
     // }
 
-    return <RootLayoutNav />
+    return (
+        <AuthProvider>
+            <RootLayoutNav />
+        </AuthProvider>
+    )
 }
 
 function RootLayoutNav() {
     const colorScheme = useColorScheme()
 
+    const { onLogout, authState } = useAuth()
+
     return (
-        <AuthProvider>
-            <ThemeProvider
-                value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+        <ThemeProvider
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+        >
+            <Stack
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: Colors.primary,
+                    },
+                    headerTitle: () => (
+                        <Image
+                            source={require('../assets/images/logo.png')}
+                            style={styles.image}
+                        />
+                    ),
+                    headerRight: () => (
+                        <OrangeButton
+                            text={
+                                authState?.authenticated ? 'Logout' : 'Login'
+                            }
+                            onPress={() => {
+                                if (authState?.authenticated) {
+                                    onLogout()
+                                } else {
+                                    router.push('/auth/loginPage')
+                                }
+                            }}
+                        />
+                    ),
+                }}
             >
-                <Stack
-                    screenOptions={{
-                        headerStyle: {
-                            backgroundColor: Colors.primary,
-                        },
-                        headerTitle: () => (
-                            <Image
-                                source={require('../assets/images/logo.png')}
-                                style={styles.image}
-                            />
-                        ),
-                    }}
-                >
-                    <Stack.Screen
-                        name="(tabs)"
-                        options={{ headerShown: true }}
-                    />
-                    <Stack.Screen
-                        name="modal"
-                        options={{ presentation: 'modal' }}
-                    />
-                </Stack>
-            </ThemeProvider>
-        </AuthProvider>
+                <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
+                <Stack.Screen
+                    name="modal"
+                    options={{ presentation: 'modal' }}
+                    
+                />
+            </Stack>
+        </ThemeProvider>
     )
 }
 

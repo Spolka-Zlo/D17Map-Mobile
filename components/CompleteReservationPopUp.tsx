@@ -16,7 +16,9 @@ import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
 import Animated from 'react-native-reanimated'
 import Dropdown from './Dropdown'
 import { router } from 'expo-router'
+import { useFocusEffect } from '@react-navigation/native'
 import { ipaddress } from '@/constants/IP'
+import axios from 'axios'
 
 type Reservation = {
     user: number
@@ -38,10 +40,14 @@ type CompleteReservationPopUpProps = {
 }
 
 async function fetchReservationTypes() {
-    // const response = await fetch('http://localhost:3000/reservationTypes')
-    // const data = await response.json()
-    let data = ['exam', 'Konsultacje', 'Spotkanie', 'Inne']
-    return data
+    try {
+        const response = await fetch(ipaddress + 'reservations-types/')
+        const data = await response.json()
+        console.log(data)
+        return data.types
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 export default function CompleteReservationPopUp({
@@ -58,6 +64,7 @@ export default function CompleteReservationPopUp({
     const [selectedReservationType, setSelectedReservationType] = useState(
         'Wybierz typ rezerwacji'
     )
+    const [error, setError] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -65,28 +72,33 @@ export default function CompleteReservationPopUp({
         }
         fetchData()
         setScrollAvailable(false)
+        setError(false)
     }, [])
+
+    useFocusEffect(() => {
+        const fetchData = async () => {
+            setReservationTypes(await fetchReservationTypes())
+        }
+    })
+
 
     const createReservation = async (reservation: Reservation) => {
         try {
-            const response = await fetch(ipaddress + 'reservations/', {
-                method: 'POST',
+            const response = await axios.post(ipaddress + 'reservations/', reservation, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(reservation),
+                timeout: 5000,
             })
-            console.log(JSON.stringify(reservation))
-            console.log(response)
-            const data = await response.json()
-            return data
+    
+            return response.data
         } catch (error) {
             console.error(error)
+            return -1
         }
     }
 
-    const handleSubmit = () => {
-        console.log('submit', selectedReservationType)
+    const handleSubmit = async () => {
         if (selectedReservationType === 'Wybierz typ rezerwacji') {
             return
         }
@@ -99,7 +111,10 @@ export default function CompleteReservationPopUp({
             endTime: endTime,
             type: selectedReservationType,
         }
-        createReservation(reservation)
+        if (await createReservation(reservation) === -1) {
+            setError(true)
+            return
+        }
         setName('')
         setSelectedReservationType('Wybierz typ rezerwacji')
         setScrollAvailable(true)
@@ -146,14 +161,20 @@ export default function CompleteReservationPopUp({
                     )}
                     {name !== '' &&
                         selectedReservationType !==
-                            'Wybierz typ rezerwacji' && (
+                            'Wybierz typ rezerwacji' &&
+                            !error &&(
                             <TouchableOpacity
                                 onPress={handleSubmit}
                                 style={styles.submit}
                             >
                                 <Text style={styles.label}>Rezerwuj</Text>
                             </TouchableOpacity>
-                        )}
+                    )}
+                    {error && (
+                        <Text style={styles.error}>
+                            Wystąpił błąd, spróbuj ponownie
+                        </Text>
+                    )}
                     <TouchableOpacity
                         onPress={() => {
                             setSelectedRoom(null)

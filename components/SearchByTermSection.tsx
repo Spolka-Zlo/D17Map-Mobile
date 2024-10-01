@@ -41,7 +41,7 @@ export default function SearchByTermSection({
 }: SearchByTermSectionProps) {
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
-    const [equipmentOptions, setEquipmentOptions] = useState<string[]>([])
+    const [equipmentOptions, setEquipmentOptions] = useState<{id: string, name: string}[]>([])
     const [selectedEquipment, setSelectedEquipment] = useState<string[]>([])
     const [minNumberOfSeats, setMinNumberOfSeats] = useState(0)
 
@@ -122,24 +122,25 @@ export default function SearchByTermSection({
                         <View key={index} style={styles.singleCheckBox}>
                             <CheckBox
                                 style={styles.checkbox}
-                                value={selectedEquipment.includes(option)}
+                                value={selectedEquipment.includes(option.name)}
                                 color={
-                                    selectedEquipment.includes(option)
+                                    selectedEquipment.includes(option.name)
                                         ? Colors.secondary
                                         : undefined
                                 }
                                 onValueChange={() => {
                                     setSelectedEquipment((prevState) =>
-                                        prevState.includes(option)
+                                        prevState.includes(option.name)
                                             ? prevState.filter(
-                                                  (item) => item !== option
+                                                  (item) => item !== option.name
                                               )
-                                            : [...prevState, option]
+                                            : [...prevState, option.name]
                                     )
                                 }}
                             />
-                            <Text style={styles.label}>{option}</Text>
+                            <Text style={styles.label}>{option.name}</Text>
                         </View>
+                        // <></>
                     )
                 })}
             </View>

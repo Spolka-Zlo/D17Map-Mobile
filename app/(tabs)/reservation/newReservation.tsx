@@ -16,6 +16,7 @@ import { OrangeButton } from '@/components/OrangeButton'
 import RoomAvailabilitySection from '@/components/RoomAvailabilitySection'
 import SearchByTermSection from '@/components/SearchByTermSection'
 import { ipaddress } from '@/constants/IP'
+import { useFocusEffect } from '@react-navigation/native'
 
 type RooomReservation = {
     id: string
@@ -40,7 +41,7 @@ export type Room = {
 async function getReservations(date: Date) {
     try {
         let day = date.toISOString().split('T')[0]
-        const response = await fetch(ipaddress + 'reservations/day?day=' + day)
+        const response = await fetch(ipaddress + 'reservations/day/?day=' + day)
         const data = await response.json()
         return data
     }
@@ -51,14 +52,14 @@ async function getReservations(date: Date) {
 
 async function fetchRooms() {
     try {
-        const response = await fetch(ipaddress + 'classrooms')
+        const response = await fetch(ipaddress + 'classrooms/')
         const data = await response.json()
         return data
     }
     catch (error) {
         console.error(error)
+        return []
     }
-    return []
 }
 
 export default function newReservation() {
@@ -74,12 +75,17 @@ export default function newReservation() {
     const [scrollAvailable, setScrollAvailable] = useState(true)
     const scrollViewRef = useRef<ScrollView>(null)
 
+    const fetchData = async () => {
+        setRooms(await fetchRooms())
+    }
+
     useEffect(() => {
-        const fetchData = async () => {
-            setRooms(await fetchRooms())
-        }
         fetchData()
     }, [])
+
+    useFocusEffect(() => {
+        fetchData()
+    })
 
     async function onDateChange(date: Date) {
         setSelectedDate(date)
