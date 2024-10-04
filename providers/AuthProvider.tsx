@@ -3,14 +3,13 @@ import axios from 'axios'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { ipaddress } from '@/constants/IP'
 import { router } from 'expo-router'
+import { ReactNode } from 'react';
 
 interface AuthProps {
     authState?: { token: string | null; authenticated: boolean | null; userId: number | null; userType: string | null }
-    onRegister: (email: string, password: string) => Promise<{
-        token: any data: { userId: number; token: string; userType: string } 
-}>
-    onLogin: (email: string, password: string) => Promise<{ token: string; userId: number; userType: string }>
-    onLogout: () => Promise<void>
+    onRegister: (email: string, password: string) => Promise<unknown>
+    onLogin: (email: string, password: string) => Promise<unknown>
+    onLogout: () => Promise<unknown>
 }
 
 const TOKEN_KEY = 'token'
@@ -18,12 +17,8 @@ const USERID_KEY = 'userId'
 const USER_TYPE_KEY = 'userType'
 const API_URL = ipaddress
 const AuthContext = createContext<AuthProps>({
-    onRegister: async () => {
-        return { data: { userId: 0, token: '', userType: '' } }
-    },
-    onLogin: async () => {
-        return { token: '', userId: 0, userType: '' }
-    },
+    onRegister: async () => {},
+    onLogin: async () => {},
     onLogout: async () => {},
     authState: { token: null, authenticated: null, userId: null, userType: null },
 })
@@ -32,7 +27,8 @@ export const useAuth = () => {
     return useContext(AuthContext)
 }
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [authState, setAuthState] = useState<{
         token: string | null
         authenticated: boolean | null
