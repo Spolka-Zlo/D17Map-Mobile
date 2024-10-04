@@ -2,9 +2,13 @@ import { Dispatch, SetStateAction } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { Reservation } from '..'
 import Colors from '@/constants/Colors'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Styles } from '@/constants/Styles'
 import { formatTime } from '@/app/utils/timeUtils'
+import { ipaddress } from '@/constants/IP'
+import axios from 'axios'
+import { Link } from 'expo-router'
+import { useDeleteReservation } from '@/services/reservationService'
+import { useAuth } from '@/providers/AuthProvider'
 
 
 type ReservationManagerProps = {
@@ -12,22 +16,38 @@ type ReservationManagerProps = {
     setReservation: Dispatch<SetStateAction<Reservation | null>>
 }
 
-export default function ReservationManager({
-    reservation,
-    setReservation,
-}: ReservationManagerProps) {
+
+export default function ReservationManager(props: ReservationManagerProps) {
+    const { authState } = useAuth();
+    const mutation = useDeleteReservation( authState?.userId! ,authState?.token!);
+
+
+    const handleDelete = (id: number) => {
+        mutation.mutate(id, {
+            onSuccess: () => {
+                props.setReservation(null);
+            },
+            onError: (error) => {
+                // modal z informacją o błędzie
+            }
+        });
+    };
+
     return (
         <TouchableOpacity
-            onPress={() => setReservation(null)}
+            onPress={() => props.setReservation(null)}
             style={styles.container}
         >
             <View style={styles.flex} onTouchStart={(e) => e.stopPropagation()}>
                 <View style={styles.box}>
-                    <Text style={Styles.h2}>{reservation?.title}</Text>
-                    <Text>{reservation?.room}</Text>
+                    <Text style={Styles.h2}>{props.reservation?.title}</Text>
+                    <Text>{props.reservation?.room}</Text>
                     <Text>
-                        {reservation?.date} {formatTime(reservation?.startTime)}-{formatTime(reservation?.endTime)}
+                        {props.reservation?.date} {formatTime(props.reservation?.startTime)}-{formatTime(props.reservation?.endTime)}
                     </Text>
+                    <TouchableOpacity onPress={() => handleDelete(props.reservation.id)} style={styles.errorButton}>
+                        <Text style={styles.errorButtonText}>Usuń rezerwacje</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </TouchableOpacity>
@@ -55,5 +75,17 @@ const styles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    errorButton: {
+        backgroundColor: 'red',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    errorButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 })

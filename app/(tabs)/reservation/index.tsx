@@ -1,14 +1,13 @@
 import { StyleSheet, View, Text, ScrollView } from 'react-native'
-import { Link, router } from 'expo-router'
+import { router } from 'expo-router'
 import { Styles } from '@/constants/Styles'
 import ReservationList from './components/ReservationList'
 import ReservationManager from './components/ReservationManager'
-import { useCallback, useEffect, useState } from 'react'
 import { OrangeAddButton } from '@/components/OrangeAddButton'
 import { useAuth } from '@/providers/AuthProvider'
-import { ipaddress } from '@/constants/IP'
-import { useFocusEffect } from '@react-navigation/native'
-
+import { useState } from 'react'
+import { useUserFutureReservations } from '@/services/reservationService'
+import Spinner from 'react-native-loading-spinner-overlay'
 export type Reservation = {
     id: number
     room: string
@@ -28,41 +27,25 @@ enum ReservationType {
     STUDENTS_CLUB_MEETING,
 }
 
-const getUserReservations = async (userId: number, token: string) => {
-    const response = await fetch(`${ipaddress}users/${userId}/future-reservations/`, {
-        headers: {
-            Authorization: `Token ${token}`,
-        },
-    })
-    const data = await response.json()
-    return data
-}
-
 export default function Reservations() {
-    const [reservations, setReservations] = useState<Reservation[]>([])
-    const authState = useAuth()
-    
-    const fetchReservations = async () => {
-        let userId = authState.authState?.userId
-        let token = authState.authState?.token
-        if (userId && token) {
-            const data = await getUserReservations(userId, token)
-            setReservations(data)
-        }
+    const { authState } = useAuth();
+    const [reservation, setReservation] = useState<Reservation | null>(null);
+    const { data: reservations = [], isLoading, isError } = useUserFutureReservations(authState?.userId!, authState?.token!);
+
+    if (isError) {
+        return (
+            <View style={Styles.background}>
+                <Text>Error fetching reservations</Text>
+            </View>
+        )
     }
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchReservations()
-        }, [])
-    )
-
-    const [reservation, setReservation] = useState<Reservation | null>(null)
     return (
         <View
             onTouchStart={() => setReservation(null)}
             style={Styles.background}
         >
+            <Spinner visible={isLoading} textContent='Ładowanie rezerwacji' />
             <ScrollView>
                 <View style={Styles.background}>
                     <Text style={[Styles.h1, styles.title]}>

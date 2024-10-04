@@ -15,7 +15,6 @@ export default function TabLayout() {
     const colorScheme = useColorScheme()
     const { authState } = useAuth()
 
-    // Tworzymy tablicę zakładek
     const screens = [
         <Tabs.Screen
             key="map"

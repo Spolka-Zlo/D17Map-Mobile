@@ -41,7 +41,9 @@ export default function SearchByTermSection({
 }: SearchByTermSectionProps) {
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
-    const [equipmentOptions, setEquipmentOptions] = useState<{id: string, name: string}[]>([])
+    const [equipmentOptions, setEquipmentOptions] = useState<
+        { id: string; name: string }[]
+    >([])
     const [selectedEquipment, setSelectedEquipment] = useState<string[]>([])
     const [minNumberOfSeats, setMinNumberOfSeats] = useState(0)
 
@@ -63,7 +65,7 @@ export default function SearchByTermSection({
 
     useEffect(() => {
         availableRoomsHandler()
-    }, [minNumberOfSeats, startTime, endTime, selectedEquipment])
+    }, [minNumberOfSeats, startTime, endTime, selectedEquipment, reservations])
 
     const availableRoomsHandler = async () => {
         const filteredRooms = rooms.filter((room) => {
@@ -75,7 +77,7 @@ export default function SearchByTermSection({
                 )
                 if (!hasAllEquipment) return false
             }
-
+            if (!reservations) return true
             const isAvailable = reservations.every((reservation) => {
                 if (reservation.classroom.name !== room.name) return true
 
@@ -184,7 +186,6 @@ export default function SearchByTermSection({
                     endTime={endTime}
                 />
             )}
-            
         </View>
     )
 }

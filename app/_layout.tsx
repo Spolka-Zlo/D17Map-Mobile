@@ -16,6 +16,7 @@ import { Image } from 'react-native'
 import { Text } from 'react-native'
 import { AuthProvider, useAuth } from '@/providers/AuthProvider'
 import { OrangeButton } from '@/components/OrangeButton'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -52,9 +53,11 @@ export default function RootLayout() {
     // }
 
     return (
-        <AuthProvider>
-            <RootLayoutNav />
-        </AuthProvider>
+        <QueryClientProvider client={new QueryClient()}>
+            <AuthProvider>
+                <RootLayoutNav />
+            </AuthProvider>
+        </QueryClientProvider>
     )
 }
 
@@ -96,8 +99,8 @@ function RootLayoutNav() {
             >
                 <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
                 <Stack.Screen
-                    name="modal"
-                    options={{ presentation: 'modal' }}
+                    name="modals/modal"
+                    options={{ presentation: 'card' }}
                     
                 />
             </Stack>

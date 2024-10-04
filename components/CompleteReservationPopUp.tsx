@@ -16,11 +16,13 @@ import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
 import Animated from 'react-native-reanimated'
 import Dropdown from './Dropdown'
 import { router } from 'expo-router'
-import { useFocusEffect } from '@react-navigation/native'
 import { ipaddress } from '@/constants/IP'
 import axios from 'axios'
+import { useAuth } from '@/providers/AuthProvider'
+import { useReservationTypes } from '@/services/reservationTypeService'
+import { useCreateReservation } from '@/services/reservationService'
 
-type Reservation = {
+export type Reservation = {
     user: number
     classroom: string
     title: string
@@ -39,17 +41,6 @@ type CompleteReservationPopUpProps = {
     endTime: string
 }
 
-async function fetchReservationTypes() {
-    try {
-        const response = await fetch(ipaddress + 'reservations-types/')
-        const data = await response.json()
-        console.log(data)
-        return data.types
-    } catch (error) {
-        console.error(error)
-    }
-}
-
 export default function CompleteReservationPopUp({
     setSelectedRoom,
     setScrollAvailable,
@@ -60,50 +51,26 @@ export default function CompleteReservationPopUp({
 }: CompleteReservationPopUpProps) {
     const [isDropDownOpen, setIsDropDownOpen] = useState(false)
     const [name, setName] = useState('')
-    const [reservationTypes, setReservationTypes] = useState<string[]>([])
+    const {
+        reservationTypes,
+        isReservationTypesError,
+        isReservationTypesLoading,
+    } = useReservationTypes()
     const [selectedReservationType, setSelectedReservationType] = useState(
         'Wybierz typ rezerwacji'
     )
     const [error, setError] = useState(false)
+    const { authState } = useAuth()
+    const createMutation = useCreateReservation(authState?.userId!)
 
     useEffect(() => {
-        const fetchData = async () => {
-            setReservationTypes(await fetchReservationTypes())
-        }
-        fetchData()
         setScrollAvailable(false)
         setError(false)
     }, [])
 
-    useFocusEffect(() => {
-        const fetchData = async () => {
-            setReservationTypes(await fetchReservationTypes())
-        }
-    })
-
-
-    const createReservation = async (reservation: Reservation) => {
-        try {
-            const response = await axios.post(ipaddress + 'reservations/', reservation, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                timeout: 5000,
-            })
-    
-            return response.data
-        } catch (error) {
-            console.error(error)
-            return -1
-        }
-    }
-
     const handleSubmit = async () => {
-        if (selectedReservationType === 'Wybierz typ rezerwacji') {
-            return
-        }
         const reservation: Reservation = {
-            user: 1,
+            user: authState?.userId!,
             classroom: room.id,
             title: name,
             date: date?.toISOString().split('T')[0] || '',
@@ -111,21 +78,21 @@ export default function CompleteReservationPopUp({
             endTime: endTime,
             type: selectedReservationType,
         }
-        if (await createReservation(reservation) === -1) {
-            setError(true)
-            return
-        }
-        setName('')
-        setSelectedReservationType('Wybierz typ rezerwacji')
-        setScrollAvailable(true)
-        setSelectedRoom(null)
-        router.navigate('reservation')
+        createMutation.mutate(reservation, {
+            onSuccess: () => {
+                setSelectedRoom(null);
+                setScrollAvailable(true);
+                setSelectedReservationType('Wybierz typ rezerwacji');
+                router.navigate('/reservation');
+            },
+            onError: () => {
+                setError(true);
+            },
+        })
     }
 
     return (
-        <View
-            style={styles.container}
-        >
+        <View style={styles.container}>
             <View style={styles.flex}>
                 <View style={styles.box}>
                     <TextInput
@@ -160,16 +127,15 @@ export default function CompleteReservationPopUp({
                         <Text style={styles.error}>Podaj nazwę rezerwacji</Text>
                     )}
                     {name !== '' &&
-                        selectedReservationType !==
-                            'Wybierz typ rezerwacji' &&
-                            !error &&(
+                        selectedReservationType !== 'Wybierz typ rezerwacji' &&
+                        !error && (
                             <TouchableOpacity
                                 onPress={handleSubmit}
                                 style={styles.submit}
                             >
                                 <Text style={styles.label}>Rezerwuj</Text>
                             </TouchableOpacity>
-                    )}
+                        )}
                     {error && (
                         <Text style={styles.error}>
                             Wystąpił błąd, spróbuj ponownie
