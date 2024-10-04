@@ -6,14 +6,12 @@ import {
 } from '@react-navigation/native'
 import { router, Stack } from 'expo-router'
 import 'react-native-reanimated'
-import * as SplashScreen from 'expo-splash-screen'
-import React, { useEffect, useState } from 'react'
-import { Button, StyleSheet } from 'react-native'
+import React from 'react'
+import { StyleSheet } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
 import { Image } from 'react-native'
-import { Text } from 'react-native'
 import { AuthProvider, useAuth } from '@/providers/AuthProvider'
 import { OrangeButton } from '@/components/OrangeButton'
 import { QueryClient, QueryClientProvider } from 'react-query'
@@ -77,6 +75,7 @@ function RootLayoutNav() {
                     },
                     headerTitle: () => (
                         <Image
+                            // eslint-disable-next-line @typescript-eslint/no-require-imports
                             source={require('../assets/images/logo.png')}
                             style={styles.image}
                         />

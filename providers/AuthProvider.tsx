@@ -6,9 +6,11 @@ import { router } from 'expo-router'
 
 interface AuthProps {
     authState?: { token: string | null; authenticated: boolean | null; userId: number | null; userType: string | null }
-    onRegister: (email: string, password: string) => Promise<any>
-    onLogin: (email: string, password: string) => Promise<any>
-    onLogout: () => Promise<any>
+    onRegister: (email: string, password: string) => Promise<{
+        token: any data: { userId: number; token: string; userType: string } 
+}>
+    onLogin: (email: string, password: string) => Promise<{ token: string; userId: number; userType: string }>
+    onLogout: () => Promise<void>
 }
 
 const TOKEN_KEY = 'token'
@@ -16,8 +18,12 @@ const USERID_KEY = 'userId'
 const USER_TYPE_KEY = 'userType'
 const API_URL = ipaddress
 const AuthContext = createContext<AuthProps>({
-    onRegister: async () => {},
-    onLogin: async () => {},
+    onRegister: async () => {
+        return { data: { userId: 0, token: '', userType: '' } }
+    },
+    onLogin: async () => {
+        return { token: '', userId: 0, userType: '' }
+    },
     onLogout: async () => {},
     authState: { token: null, authenticated: null, userId: null, userType: null },
 })
@@ -26,7 +32,7 @@ export const useAuth = () => {
     return useContext(AuthContext)
 }
 
-export const AuthProvider = ({ children }: any) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [authState, setAuthState] = useState<{
         token: string | null
         authenticated: boolean | null

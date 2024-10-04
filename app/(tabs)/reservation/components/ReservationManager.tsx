@@ -4,9 +4,6 @@ import { Reservation } from '..'
 import Colors from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { formatTime } from '@/app/utils/timeUtils'
-import { ipaddress } from '@/constants/IP'
-import axios from 'axios'
-import { Link } from 'expo-router'
 import { useDeleteReservation } from '@/services/reservationService'
 import { useAuth } from '@/providers/AuthProvider'
 
@@ -19,7 +16,7 @@ type ReservationManagerProps = {
 
 export default function ReservationManager(props: ReservationManagerProps) {
     const { authState } = useAuth();
-    const mutation = useDeleteReservation( authState?.userId! ,authState?.token!);
+    const mutation = useDeleteReservation( authState?.userId ?? 0);
 
 
     const handleDelete = (id: number) => {
@@ -27,7 +24,7 @@ export default function ReservationManager(props: ReservationManagerProps) {
             onSuccess: () => {
                 props.setReservation(null);
             },
-            onError: (error) => {
+            onError: () => {
                 // modal z informacją o błędzie
             }
         });

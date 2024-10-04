@@ -1,6 +1,6 @@
 import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
 import Colors from '@/constants/Colors'
-import React, { JSXElementConstructor, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { OrangeButton } from './OrangeButton'
 
@@ -89,7 +89,7 @@ export default function TimeSlotPicker({
         if (firstSelectedSlot !== null && secondSelectedSlot !== null) {
             return true
         }
-        let roomsAvailable = Array.from(
+        const roomsAvailable = Array.from(
             { length: selectedRoomsId.length },
             () => true
         )
@@ -182,7 +182,7 @@ export default function TimeSlotPicker({
                     <View style={styles.rowContainer}>
                         {Array.from({ length: 4 }, (_, j) => {
                             const slotId = i * 4 + j
-                            let colors: string[] = []
+                            const colors: string[] = []
                             let disabled = false
                             if (RoomAvailabilityBySlots[slotId] !== undefined) {
                                 RoomAvailabilityBySlots[slotId].map(

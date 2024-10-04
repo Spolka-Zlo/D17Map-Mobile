@@ -30,7 +30,7 @@ enum ReservationType {
 export default function Reservations() {
     const { authState } = useAuth();
     const [reservation, setReservation] = useState<Reservation | null>(null);
-    const { data: reservations = [], isLoading, isError } = useUserFutureReservations(authState?.userId!, authState?.token!);
+    const { data: reservations = [], isLoading, isError } = useUserFutureReservations(authState?.userId ?? 0);
 
     if (isError) {
         return (
@@ -45,8 +45,8 @@ export default function Reservations() {
             onTouchStart={() => setReservation(null)}
             style={Styles.background}
         >
-            <Spinner visible={isLoading} textContent='Ładowanie rezerwacji' />
             <ScrollView>
+            <Spinner visible={isLoading} textContent='Ładowanie rezerwacji' />
                 <View style={Styles.background}>
                     <Text style={[Styles.h1, styles.title]}>
                         Twoje Rezerwacje

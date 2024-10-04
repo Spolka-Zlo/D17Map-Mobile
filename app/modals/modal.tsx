@@ -1,6 +1,5 @@
-import { Link, router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar'
-import { Platform, StyleSheet, View, Text } from 'react-native'
+import { Link } from 'expo-router';
+import { StyleSheet, View, Text } from 'react-native'
 
 export default function ModalScreen() {
   

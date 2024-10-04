@@ -33,15 +33,7 @@ const RoomDropdown = ({ setSelectedRooms, selectedRooms, rooms }: RoomDropdownPr
     )
 
     const renderItem = (item: {
-        label:
-            | string
-            | number
-            | boolean
-            | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-            | Iterable<React.ReactNode>
-            | React.ReactPortal
-            | null
-            | undefined
+        label:string
     }) => {
         return (
             <View style={styles.item}>

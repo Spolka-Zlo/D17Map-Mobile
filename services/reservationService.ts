@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 const fetchDayReservations = async (date: Date) => {
-    let day = date.toISOString().split('T')[0]
+    const day = date.toISOString().split('T')[0]
     const response = await axios.get(ipaddress + 'reservations/day/?day=' + day)
     return response.data
 }
@@ -30,15 +30,11 @@ export const useDayReservations = (date: Date | null) => {
 
 const fetchDeleteReservation = async (id: number) => {
     const response = await axios.delete(`${ipaddress}reservations/${id}/`)
-    if (response.status === 204) {
-        return 0
-    }
-    throw new Error(`Failed to delete reservation. Status: ${response.status}`)
+    return response.data
 }
 
 export const useDeleteReservation = (
     userId: number | undefined,
-    token: string | undefined
 ) => {
     const queryClient = useQueryClient()
 
@@ -70,7 +66,7 @@ export const useCreateReservation = (userId: number) => {
     })
 }
 
-export const fetchUserReservations = async (userId: number, token: string) => {
+export const fetchUserReservations = async (userId: number) => {
     const response = await axios.get(
         `${ipaddress}users/${userId}/future-reservations/`
     )
@@ -81,14 +77,13 @@ export const fetchUserReservations = async (userId: number, token: string) => {
 }
 
 export const useUserFutureReservations = (
-    userId: number | undefined,
-    token: string | undefined
+    userId: number | undefined
 ) => {
     return useQuery(
         ['userReservations', userId],
-        () => fetchUserReservations(userId!, token!),
+        () => fetchUserReservations(userId!),
         {
-            enabled: !!userId && !!token,
+            enabled: !!userId,
             refetchInterval: 15000,
         }
     )

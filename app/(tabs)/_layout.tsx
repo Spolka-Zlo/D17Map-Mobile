@@ -1,11 +1,8 @@
 import React from 'react'
-import { Link, Tabs } from 'expo-router'
-import { Pressable } from 'react-native'
-import { StyleSheet } from 'react-native'
+import { Tabs } from 'expo-router'
 import 'react-native-reanimated'
 import Colors from '@/constants/Colors'
 import { useColorScheme } from '@/components/useColorScheme'
-import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { useAuth } from '@/providers/AuthProvider'
 import { FontAwesome5 } from '@expo/vector-icons'
 
@@ -101,20 +98,3 @@ export default function TabLayout() {
         </Tabs>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
-    },
-})

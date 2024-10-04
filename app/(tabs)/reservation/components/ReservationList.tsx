@@ -1,9 +1,7 @@
-import { StyleSheet, View, Text, ScrollView } from 'react-native'
+import { StyleSheet, View, ScrollView } from 'react-native'
 import { Reservation } from '..'
-import { useState } from 'react'
 import ListElement from '@/components/ListElement'
 import Colors from '@/constants/Colors'
-import ReservationManager from './ReservationManager'
 import { formatTime } from '@/app/utils/timeUtils'
 
 type ReservationListProps = {

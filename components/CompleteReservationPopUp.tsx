@@ -4,20 +4,12 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    GestureResponderEvent,
 } from 'react-native'
-import { Styles } from '@/constants/Styles'
-import CheckBox from 'expo-checkbox'
 import React, { useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import Colors from '@/constants/Colors'
-import TimePicker from './TimePicker'
-import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
-import Animated from 'react-native-reanimated'
+import { Room } from '@/app/(tabs)/reservation/newReservation'
 import Dropdown from './Dropdown'
 import { router } from 'expo-router'
-import { ipaddress } from '@/constants/IP'
-import axios from 'axios'
 import { useAuth } from '@/providers/AuthProvider'
 import { useReservationTypes } from '@/services/reservationTypeService'
 import { useCreateReservation } from '@/services/reservationService'
@@ -61,7 +53,7 @@ export default function CompleteReservationPopUp({
     )
     const [error, setError] = useState(false)
     const { authState } = useAuth()
-    const createMutation = useCreateReservation(authState?.userId!)
+    const createMutation = useCreateReservation(authState?.userId ?? 0)
 
     useEffect(() => {
         setScrollAvailable(false)
@@ -70,7 +62,7 @@ export default function CompleteReservationPopUp({
 
     const handleSubmit = async () => {
         const reservation: Reservation = {
-            user: authState?.userId!,
+            user: authState?.userId ?? 0,
             classroom: room.id,
             title: name,
             date: date?.toISOString().split('T')[0] || '',
