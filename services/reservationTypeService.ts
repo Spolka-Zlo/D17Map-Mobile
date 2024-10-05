@@ -1,9 +1,8 @@
-import { ipaddress } from '@/constants/IP'
 import axios from 'axios'
 import { useQuery } from 'react-query'
 
 async function fetchReservationTypes() {
-    const response = await axios.get(`${ipaddress}reservations-types/`)
+    const response = await axios.get(`reservations-types/`)
     return response.data.types
 }
 

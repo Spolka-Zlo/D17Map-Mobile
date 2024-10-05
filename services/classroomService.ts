@@ -1,9 +1,8 @@
-import { ipaddress } from '@/constants/IP'
 import axios from 'axios'
 import { useQuery } from 'react-query'
 
 const fetchClassrooms = async () => {
-    const response = await axios.get(`${ipaddress}classrooms/`)
+    const response = await axios.get('classrooms/')
     return response.data
 }
 
@@ -13,7 +12,7 @@ export const useClassrooms = () => {
 }
 
 const fetchEquipment = async () => {
-    const response = await axios.get(`${ipaddress}equipments/`)
+    const response = await axios.get('equipments/')
     console.log(response.data, 'equipments')
     return response.data
 }

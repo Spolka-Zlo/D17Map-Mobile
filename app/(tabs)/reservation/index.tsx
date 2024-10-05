@@ -5,9 +5,8 @@ import ReservationList from './components/ReservationList'
 import ReservationManager from './components/ReservationManager'
 import { OrangeAddButton } from '@/components/OrangeAddButton'
 import { useAuth } from '@/providers/AuthProvider'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useUserFutureReservations } from '@/services/reservationService'
-import Spinner from 'react-native-loading-spinner-overlay'
 export type Reservation = {
     id: number
     room: string
@@ -46,7 +45,7 @@ export default function Reservations() {
             style={Styles.background}
         >
             <ScrollView>
-            <Spinner visible={isLoading} textContent='Ładowanie rezerwacji' />
+            {/* <Spinner visible={isLoading} textContent='Ładowanie rezerwacji' /> */}
                 <View style={Styles.background}>
                     <Text style={[Styles.h1, styles.title]}>
                         Twoje Rezerwacje

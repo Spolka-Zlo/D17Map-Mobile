@@ -44,15 +44,15 @@ export default function TabLayout() {
     ]
 
     const hiddenScreens = [
-        "reservation/[roomId]",
-        "reservation/newReservation",
-        "reservation/components/ReservationList",
-        "reservation/components/ReservationManager",
-        "auth/loginPage",
-        "auth/registerPage",
+        {name: "reservation/[roomId]", params: {onmountBlur: false}},
+        { name: "reservation/newReservation", params: {onmountBlur: true} },
+        { name: "reservation/components/ReservationList", params: {onmountBlur: false} },
+        { name: "reservation/components/ReservationManager", params: {onmountBlur: false} },
+        { name: "auth/loginPage", params: {onmountBlur: true} },
+        { name: "auth/registerPage", params: {onmountBlur: false} },
     ]
 
-    if (authState?.authenticated) {
+    if (authState?.userType !== 'STUDENT') {
         screens.push(
             <Tabs.Screen
                 key="reservation/index"
@@ -66,21 +66,22 @@ export default function TabLayout() {
                             color={Colors.secondary}
                         />
                     ),
+                    unmountOnBlur: true,
                 }}
             />
         )
     } else {
-        hiddenScreens.push("reservation/index")
+        hiddenScreens.push({name: "reservation/index", params: {onmountBlur: false}})
     }
 
-    hiddenScreens.forEach((screenName) => {
+    hiddenScreens.forEach((screen) => {
         screens.push(
             <Tabs.Screen
-                key={screenName}
-                name={screenName}
+                key={screen.name}
+                name={screen.name}
                 options={{
                     tabBarButton: () => null,
-                    // unmountOnBlur: true, -- for furute use
+                    unmountOnBlur: screen.params.onmountBlur,
                 }}
             />
         )

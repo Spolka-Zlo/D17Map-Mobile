@@ -83,7 +83,7 @@ function RootLayoutNav() {
                     headerRight: () => (
                         <OrangeButton
                             text={
-                                authState?.authenticated ? 'Logout' : 'Login'
+                                authState?.authenticated ? 'Wyloguj się' : 'Logowanie'
                             }
                             onPress={() => {
                                 if (authState?.authenticated) {

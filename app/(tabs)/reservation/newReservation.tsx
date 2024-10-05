@@ -3,7 +3,6 @@ import {
     View,
     Text,
     ScrollView,
-    TouchableOpacity,
 } from 'react-native'
 import { Styles } from '@/constants/Styles'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -13,7 +12,6 @@ import Colors from '@/constants/Colors'
 import { OrangeButton } from '@/components/OrangeButton'
 import RoomAvailabilitySection from '@/components/RoomAvailabilitySection'
 import SearchByTermSection from '@/components/SearchByTermSection'
-import Spinner from 'react-native-loading-spinner-overlay'
 
 import { useClassrooms } from '@/services/classroomService'
 import { useDayReservations } from '@/services/reservationService'
@@ -79,12 +77,6 @@ export default function newReservation() {
             scrollEnabled={scrollAvailable}
             ref={scrollViewRef}
         >
-            <Spinner
-                visible={isRoomsLoading || isReservationsLoading}
-                textContent={'Loading...'}
-                textStyle={{ color: Colors.primary }}
-            />
-
             <SafeAreaView style={Styles.background}>
                 <Text style={[Styles.h1, styles.h1]}>Nowa rezerwacja</Text>
                 <Calendar onDateChange={onDateChange} />
