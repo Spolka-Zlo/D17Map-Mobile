@@ -4,7 +4,9 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 const fetchDayReservations = async (date: Date) => {
     const day = date.toISOString().split('T')[0]
-    const response = await axios.get('reservations/day/?day=' + day)
+    const response = await axios.get('reservations/day/?day=' + day, {
+        timeout: 2000,
+    })
     return response.data
 }
 
@@ -16,7 +18,13 @@ export const useDayReservations = (date: Date | null) => {
         () => fetchDayReservations(date!),
         {
             enabled: shouldFetch,
-            refetchInterval: shouldFetch ? 15000 : false,
+            refetchInterval: (data, query) => {
+                if (query.state.error) {
+                    return false
+                }
+                return shouldFetch ? 15000 : false
+            },
+            retry: false,
         }
     )
 
@@ -28,7 +36,9 @@ export const useDayReservations = (date: Date | null) => {
 }
 
 const fetchDeleteReservation = async (id: number) => {
-    const response = await axios.delete(`reservations/${id}/`)
+    const response = await axios.delete(`reservations/${id}/`, {
+        timeout: 2000,
+    })
     return response.data
 }
 
@@ -39,6 +49,7 @@ export const useDeleteReservation = (userId: number | undefined) => {
         onSuccess: () => {
             queryClient.invalidateQueries(['userReservations', userId])
         },
+        retry: 1,
     })
 }
 
@@ -60,7 +71,9 @@ export const useCreateReservation = (userId: number) => {
 }
 
 export const fetchUserReservations = async (userId: number) => {
-    const response = await axios.get(`users/${userId}/future-reservations/`)
+    const response = await axios.get(`users/${userId}/future-reservations/`, {
+        timeout: 2000,
+    })
     if (response.status !== 200) {
         throw new Error('Error fetching reservations')
     }
@@ -68,11 +81,17 @@ export const fetchUserReservations = async (userId: number) => {
 }
 
 export const useUserFutureReservations = (userId: number | undefined) => {
-    return useQuery(
+    const { data, isLoading, isError } = useQuery(
         ['userReservations', userId],
         () => fetchUserReservations(userId!),
         {
             enabled: !!userId,
+            retry: 1,
         }
     )
+    return {
+        reservations: data,
+        isReservationLoading: isLoading,
+        isReservationError: isError,
+    }
 }

@@ -1,9 +1,4 @@
-import {
-    StyleSheet,
-    View,
-    Text,
-    ScrollView,
-} from 'react-native'
+import { StyleSheet, View, Text, ScrollView } from 'react-native'
 import { Styles } from '@/constants/Styles'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Calendar from '@/components/Calendar'
@@ -15,6 +10,9 @@ import SearchByTermSection from '@/components/SearchByTermSection'
 
 import { useClassrooms } from '@/services/classroomService'
 import { useDayReservations } from '@/services/reservationService'
+import Spinner from 'react-native-loading-spinner-overlay'
+import InfoModal from '@/app/modals/errrorModal'
+import { router } from 'expo-router'
 
 type RooomReservation = {
     id: string
@@ -50,7 +48,7 @@ export default function newReservation() {
     const [scrollAvailable, setScrollAvailable] = useState(true)
     const scrollViewRef = useRef<ScrollView>(null)
 
-    async function onDateChange(date: Date) {
+    function onDateChange(date: Date) {
         setSelectedDate(date)
         setButtonsVisible(true)
     }
@@ -77,14 +75,24 @@ export default function newReservation() {
             scrollEnabled={scrollAvailable}
             ref={scrollViewRef}
         >
+            <Spinner
+                visible={isRoomsLoading || isReservationsLoading}
+                textContent={'Ładowanie...'}
+                textStyle={{ color: Colors.primary }}
+            />
+            <InfoModal
+                text="Wystąpił błąd po stronie serwera"
+                visible={isRoomsError || isReservationsError}
+                onClose={() => {
+                    router.back()
+                }}
+            />
             <SafeAreaView style={Styles.background}>
                 <Text style={[Styles.h1, styles.h1]}>Nowa rezerwacja</Text>
                 <Calendar onDateChange={onDateChange} />
 
                 {!buttonsVisible && (
-                    <Text style={Styles.h2}>
-                        Wybierz datę, aby kontynuować
-                    </Text>
+                    <Text style={Styles.h2}>Wybierz datę, aby kontynuować</Text>
                 )}
 
                 {buttonsVisible && (

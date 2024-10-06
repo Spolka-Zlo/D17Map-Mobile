@@ -52,7 +52,7 @@ export default function TabLayout() {
         { name: "auth/registerPage", params: {onmountBlur: false} },
     ]
 
-    if (authState?.userType !== 'STUDENT') {
+    if (authState?.userType !== 'STUDENT' && authState?.authenticated) {
         screens.push(
             <Tabs.Screen
                 key="reservation/index"

@@ -7,7 +7,13 @@ const fetchClassrooms = async () => {
 }
 
 export const useClassrooms = () => {
-    const { data, isError, isLoading } = useQuery('classrooms', fetchClassrooms)
+    const { data, isError, isLoading } = useQuery(
+        'classrooms',
+        fetchClassrooms,
+        {
+            retry: 1,
+        }
+    )
     return { rooms: data, isRoomsError: isError, isRoomsLoading: isLoading }
 }
 

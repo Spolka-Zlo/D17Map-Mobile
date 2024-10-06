@@ -66,6 +66,11 @@ export default function TimeSlotPicker({
         setRoomAvailabilityBySlots(getRoomAvailabilityBySlots())
     }, [reservations, selectedRoomsId])
 
+    useEffect(() => {
+        setFirstSelectedSlot(null)
+        setSecondSelectedSlot(null)
+    }, [rooms])
+
     const handlePress = (slotId: number) => {
         if (firstSelectedSlot !== null && slotId < firstSelectedSlot) {
             setFirstSelectedSlot(slotId)

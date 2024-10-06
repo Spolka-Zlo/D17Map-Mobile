@@ -9,7 +9,10 @@ async function fetchReservationTypes() {
 export const useReservationTypes = () => {
     const { data, isError, isLoading } = useQuery(
         'reservationTypes',
-        fetchReservationTypes
+        fetchReservationTypes,
+        {
+            retry: 1,
+        }
     )
     return {
         reservationTypes: data,

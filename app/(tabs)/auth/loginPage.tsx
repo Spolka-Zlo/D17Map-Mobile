@@ -3,7 +3,7 @@ import Colors from '@/constants/Colors'
 import { useAuth } from '@/providers/AuthProvider'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { StyleSheet, Text, TextInput, View } from 'react-native'
 
 export default function LoginScreen() {
     const { onLogin } = useAuth()
