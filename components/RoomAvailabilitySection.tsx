@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, ScrollView } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useState } from 'react'
 import Colors from '@/constants/Colors'
 import RoomDropdown from './RoomDropdown'

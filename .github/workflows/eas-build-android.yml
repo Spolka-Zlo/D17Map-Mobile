@@ -1,8 +1,9 @@
-name: update
+name: Build Android App on PR
+
 on:
-    push:
-        branches:
-            - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -33,4 +34,4 @@ jobs:
         run: bun install
 
       - name: Build on EAS
-        run: eas build -p android --non-interactive --no-wait
+        run: eas build -p android --profile preview --non-interactive

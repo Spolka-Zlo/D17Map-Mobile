@@ -8,29 +8,17 @@ import {
 import { Styles } from '@/constants/Styles'
 import CheckBox from 'expo-checkbox'
 import React, { useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import Colors from '@/constants/Colors'
 import TimePicker from './TimePicker'
 import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
 import CompleteReservationPopUp from './CompleteReservationPopUp'
-import { ipaddress } from '@/constants/IP'
+import { useEquipmentOptions } from '@/services/classroomService'
 
 type SearchByTermSectionProps = {
     reservations: DayReservation[]
     rooms: Room[]
     date: Date | null
     setScrollAvailable: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-async function fetchAllEquipmentOptions() {
-    try {
-        const response = await fetch(ipaddress + 'equipments')
-        const data = await response.json()
-        return data
-    } catch (error) {
-        console.error(error)
-    }
-    return []
 }
 
 export default function SearchByTermSection({
@@ -41,20 +29,11 @@ export default function SearchByTermSection({
 }: SearchByTermSectionProps) {
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
-    const [equipmentOptions, setEquipmentOptions] = useState<string[]>([])
     const [selectedEquipment, setSelectedEquipment] = useState<string[]>([])
     const [minNumberOfSeats, setMinNumberOfSeats] = useState(0)
-
     const [availableRooms, setAvailableRooms] = useState<Room[]>([])
-
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setEquipmentOptions(await fetchAllEquipmentOptions())
-        }
-        fetchData()
-    }, [])
+    const { equipmentOptions, isEquipmentOptionsError, isEquipmentOptionsLoading } = useEquipmentOptions()
 
     const handleChange = (text: string) => {
         const numericValue = text.replace(/[^0-9]/g, '')
@@ -63,7 +42,7 @@ export default function SearchByTermSection({
 
     useEffect(() => {
         availableRoomsHandler()
-    }, [minNumberOfSeats, startTime, endTime, selectedEquipment])
+    }, [minNumberOfSeats, startTime, endTime, selectedEquipment, reservations])
 
     const availableRoomsHandler = async () => {
         const filteredRooms = rooms.filter((room) => {
@@ -75,7 +54,7 @@ export default function SearchByTermSection({
                 )
                 if (!hasAllEquipment) return false
             }
-
+            if (!reservations) return true
             const isAvailable = reservations.every((reservation) => {
                 if (reservation.classroom.name !== room.name) return true
 
@@ -117,28 +96,28 @@ export default function SearchByTermSection({
         <View style={styles.container}>
             <TimePicker setStartTime={setStartTime} setEndTime={setEndTime} />
             <View style={styles.checkboxSection}>
-                {equipmentOptions.map((option, index) => {
+                {equipmentOptions.map((option: {id: string, name: string}, index: number) => {
                     return (
                         <View key={index} style={styles.singleCheckBox}>
                             <CheckBox
                                 style={styles.checkbox}
-                                value={selectedEquipment.includes(option)}
+                                value={selectedEquipment.includes(option.name)}
                                 color={
-                                    selectedEquipment.includes(option)
+                                    selectedEquipment.includes(option.name)
                                         ? Colors.secondary
                                         : undefined
                                 }
                                 onValueChange={() => {
                                     setSelectedEquipment((prevState) =>
-                                        prevState.includes(option)
+                                        prevState.includes(option.name)
                                             ? prevState.filter(
-                                                  (item) => item !== option
+                                                  (item) => item !== option.name
                                               )
-                                            : [...prevState, option]
+                                            : [...prevState, option.name]
                                     )
                                 }}
                             />
-                            <Text style={styles.label}>{option}</Text>
+                            <Text style={styles.label}>{option.name}</Text>
                         </View>
                     )
                 })}
@@ -183,7 +162,6 @@ export default function SearchByTermSection({
                     endTime={endTime}
                 />
             )}
-            
         </View>
     )
 }

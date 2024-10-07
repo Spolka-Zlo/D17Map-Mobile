@@ -4,27 +4,27 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    GestureResponderEvent,
+    Modal,
 } from 'react-native'
-import { Styles } from '@/constants/Styles'
-import CheckBox from 'expo-checkbox'
 import React, { useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import Colors from '@/constants/Colors'
-import TimePicker from './TimePicker'
-import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
-import Animated from 'react-native-reanimated'
+import { Room } from '@/app/(tabs)/reservation/newReservation'
 import Dropdown from './Dropdown'
 import { router } from 'expo-router'
+import { useAuth } from '@/providers/AuthProvider'
+import { useReservationTypes } from '@/services/reservationTypeService'
+import { useCreateReservation } from '@/services/reservationService'
+import Spinner from 'react-native-loading-spinner-overlay'
+import InfoModal from '@/app/modals/errrorModal'
 
-type Reservation = {
-    name: string
-    type: string
-    userId: number
+export type Reservation = {
+    user: number
+    classroom: string
+    title: string
     date: string
     startTime: string
     endTime: string
-    classroomId: string
+    type: string
 }
 
 type CompleteReservationPopUpProps = {
@@ -34,13 +34,6 @@ type CompleteReservationPopUpProps = {
     date: Date | null
     startTime: string
     endTime: string
-}
-
-async function fetchReservationTypes() {
-    // const response = await fetch('http://localhost:3000/reservationTypes')
-    // const data = await response.json()
-    let data = ['Kolokwium', 'Konsultacje', 'Spotkanie', 'Inne']
-    return data
 }
 
 export default function CompleteReservationPopUp({
@@ -53,112 +46,135 @@ export default function CompleteReservationPopUp({
 }: CompleteReservationPopUpProps) {
     const [isDropDownOpen, setIsDropDownOpen] = useState(false)
     const [name, setName] = useState('')
-    const [reservationTypes, setReservationTypes] = useState<string[]>([])
+    const { reservationTypes } = useReservationTypes()
     const [selectedReservationType, setSelectedReservationType] = useState(
         'Wybierz typ rezerwacji'
     )
+    const [error, setError] = useState(false)
+    const { authState } = useAuth()
+    const createMutation = useCreateReservation(authState?.userId ?? 0)
 
     useEffect(() => {
-        const fetchData = async () => {
-            setReservationTypes(await fetchReservationTypes())
-        }
-        fetchData()
         setScrollAvailable(false)
+        setError(false)
     }, [])
 
-    const handleSubmit = () => {
-        console.log('submit', selectedReservationType)
-        if (selectedReservationType === 'Wybierz typ rezerwacji') {
-            return
-        }
+    const handleSubmit = async () => {
         const reservation: Reservation = {
-            type: selectedReservationType,
-            name: name,
-            userId: 1,
+            user: authState?.userId ?? 0,
+            classroom: room.id,
+            title: name,
             date: date?.toISOString().split('T')[0] || '',
             startTime: startTime,
             endTime: endTime,
-            classroomId: room.id,
+            type: selectedReservationType,
         }
-        console.log(reservation)
-        setName('')
-        setSelectedReservationType('Wybierz typ rezerwacji')
-        setScrollAvailable(true)
-        setSelectedRoom(null)
-        router.navigate('reservation')
+        createMutation.mutate(reservation, {
+            onSuccess: () => {
+                setSelectedRoom(null)
+                setScrollAvailable(true)
+                setSelectedReservationType('Wybierz typ rezerwacji')
+                router.navigate('/reservation')
+            },
+            onError: () => {
+                setError(true)
+            },
+        })
     }
 
     return (
-        <View
-            style={styles.container}
-        >
-            <View style={styles.flex}>
-                <View style={styles.box}>
-                    <TextInput
-                        placeholder="Nazwa rezerwacji"
-                        onChangeText={setName}
-                        value={name}
-                        style={styles.input}
-                        placeholderTextColor={Colors.secondary}
-                    />
-                    <View style={{ zIndex: 2 }}>
-                        <Dropdown
-                            options={reservationTypes}
-                            selected={selectedReservationType}
-                            setSelected={setSelectedReservationType}
-                            isOpen={isDropDownOpen}
-                            setIsOpen={setIsDropDownOpen}
+        <View>
+            <Spinner
+                visible={createMutation.isLoading}
+                cancelable={false}
+                textContent="Tworzenie rezerwacji"
+                overlayColor="rgba(0, 0, 0, 0.7)"
+                textStyle={{ color: Colors.white }}
+            />
+            <InfoModal
+                text="Nie udało się utworzyć rezerwacji"
+                visible={createMutation.isError}
+                onClose={() => router.navigate('/')}
+            />
+            <Modal transparent={true} animationType="fade">
+                <View style={styles.modalBackground}>
+                    <View style={styles.box}>
+                        <TextInput
+                            placeholder="Nazwa rezerwacji"
+                            onChangeText={setName}
+                            value={name}
+                            style={styles.input}
+                            placeholderTextColor={Colors.secondary}
                         />
-                    </View>
-                    {date && (
-                        <Text>{date?.toISOString().split('T')[0] || ''}</Text>
-                    )}
-                    <Text>
-                        {startTime} - {endTime}
-                    </Text>
-                    <Text>{room.name}</Text>
-                    <Text>{room.capacity} miejsc</Text>
-                    <Text>{room.equipment.join(', ')}</Text>
-                    {selectedReservationType === 'Wybierz typ rezerwacji' && (
-                        <Text style={styles.error}>Wybierz typ rezerwacji</Text>
-                    )}
-                    {name === '' && (
-                        <Text style={styles.error}>Podaj nazwę rezerwacji</Text>
-                    )}
-                    {name !== '' &&
-                        selectedReservationType !==
-                            'Wybierz typ rezerwacji' && (
-                            <TouchableOpacity
-                                onPress={handleSubmit}
-                                style={styles.submit}
-                            >
-                                <Text style={styles.label}>Rezerwuj</Text>
-                            </TouchableOpacity>
+                        <View style={{ zIndex: 2 }}>
+                            <Dropdown
+                                options={reservationTypes}
+                                selected={selectedReservationType}
+                                setSelected={setSelectedReservationType}
+                                isOpen={isDropDownOpen}
+                                setIsOpen={setIsDropDownOpen}
+                            />
+                        </View>
+                        {date && (
+                            <Text>
+                                {date?.toISOString().split('T')[0] || ''}
+                            </Text>
                         )}
-                    <TouchableOpacity
-                        onPress={() => {
-                            setSelectedRoom(null)
-                            setScrollAvailable(true)
-                        }}
-                        style={styles.cancel}
-                    >
-                        <Text style={styles.label}>Zamknij</Text>
-                    </TouchableOpacity>
+                        <Text>
+                            {startTime} - {endTime}
+                        </Text>
+                        <Text>{room.name}</Text>
+                        <Text>{room.capacity} miejsc</Text>
+                        <Text>{room.equipment.join(', ')}</Text>
+                        {selectedReservationType ===
+                            'Wybierz typ rezerwacji' && (
+                            <Text style={styles.error}>
+                                Wybierz typ rezerwacji
+                            </Text>
+                        )}
+                        {name === '' && (
+                            <Text style={styles.error}>
+                                Podaj nazwę rezerwacji
+                            </Text>
+                        )}
+                        {name !== '' &&
+                            selectedReservationType !==
+                                'Wybierz typ rezerwacji' &&
+                            !error && (
+                                <TouchableOpacity
+                                    onPress={handleSubmit}
+                                    style={styles.submit}
+                                >
+                                    <Text style={styles.label}>Rezerwuj</Text>
+                                </TouchableOpacity>
+                            )}
+                        {error && (
+                            <Text style={styles.error}>
+                                Wystąpił błąd, spróbuj ponownie
+                            </Text>
+                        )}
+                        <TouchableOpacity
+                            onPress={() => {
+                                setSelectedRoom(null)
+                                setScrollAvailable(true)
+                            }}
+                            style={styles.cancel}
+                        >
+                            <Text style={styles.label}>Zamknij</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            </Modal>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
+    modalBackground: {
         flex: 1,
-        position: 'absolute',
-        width: '100%',
-        height: 733,
-        backgroundColor: Colors.primary + '80',
-        zIndex: 1,
-        bottom: '0%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     flex: {
         padding: 30,
