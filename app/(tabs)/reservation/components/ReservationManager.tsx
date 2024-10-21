@@ -1,22 +1,21 @@
 import { Dispatch, SetStateAction } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native'
-import { Reservation } from '..'
 import Colors from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { formatTime } from '@/app/utils/timeUtils'
 import { useDeleteReservation } from '@/services/reservationService'
-import { useAuth } from '@/providers/AuthProvider'
 import InfoModal from '@/app/modals/errrorModal'
 import Spinner from 'react-native-loading-spinner-overlay'
+import { OrangeButton } from '@/components/OrangeButton'
+import { SimpleReservation } from '@/constants/types'
 
 type ReservationManagerProps = {
-    reservation: Reservation
-    setReservation: Dispatch<SetStateAction<Reservation | null>>
+    reservation: SimpleReservation
+    setReservation: Dispatch<SetStateAction<SimpleReservation | null>>
 }
 
 export default function ReservationManager(props: ReservationManagerProps) {
-    const { authState } = useAuth()
-    const mutation = useDeleteReservation(authState?.userId ?? 0)
+    const mutation = useDeleteReservation()
 
     const handleDelete = (id: number) => {
         mutation.mutate(id)
@@ -67,7 +66,7 @@ export default function ReservationManager(props: ReservationManagerProps) {
                                     <Text style={Styles.h2}>
                                         {props.reservation?.title}
                                     </Text>
-                                    <Text>{props.reservation?.room}</Text>
+                                    <Text>{props.reservation?.classroom}</Text>
                                     <Text>
                                         {props.reservation?.date}{' '}
                                         {formatTime(
@@ -76,6 +75,10 @@ export default function ReservationManager(props: ReservationManagerProps) {
                                         -
                                         {formatTime(props.reservation?.endTime)}
                                     </Text>
+                                    <OrangeButton
+                                        text="Edytuj"
+                                        onPress={() => {}}
+                                    />
                                     <TouchableOpacity
                                         onPress={() =>
                                             handleDelete(props.reservation.id)

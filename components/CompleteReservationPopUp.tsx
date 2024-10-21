@@ -8,24 +8,15 @@ import {
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Colors from '@/constants/Colors'
-import { Room } from '@/app/(tabs)/reservation/newReservation'
+import { Reservation, Room } from '@/constants/types'
 import Dropdown from './Dropdown'
 import { router } from 'expo-router'
-import { useAuth } from '@/providers/AuthProvider'
 import { useReservationTypes } from '@/services/reservationTypeService'
 import { useCreateReservation } from '@/services/reservationService'
 import Spinner from 'react-native-loading-spinner-overlay'
 import InfoModal from '@/app/modals/errrorModal'
 
-export type Reservation = {
-    user: number
-    classroom: string
-    title: string
-    date: string
-    startTime: string
-    endTime: string
-    type: string
-}
+
 
 type CompleteReservationPopUpProps = {
     setSelectedRoom: (room: Room | null) => void
@@ -50,9 +41,10 @@ export default function CompleteReservationPopUp({
     const [selectedReservationType, setSelectedReservationType] = useState(
         'Wybierz typ rezerwacji'
     )
+    const [description, setDescription] = useState('')
+    const [numberOfParticipants, setNumberOfParticipants ] = useState(room.capacity)
     const [error, setError] = useState(false)
-    const { authState } = useAuth()
-    const createMutation = useCreateReservation(authState?.userId ?? 0)
+    const createMutation = useCreateReservation()
 
     useEffect(() => {
         setScrollAvailable(false)
@@ -61,13 +53,14 @@ export default function CompleteReservationPopUp({
 
     const handleSubmit = async () => {
         const reservation: Reservation = {
-            user: authState?.userId ?? 0,
-            classroom: room.id,
             title: name,
+            description: description,
+            classroomId: room.id,
             date: date?.toISOString().split('T')[0] || '',
             startTime: startTime,
             endTime: endTime,
             type: selectedReservationType,
+            numberOfParticipants: numberOfParticipants,
         }
         createMutation.mutate(reservation, {
             onSuccess: () => {
@@ -106,9 +99,27 @@ export default function CompleteReservationPopUp({
                             style={styles.input}
                             placeholderTextColor={Colors.secondary}
                         />
+                        <TextInput
+                            placeholder="Opis rezerwacji"
+                            onChangeText={setDescription}
+                            value={description}
+                            style={styles.input}
+                            placeholderTextColor={Colors.secondary}
+                        />
+                        <Text>
+                            Liczba uczestników: {numberOfParticipants}
+                        </Text>
+                        <TextInput
+                            placeholder="Liczba uczestników"
+                            onChangeText={(value) => setNumberOfParticipants(Number(value))}
+                            value={numberOfParticipants.toString()}
+                            style={styles.input}
+                            placeholderTextColor={Colors.secondary}
+                            keyboardType="numeric"
+                        />
                         <View style={{ zIndex: 2 }}>
                             <Dropdown
-                                options={reservationTypes}
+                                options={reservationTypes!}
                                 selected={selectedReservationType}
                                 setSelected={setSelectedReservationType}
                                 isOpen={isDropDownOpen}
@@ -125,7 +136,7 @@ export default function CompleteReservationPopUp({
                         </Text>
                         <Text>{room.name}</Text>
                         <Text>{room.capacity} miejsc</Text>
-                        <Text>{room.equipment.join(', ')}</Text>
+                        <Text>{room.equipments.map(equipment => equipment.name).join(', ')}</Text>
                         {selectedReservationType ===
                             'Wybierz typ rezerwacji' && (
                             <Text style={styles.error}>

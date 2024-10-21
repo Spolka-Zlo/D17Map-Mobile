@@ -10,9 +10,10 @@ import CheckBox from 'expo-checkbox'
 import React, { useEffect, useState } from 'react'
 import Colors from '@/constants/Colors'
 import TimePicker from './TimePicker'
-import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
+import { DayReservation } from '@/app/(tabs)/reservation/newReservation'
 import CompleteReservationPopUp from './CompleteReservationPopUp'
 import { useEquipmentOptions } from '@/services/classroomService'
+import { Room } from '@/constants/types'
 
 type SearchByTermSectionProps = {
     reservations: DayReservation[]
@@ -50,8 +51,8 @@ export default function SearchByTermSection({
 
             if (selectedEquipment.length > 0) {
                 const hasAllEquipment = selectedEquipment.every((equipment) =>
-                    room.equipment.includes(equipment)
-                )
+                    room.equipments.some((roomEquipment) => roomEquipment.name === equipment)
+                );
                 if (!hasAllEquipment) return false
             }
             if (!reservations) return true

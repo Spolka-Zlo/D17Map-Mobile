@@ -1,10 +1,11 @@
-import { Reservation } from '@/components/CompleteReservationPopUp'
+import { Reservation } from '@/constants/types'
+import { useAuth } from '@/providers/AuthProvider'
 import axios from 'axios'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 const fetchDayReservations = async (date: Date) => {
     const day = date.toISOString().split('T')[0]
-    const response = await axios.get('reservations/day/?day=' + day, {
+    const response = await axios.get('reservations?day=' + day, {
         timeout: 2000,
     })
     return response.data
@@ -35,21 +36,38 @@ export const useDayReservations = (date: Date | null) => {
     }
 }
 
-const fetchDeleteReservation = async (id: number) => {
-    const response = await axios.delete(`reservations/${id}/`, {
+const fetchDeleteReservation = async (reservationId: number) => {
+    const response = await axios.delete(`reservations/${reservationId}/`, {
         timeout: 2000,
     })
     return response.data
 }
 
-export const useDeleteReservation = (userId: number | undefined) => {
+export const useDeleteReservation = () => {
     const queryClient = useQueryClient()
 
     return useMutation(fetchDeleteReservation, {
         onSuccess: () => {
-            queryClient.invalidateQueries(['userReservations', userId])
+            queryClient.invalidateQueries(['userReservations'])
         },
         retry: 1,
+    })
+}
+
+const fetchEditReservation = async (reservation: Reservation) => {
+    const response = await axios.put(`reservations/`, reservation, {
+        timeout: 2000,
+    })
+    return response.data
+}
+
+export const useEditReservation = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation(fetchEditReservation, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['userReservations'])
+        },
     })
 }
 
@@ -60,18 +78,18 @@ async function createReservation(reservation: Reservation) {
     return response.data
 }
 
-export const useCreateReservation = (userId: number) => {
+export const useCreateReservation = () => {
     const queryClient = useQueryClient()
 
     return useMutation(createReservation, {
         onSuccess: () => {
-            queryClient.invalidateQueries(['userReservations', userId])
+            queryClient.invalidateQueries(['userReservations'])
         },
     })
 }
 
-export const fetchUserReservations = async (userId: number) => {
-    const response = await axios.get(`users/${userId}/future-reservations/`, {
+export const fetchUserReservations = async () => {
+    const response = await axios.get(`reservations/future-reservations`, {
         timeout: 2000,
     })
     if (response.status !== 200) {
@@ -80,13 +98,14 @@ export const fetchUserReservations = async (userId: number) => {
     return response.data
 }
 
-export const useUserFutureReservations = (userId: number | undefined) => {
+export const useUserFutureReservations = () => {
+    const { authState } = useAuth()
     const { data, isLoading, isError } = useQuery(
-        ['userReservations', userId],
-        () => fetchUserReservations(userId!),
+        ['userReservations'],
+        fetchUserReservations,
         {
-            enabled: !!userId,
             retry: 1,
+            enabled: authState?.authenticated ?? false,
         }
     )
     return {

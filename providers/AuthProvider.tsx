@@ -6,7 +6,8 @@ import { ReactNode } from 'react';
 import { useQueryClient } from 'react-query';
 
 interface AuthProps {
-    authState?: { token: string | null; authenticated: boolean | null; userId: number | null; userType: string | null }
+    // authState?: { token: string | null; authenticated: boolean | null; userId: number | null; userType: string | null }
+    authState?: { token: string | null; authenticated: boolean | null; userType: string | null }
     onRegister: (email: string, password: string) => Promise<unknown>
     onLogin: (email: string, password: string) => Promise<unknown>
     onLogout: () => Promise<unknown>
@@ -17,7 +18,7 @@ interface AuthProps {
 const IP_KEY = 'api_ip';
 export const getApiUrl = async () => {
     const ip = await SecureStore.getItemAsync(IP_KEY);
-    return ip || 'http://192.168.33.12:8000/api/';
+    return ip || 'http://192.168.33.12:8080/';
   };
   
 export const setApiUrl = async (newIp: string) => {
@@ -35,7 +36,8 @@ const AuthContext = createContext<AuthProps>({
     onRegister: async () => {},
     onLogin: async () => {},
     onLogout: async () => {},
-    authState: { token: null, authenticated: null, userId: null, userType: null },
+    // authState: { token: null, authenticated: null, userId: null, userType: null },
+    authState: { token: null, authenticated: null, userType: null },
     setApiUrl: async () => {}
 })
 
@@ -48,24 +50,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [authState, setAuthState] = useState<{
         token: string | null
         authenticated: boolean | null
-        userId: number | null
+        // userId: number | null
         userType: string | null
-    }>({ token: null, authenticated: null, userId: null, userType: null })
+    // }>({ token: null, authenticated: null, userId: null, userType: null })
+    }>({ token: null, authenticated: null, userType: null })
 
     useEffect(() => {
         const loadToken = async () => {
             const token = await SecureStore.getItemAsync(TOKEN_KEY)
-            const userId = await SecureStore.getItemAsync(USERID_KEY)
+            // const userId = await SecureStore.getItemAsync(USERID_KEY)
             const userType = await SecureStore.getItemAsync(USER_TYPE_KEY)
             const apiUrl = await getApiUrl();
             axios.defaults.baseURL = apiUrl;
             if (token) {
                 axios.defaults.headers.common['Authorization'] =
-                    `Token ${token}`
+                    `Bearer ${token}`
                 setAuthState({
                     token,
                     authenticated: true,
-                    userId: userId ? parseInt(userId) : null,
+                    // userId: userId ? parseInt(userId) : null,
                     userType: userType
                 })
             }
@@ -75,41 +78,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     const register = async (username: string, password: string) => {
         try {
-            const response = await axios.post('register/', {
+            const response = await axios.post('auth/register/', {
                 username,
                 password,
             })
-            return response.data
+            return response.status === 201
         } catch (error) {
             return error
         }
     }
+
     const login = async (username: string, password: string) => {
         try {
-            const response = await axios.post('login/', {
+            const response = await axios.post('auth/login', {
                 username,
                 password,
             }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
+                },
                 timeout: 5000
-            })
+            });
             console.log(response)
-            await SecureStore.setItemAsync(TOKEN_KEY, response.data.token)
-            await SecureStore.setItemAsync(
-                USERID_KEY,
-                response.data.userId.toString()
-            )
-            await SecureStore.setItemAsync(
-                USER_TYPE_KEY,
-                response.data.userType
-            )
+            await SecureStore.setItemAsync(TOKEN_KEY, response.data)
+            // await SecureStore.setItemAsync(
+            //     USERID_KEY,
+            //     response.data.userId.toString()
+            // )
+            // await SecureStore.setItemAsync(
+            //     USER_TYPE_KEY,
+            //     response.data.userType
+            // )
             setAuthState({
-                token: response.data.token,
+                token:response.data,
                 authenticated: true,
-                userId: response.data.userId,
+                // userId: response.data.userId,
                 userType: response.data.userType
             })
             axios.defaults.headers.common['Authorization'] =
-                `Token ${response.data.token}`
+                `Bearer ${response.data}`
             console.log('Logged in')
             return response.data
         } catch (error) {
@@ -122,7 +130,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await SecureStore.deleteItemAsync(TOKEN_KEY)
         await SecureStore.deleteItemAsync(USERID_KEY)
         await SecureStore.deleteItemAsync(USER_TYPE_KEY)
-        setAuthState({ token: null, authenticated: false, userId: null, userType: null })
+        // setAuthState({ token: null, authenticated: false, userId: null, userType: null })
+        setAuthState({ token: null, authenticated: false, userType: null })
         axios.defaults.headers.common['Authorization'] = ''
         router.push('/auth/loginPage')
     }

@@ -27,12 +27,7 @@ export type DayReservation = {
     classroom: RooomReservation
 }
 
-export type Room = {
-    id: string
-    name: string
-    capacity: number
-    equipment: string[]
-}
+
 
 export default function newReservation() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)

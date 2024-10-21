@@ -20,7 +20,7 @@ export default function RegisterScreen() {
         try {
             console.log('Registering...')
             const response = await onRegister(username, password)
-            if (response?.token) {
+            if (response) {
                 console.log('Registration successful')
                 router.push('/auth/loginPage')
                 setError('')
@@ -28,10 +28,10 @@ export default function RegisterScreen() {
                 setPassword('')
                 setConfirmPassword('')
             } else {
-                setError('Registration failed. Please try again.')
+                setError('Błąd podczas rezerwacji. Spróbuj ponownie.')
             }
-        } catch (err) {
-            setError('An error occurred during registration.')
+        } catch {
+            setError('Błąd podczas rezerwacji. Spróbuj ponownie.')
         }
     }
 
