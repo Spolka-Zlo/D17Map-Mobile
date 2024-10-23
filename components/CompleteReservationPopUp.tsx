@@ -15,6 +15,7 @@ import { useReservationTypes } from '@/services/reservationTypeService'
 import { useCreateReservation } from '@/services/reservationService'
 import Spinner from 'react-native-loading-spinner-overlay'
 import InfoModal from '@/app/modals/errrorModal'
+import { useEquipmentOptions } from '@/services/classroomService'
 
 
 
@@ -43,6 +44,7 @@ export default function CompleteReservationPopUp({
     )
     const [description, setDescription] = useState('')
     const [numberOfParticipants, setNumberOfParticipants ] = useState(room.capacity)
+    const { equipmentOptions } = useEquipmentOptions()
     const [error, setError] = useState(false)
     const createMutation = useCreateReservation()
 
@@ -56,9 +58,9 @@ export default function CompleteReservationPopUp({
             title: name,
             description: description,
             classroomId: room.id,
-            date: date?.toISOString().split('T')[0] || '',
-            startTime: startTime,
-            endTime: endTime,
+            date: date?.toISOString().split('T')[0].split('-').reverse().join('-') || '',
+            startTime: startTime.split(':').map((unit: string) => unit.padStart(2, '0')).join(':'),
+            endTime: endTime.split(':').map((unit: string) => unit.padStart(2, '0')).join(':'),
             type: selectedReservationType,
             numberOfParticipants: numberOfParticipants,
         }
@@ -136,7 +138,14 @@ export default function CompleteReservationPopUp({
                         </Text>
                         <Text>{room.name}</Text>
                         <Text>{room.capacity} miejsc</Text>
-                        <Text>{room.equipments.map(equipment => equipment.name).join(', ')}</Text>
+                        <Text>
+                            {room.equipmentIds.map((equipmentId) => {
+                                const equipment = equipmentOptions?.find(
+                                    (option: { id: string }) => option.id === equipmentId
+                                )
+                                return equipment ? equipment.name : ''
+                            })}
+                        </Text>
                         {selectedReservationType ===
                             'Wybierz typ rezerwacji' && (
                             <Text style={styles.error}>

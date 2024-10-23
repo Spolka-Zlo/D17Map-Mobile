@@ -34,7 +34,7 @@ export default function SearchByTermSection({
     const [minNumberOfSeats, setMinNumberOfSeats] = useState(0)
     const [availableRooms, setAvailableRooms] = useState<Room[]>([])
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
-    const { equipmentOptions, isEquipmentOptionsError, isEquipmentOptionsLoading } = useEquipmentOptions()
+    const { equipmentOptions } = useEquipmentOptions()
 
     const handleChange = (text: string) => {
         const numericValue = text.replace(/[^0-9]/g, '')
@@ -51,7 +51,7 @@ export default function SearchByTermSection({
 
             if (selectedEquipment.length > 0) {
                 const hasAllEquipment = selectedEquipment.every((equipment) =>
-                    room.equipments.some((roomEquipment) => roomEquipment.name === equipment)
+                    room.equipmentIds.some((roomEquipment) => roomEquipment === equipment)
                 );
                 if (!hasAllEquipment) return false
             }
@@ -102,19 +102,19 @@ export default function SearchByTermSection({
                         <View key={index} style={styles.singleCheckBox}>
                             <CheckBox
                                 style={styles.checkbox}
-                                value={selectedEquipment.includes(option.name)}
+                                value={selectedEquipment.includes(option.id)}
                                 color={
-                                    selectedEquipment.includes(option.name)
+                                    selectedEquipment.includes(option.id)
                                         ? Colors.secondary
                                         : undefined
                                 }
                                 onValueChange={() => {
                                     setSelectedEquipment((prevState) =>
-                                        prevState.includes(option.name)
+                                        prevState.includes(option.id)
                                             ? prevState.filter(
-                                                  (item) => item !== option.name
+                                                  (item) => item !== option.id
                                               )
-                                            : [...prevState, option.name]
+                                            : [...prevState, option.id]
                                     )
                                 }}
                             />

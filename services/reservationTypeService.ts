@@ -2,18 +2,8 @@ import axios from 'axios'
 import { useQuery } from 'react-query'
 
 async function fetchReservationTypes() {
-    // const response = await axios.get(`reservations-types/`)
-
-    return [
-        'CLASS',
-        'EXAM',
-        'TEST',
-        'LECTURE',
-        'CONSULTATIONS',
-        'CONFERENCE',
-        'STUDENTS_CLUB_MEETING',
-        'EVENT',
-    ]
+    const response = await axios.get(`reservations/types`)
+    return response.data
 }
 
 export const useReservationTypes = () => {

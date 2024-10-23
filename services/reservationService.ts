@@ -72,7 +72,8 @@ export const useEditReservation = () => {
 }
 
 async function createReservation(reservation: Reservation) {
-    const response = await axios.post('reservations/', reservation, {
+    console.log(reservation, 'asdfasdasdfasdfasfdasdfaf')
+    const response = await axios.post('reservations', reservation, {
         timeout: 5000,
     })
     return response.data
@@ -89,7 +90,7 @@ export const useCreateReservation = () => {
 }
 
 export const fetchUserReservations = async () => {
-    const response = await axios.get(`reservations/future-reservations`, {
+    const response = await axios.get(`reservations/user/future`, {
         timeout: 2000,
     })
     if (response.status !== 200) {

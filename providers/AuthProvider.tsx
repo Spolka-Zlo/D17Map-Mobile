@@ -102,12 +102,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 response.data.role
             )
             setAuthState({
-                token:response.data,
+                token:response.data.token,
                 authenticated: true,
                 userType: response.data.role
             })
             axios.defaults.headers.common['Authorization'] =
-                `Bearer ${response.data}`
+                `Bearer ${response.data.token}`
             console.log('Logged in')
             return response.data
         } catch (error) {

@@ -1,13 +1,8 @@
-export type RoomEquipment = {
-    id: string
-    name: string
-}
-
 export type Room = {
     id: string
     name: string
     capacity: number
-    equipments: RoomEquipment[]
+    equipmentIds: string[]
 }
 
 export type Reservation = {
@@ -28,14 +23,5 @@ export type SimpleReservation = {
     date: string
     startTime: string
     endTime: string
-    type: ReservationType
-}
-
-enum ReservationType {
-    CLASS,
-    EXAM,
-    TEST,
-    CONSULTATIONS,
-    CONFERENE,
-    STUDENTS_CLUB_MEETING,
+    type: string
 }
