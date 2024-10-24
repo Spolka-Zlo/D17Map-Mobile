@@ -1,10 +1,11 @@
-import { StyleSheet, View, Text, ScrollView } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useState } from 'react'
 import Colors from '@/constants/Colors'
 import RoomDropdown from './RoomDropdown'
 import TimeSlotPicker from './TimeSlotPicker'
-import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
+import { DayReservation } from '@/app/(tabs)/reservation/newReservation'
 import CompleteReservationPopUp from './CompleteReservationPopUp'
+import { Room } from '@/constants/types'
 
 type RoomAvailabilitySectionProps = {
     reservations: DayReservation[]
