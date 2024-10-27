@@ -24,7 +24,7 @@ export default function TabLayout() {
             }}
         >
             <Tabs.Screen
-                name="map"
+                name="map/map"
                 options={{
                     title: 'Map',
                     tabBarIcon: () => (
@@ -74,6 +74,21 @@ export default function TabLayout() {
                         />
                     ),
                     href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="map/[floor]"
+                options={{
+                    title: 'Reservation',
+                    tabBarIcon: () => (
+                        <FontAwesome5
+                            size={28}
+                            name="book"
+                            color={Colors.secondary}
+                        />
+                    ),
+                    href: null,
+                    unmountOnBlur: true,
                 }}
             />
         </Tabs>
