@@ -58,7 +58,7 @@ export default function CompleteReservationPopUp({
             title: name,
             description: description,
             classroomId: room.id,
-            date: date?.toISOString().split('T')[0].split('-').reverse().join('-') || '',
+            date: date ? date.toISOString().split('T')[0] : '',
             startTime: startTime.split(':').map((unit: string) => unit.padStart(2, '0')).join(':'),
             endTime: endTime.split(':').map((unit: string) => unit.padStart(2, '0')).join(':'),
             type: selectedReservationType,

@@ -66,7 +66,7 @@ export default function ReservationManager(props: ReservationManagerProps) {
                                     <Text style={Styles.h2}>
                                         {props.reservation?.title}
                                     </Text>
-                                    <Text>{props.reservation?.classroom}</Text>
+                                    <Text>{props.reservation?.classroom.name}</Text>
                                     <Text>
                                         {props.reservation?.date}{' '}
                                         {formatTime(
