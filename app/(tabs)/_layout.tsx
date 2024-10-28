@@ -15,7 +15,7 @@ export default function TabLayout() {
     const screens = [
         <Tabs.Screen
             key="map"
-            name="map"
+            name="map/map"
             options={{
                 title: 'Map',
                 tabBarIcon: () => (
@@ -50,6 +50,7 @@ export default function TabLayout() {
         { name: "reservation/components/ReservationManager", params: {onmountBlur: false} },
         { name: "auth/loginPage", params: {onmountBlur: true} },
         { name: "auth/registerPage", params: {onmountBlur: true} },
+        { name: "map/[floor]", params: {onmountBlur: true} },
     ]
 
     if (authState?.userType !== 'STUDENT' && authState?.authenticated) {
