@@ -4,7 +4,7 @@ import { useGLTF, Environment } from '@react-three/drei/native'
 import Floor1 from '@/assets/models/floor1.glb'
 import Floor2 from '@/assets/models/floor2.glb'
 import Dropdown from '@/components/Dropdown'
-import { View, Text } from '@/components/Themed'
+import { View, Text } from 'react-native'
 import { Link, router } from 'expo-router'
 
 
@@ -16,8 +16,8 @@ const models: Record<string, string> = {
 export default function Map() {
 
     return (
-        <View >
-            <Text>Reservations</Text>
+        <View style={{backgroundColor: "white"}}>
+            <Text >Reservations</Text>
             <View/>
             <Text>
                 Choose a room:

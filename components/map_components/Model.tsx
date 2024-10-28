@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei/native'
-import Floor1 from '@/assets/models/floor1_3.glb'
+import Floor1 from '@/assets/models/floor1_2.glb'
 import Floor2 from '@/assets/models/floor2.glb'
 import { Mesh, MeshStandardMaterial, Vector3 } from 'three'
 import { useEffect, useRef, useState } from 'react'
