@@ -1,5 +1,5 @@
 import Colors from '@/constants/Colors'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 
 type DropdownProps = {

@@ -1,9 +1,8 @@
-import { StyleSheet, View, Text, ScrollView } from 'react-native'
+import { StyleSheet, View, ScrollView } from 'react-native'
 import { Reservation } from '..'
-import { useState } from 'react'
 import ListElement from '@/components/ListElement'
 import Colors from '@/constants/Colors'
-import ReservationManager from './ReservationManager'
+import { formatTime } from '@/app/utils/timeUtils'
 
 type ReservationListProps = {
     reservations: Reservation[]
@@ -21,7 +20,7 @@ export default function ReservationList({
                     {reservations.map((reservation) => (
                         <ListElement
                             key={reservation.id}
-                            text={`${reservation.name} - ${reservation.date} ${reservation.startTime}-${reservation.endTime}`}
+                            text={`${reservation.title} - ${reservation.date} ${formatTime(reservation.startTime)}-${formatTime(reservation.endTime)}`}
                             onPress={() => setReservation(reservation)}
                             textStyle={{
                                 fontSize: 16,

@@ -1,21 +1,18 @@
-import {
-    StyleSheet,
-    View,
-    Text,
-    ScrollView,
-    Pressable,
-    Touchable,
-    TouchableOpacity,
-} from 'react-native'
+import { StyleSheet, View, Text, ScrollView } from 'react-native'
 import { Styles } from '@/constants/Styles'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Calendar from '@/components/Calendar'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Colors from '@/constants/Colors'
 import { OrangeButton } from '@/components/OrangeButton'
 import RoomAvailabilitySection from '@/components/RoomAvailabilitySection'
 import SearchByTermSection from '@/components/SearchByTermSection'
-import { ipaddress } from '@/constants/IP'
+
+import { useClassrooms } from '@/services/classroomService'
+import { useDayReservations } from '@/services/reservationService'
+import Spinner from 'react-native-loading-spinner-overlay'
+import InfoModal from '@/app/modals/errrorModal'
+import { router } from 'expo-router'
 
 type RooomReservation = {
     id: string
@@ -30,43 +27,14 @@ export type DayReservation = {
     classroom: RooomReservation
 }
 
-export type Room = {
-    id: string
-    name: string
-    capacity: number
-    equipment: string[]
-}
 
-async function getReservations(date: Date) {
-    try {
-        let day = date.toISOString().split('T')[0]
-        const response = await fetch(ipaddress + 'reservations?day=' + day)
-        const data = await response.json()
-        console.log(data)
-        return data
-    }
-    catch (error) {
-        console.error(error)
-    }
-}
-
-async function fetchRooms() {
-    try {
-        const response = await fetch(ipaddress + 'classrooms')
-        const data = await response.json()
-        return data
-    }
-    catch (error) {
-        console.error(error)
-    }
-    return []
-}
 
 export default function newReservation() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
-    const [reservations, setReservations] = useState<DayReservation[]>([])
-    const [rooms, setRooms] = useState<Room[]>([])
+    const { rooms, isRoomsError, isRoomsLoading } = useClassrooms()
+    const { reservations, isReservationsError, isReservationsLoading } =
+        useDayReservations(selectedDate)
 
     const [buttonsVisible, setButtonsVisible] = useState(false)
     const [roomSectionOpen, setRoomSectionOpen] = useState(false)
@@ -75,17 +43,9 @@ export default function newReservation() {
     const [scrollAvailable, setScrollAvailable] = useState(true)
     const scrollViewRef = useRef<ScrollView>(null)
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setRooms(await fetchRooms())
-        }
-        fetchData()
-    }, [])
-
-    async function onDateChange(date: Date) {
+    function onDateChange(date: Date) {
         setSelectedDate(date)
         setButtonsVisible(true)
-        setReservations(await getReservations(date))
     }
 
     function handleRoomSection() {
@@ -97,6 +57,7 @@ export default function newReservation() {
     function handleTimeSection() {
         setRoomSectionOpen(false)
         setTimeSectionOpen(true)
+        scrollToPosition(378)
     }
 
     function scrollToPosition(position: number) {
@@ -109,6 +70,18 @@ export default function newReservation() {
             scrollEnabled={scrollAvailable}
             ref={scrollViewRef}
         >
+            <Spinner
+                visible={isRoomsLoading || isReservationsLoading}
+                textContent={'Ładowanie...'}
+                textStyle={{ color: Colors.primary }}
+            />
+            <InfoModal
+                text="Wystąpił błąd po stronie serwera"
+                visible={isRoomsError || isReservationsError}
+                onClose={() => {
+                    router.back()
+                }}
+            />
             <SafeAreaView style={Styles.background}>
                 <Text style={[Styles.h1, styles.h1]}>Nowa rezerwacja</Text>
                 <Calendar onDateChange={onDateChange} />
@@ -126,7 +99,10 @@ export default function newReservation() {
                                 textAlign: 'center',
                                 color: Colors.primary,
                             }}
-                            buttonStyle={{ width: 170, alignContent: 'center' }}
+                            buttonStyle={{
+                                width: 170,
+                                alignContent: 'center',
+                            }}
                         />
                         <OrangeButton
                             text="Wybieraj po godzinach"
