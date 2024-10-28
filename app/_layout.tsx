@@ -4,16 +4,17 @@ import {
     DefaultTheme,
     ThemeProvider,
 } from '@react-navigation/native'
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import 'react-native-reanimated'
-import * as SplashScreen from 'expo-splash-screen'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { StyleSheet } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
 import { Image } from 'react-native'
-import { Text } from 'react-native'
+import { AuthProvider, useAuth } from '@/providers/AuthProvider'
+import { OrangeButton } from '@/components/OrangeButton'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -49,11 +50,19 @@ export default function RootLayout() {
     //     return null
     // }
 
-    return <RootLayoutNav />
+    return (
+        <QueryClientProvider client={new QueryClient()}>
+            <AuthProvider>
+                <RootLayoutNav />
+            </AuthProvider>
+        </QueryClientProvider>
+    )
 }
 
 function RootLayoutNav() {
     const colorScheme = useColorScheme()
+
+    const { onLogout, authState } = useAuth()
 
     return (
         <ThemeProvider
@@ -66,16 +75,32 @@ function RootLayoutNav() {
                     },
                     headerTitle: () => (
                         <Image
+                            // eslint-disable-next-line @typescript-eslint/no-require-imports
                             source={require('../assets/images/logo.png')}
                             style={styles.image}
+                        />
+                    ),
+                    headerRight: () => (
+                        <OrangeButton
+                            text={
+                                authState?.authenticated ? 'Wyloguj się' : 'Logowanie'
+                            }
+                            onPress={() => {
+                                if (authState?.authenticated) {
+                                    onLogout()
+                                } else {
+                                    router.push('/auth/loginPage')
+                                }
+                            }}
                         />
                     ),
                 }}
             >
                 <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
                 <Stack.Screen
-                    name="modal"
-                    options={{ presentation: 'modal' }}
+                    name="modals/modal"
+                    options={{ presentation: 'card' }}
+                    
                 />
             </Stack>
         </ThemeProvider>

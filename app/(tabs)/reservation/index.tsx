@@ -1,35 +1,68 @@
-import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
-import { Link } from 'expo-router'
+import { StyleSheet, View, Text, ScrollView } from 'react-native'
+import { router } from 'expo-router'
+import { Styles } from '@/constants/Styles'
+import ReservationList from './components/ReservationList'
+import ReservationManager from './components/ReservationManager'
+import { OrangeAddButton } from '@/components/OrangeAddButton'
+import { useState } from 'react'
+import { useUserFutureReservations } from '@/services/reservationService'
+import InfoModal from '@/app/modals/errrorModal'
+import Spinner from 'react-native-loading-spinner-overlay'
+import { SimpleReservation } from '@/constants/types'
+
+
 
 export default function Reservations() {
-    console.log('TabReservationsScreen')
+    const [reservation, setReservation] = useState<SimpleReservation | null>(null)
+    const {
+        reservations = [],
+        isReservationLoading,
+        isReservationError,
+    } = useUserFutureReservations()
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Reservations</Text>
-            <View style={styles.separator} />
-            <Text>
-                Choose a room:
-                <Link href="/(tabs)/reservation/1">Room 1</Link>
-                <Link href="/(tabs)/reservation/2">Room 2</Link>
-            </Text>
+        <View
+            onTouchStart={() => setReservation(null)}
+            style={Styles.background}
+        >
+            <ScrollView style={styles.scroll}>
+                <Spinner visible={isReservationLoading} textContent='Ładowanie rezerwacji' />
+                <View style={Styles.background}>
+                    <Text style={[Styles.h1, styles.title]}>
+                        Twoje Rezerwacje
+                    </Text>
+                    <ReservationList
+                        reservations={reservations}
+                        setReservation={setReservation}
+                    />
+                </View>
+            </ScrollView>
+            {reservation && (
+                <ReservationManager
+                    reservation={reservation}
+                    setReservation={setReservation}
+                />
+            )}
+            <OrangeAddButton
+                onPress={() => {
+                    router.push('/reservation/newReservation')
+                }}
+            />
+            <InfoModal
+                text="Wystąpił błąd po stronie serwera. Spróbuj ponownie później."
+                visible={isReservationError}
+                onClose={() => {router.back()}}
+            />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     title: {
-        fontSize: 20,
-        fontWeight: 'bold',
+        marginTop: 16,
+        marginBottom: 16,
     },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
+    scroll: {
+        width: '100%',
     },
 })

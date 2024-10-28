@@ -1,55 +1,62 @@
 import React from 'react'
-import { Link, Tabs } from 'expo-router'
-import { Pressable } from 'react-native'
-import { StyleSheet } from 'react-native'
+import { Tabs } from 'expo-router'
 import 'react-native-reanimated'
 import Colors from '@/constants/Colors'
 import { useColorScheme } from '@/components/useColorScheme'
-import { useClientOnlyValue } from '@/components/useClientOnlyValue'
-
-// temp const out to prevent errors in the app waiting for the icons to be fixed by the expo team
-const FontAwesome5 = (a: any) => <></>
+import { useAuth } from '@/providers/AuthProvider'
+import { FontAwesome5 } from '@expo/vector-icons'
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 
 export default function TabLayout() {
     const colorScheme = useColorScheme()
+    const { authState } = useAuth()
 
-    return (
-        <Tabs
-            screenOptions={{
-                headerShown: false,
-                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-                tabBarStyle: { backgroundColor: Colors.primary, paddingTop: 5 },
+    const screens = [
+        <Tabs.Screen
+            key="map"
+            name="map/map"
+            options={{
+                title: 'Map',
+                tabBarIcon: () => (
+                    <FontAwesome5
+                        size={28}
+                        name="map-marker"
+                        color={Colors.secondary}
+                    />
+                ),
             }}
-        >
+        />,
+        <Tabs.Screen
+            key="index"
+            name="index"
+            options={{
+                title: 'Home',
+                tabBarIcon: () => (
+                    <FontAwesome5
+                        size={28}
+                        name="home"
+                        color={Colors.secondary}
+                    />
+                ),
+            }}
+        />,
+    ]
+
+    const hiddenScreens = [
+        {name: "reservation/[roomId]", params: {onmountBlur: false}},
+        { name: "reservation/newReservation", params: {onmountBlur: true} },
+        { name: "reservation/components/ReservationList", params: {onmountBlur: false} },
+        { name: "reservation/components/ReservationManager", params: {onmountBlur: false} },
+        { name: "auth/loginPage", params: {onmountBlur: true} },
+        { name: "auth/registerPage", params: {onmountBlur: true} },
+        { name: "map/[floor]", params: {onmountBlur: true} },
+    ]
+
+    if (authState?.userType !== 'STUDENT' && authState?.authenticated) {
+        screens.push(
             <Tabs.Screen
-                name="map/map"
-                options={{
-                    title: 'Map',
-                    tabBarIcon: () => (
-                        <FontAwesome5
-                            size={28}
-                            name="map-marker"
-                            color={Colors.secondary}
-                        />
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="index"
-                options={{
-                    title: 'Home',
-                    tabBarIcon: () => (
-                        <FontAwesome5
-                            size={28}
-                            name="home"
-                            color={Colors.secondary}
-                        />
-                    ),
-                }}
-            />
-            <Tabs.Screen
+                key="reservation/index"
                 name="reservation/index"
                 options={{
                     title: 'Reservation',
@@ -60,54 +67,36 @@ export default function TabLayout() {
                             color={Colors.secondary}
                         />
                     ),
-                }}
-            />
-            <Tabs.Screen
-                name="reservation/[roomId]"
-                options={{
-                    title: 'Reservation',
-                    tabBarIcon: () => (
-                        <FontAwesome5
-                            size={28}
-                            name="book"
-                            color={Colors.secondary}
-                        />
-                    ),
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
-                name="map/[floor]"
-                options={{
-                    title: 'Reservation',
-                    tabBarIcon: () => (
-                        <FontAwesome5
-                            size={28}
-                            name="book"
-                            color={Colors.secondary}
-                        />
-                    ),
-                    href: null,
                     unmountOnBlur: true,
                 }}
             />
+        )
+    } else {
+        hiddenScreens.push({name: "reservation/index", params: {onmountBlur: false}})
+    }
+
+    hiddenScreens.forEach((screen) => {
+        screens.push(
+            <Tabs.Screen
+                key={screen.name}
+                name={screen.name}
+                options={{
+                    tabBarButton: () => null,
+                    unmountOnBlur: screen.params.onmountBlur,
+                }}
+            />
+        )
+    })
+
+    return (
+        <Tabs
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+                tabBarStyle: { backgroundColor: Colors.primary, paddingTop: 5 },
+            }}
+        >
+            {screens}
         </Tabs>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
-    },
-})

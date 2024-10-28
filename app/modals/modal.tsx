@@ -1,16 +1,15 @@
+import { Link } from 'expo-router';
 import { StyleSheet, View, Text } from 'react-native'
-import { useLocalSearchParams } from 'expo-router'
 
-export default function Reservations() {
-    console.log('TabReservationScreen')
-    const { roomId } = useLocalSearchParams()
+export default function ModalScreen() {
+  
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Reservation {roomId}</Text>
-            <View />
-        </View>
-    )
-}
+      <View style={styles.container}>
+        <Text>Modal screen</Text>
+       <Link href="../">Dismiss modal</Link>
+      </View>
+    );
+  }
 
 const styles = StyleSheet.create({
     container: {

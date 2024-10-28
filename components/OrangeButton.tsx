@@ -7,11 +7,12 @@ type ButtonProps = {
     text: string
     textClassName?: TextStyle
     onPress: () => void
+    buttonStyle?: TextStyle
 }
 
-export function OrangeButton({ text, textClassName, onPress }: ButtonProps) {
+export function OrangeButton({ text, textClassName, onPress, buttonStyle }: ButtonProps) {
     return (
-        <TouchableOpacity style={styles.button} onPress={onPress}>
+        <TouchableOpacity style={[styles.button, buttonStyle]} onPress={onPress}>
             <Text style={[styles.buttonText, textClassName]}>{text}</Text>
         </TouchableOpacity>
     )
@@ -31,9 +32,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     buttonText: {
         fontSize: 16,
         fontWeight: '800',
+        textAlign: 'center',
     },
 })
