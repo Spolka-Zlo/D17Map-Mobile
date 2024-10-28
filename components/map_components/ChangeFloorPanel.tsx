@@ -1,37 +1,48 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { Link } from 'expo-router'; // Upewnij się, że masz poprawny import
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { useRouter } from 'expo-router';
+import Colors from '@/constants/Colors';
 
-export const ChangeFloorPanel = (floor: number ) => {
-    // Styl dla aktywnej i nieaktywnej strzałki
-    const upArrowStyle = floor > 4 ? styles.arrow : styles.disabledArrow;
-    const downArrowStyle = floor < 1 ? styles.disabledArrow : styles.arrow;
+type ChangeFloorPanelProps = {
+    floor: number;
+}
+
+export const ChangeFloorPanel = ({ floor }: ChangeFloorPanelProps) => {
+    const router = useRouter();
+    const isUpEnabled = floor < 4;
+    const isDownEnabled = floor > 1;
 
     return (
         <View style={styles.container}>
             <View style={styles.innerContainer}>
-                <Link
-                    href={`/(tabs)/map/${floor + 1}`}
-                    style={floor <= 4 ? styles.link : styles.disabledLink}
-                    onPress={(e) => { 
-                        if (floor > 4) {
-                            e.preventDefault(); // Zablokuj nawigację, jeśli piętro jest większe niż 4
+                <TouchableOpacity
+                    style={isUpEnabled ? styles.button : styles.disabledButton}
+                    disabled={!isUpEnabled}
+                    onPress={() => {
+                        if (isUpEnabled) {
+                            router.push(`/(tabs)/map/${floor + 1}`);
                         }
                     }}
                 >
-                    <Text style={upArrowStyle}>↑</Text>
-                </Link>
+                    <Image
+                        source={require('@/assets/images/up-arrow.png')}
+                        style={styles.image}
+                    />
+                </TouchableOpacity>
                 <Text style={styles.floorText}>{floor}</Text>
-                <Link
-                    href={`/(tabs)/map/${floor - 1}`}
-                    style={floor >= 1 ? styles.link : styles.disabledLink}
-                    onPress={(e) => {
-                        if (floor < 1) {
-                            e.preventDefault(); // Zablokuj nawigację, jeśli piętro jest mniejsze niż 1
+                <TouchableOpacity
+                    style={isDownEnabled ? styles.button : styles.disabledButton}
+                    disabled={!isDownEnabled}
+                    onPress={() => {
+                        if (isDownEnabled) {
+                            router.push(`/(tabs)/map/${floor - 1}`);
                         }
                     }}
                 >
-                    <Text style={downArrowStyle}>↓</Text>
-                </Link>
+                    <Image
+                        source={require('@/assets/images/down-arrow.png')}
+                        style={styles.image}
+                    />
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -40,31 +51,30 @@ export const ChangeFloorPanel = (floor: number ) => {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 20,
-        right: 20,
+        bottom: 15,
+        right: 10,
         zIndex: 2,
     },
     innerContainer: {
         flexDirection: 'column',
         alignItems: 'center',
     },
-    link: {
+    button: {
         padding: 10,
+        alignItems: 'center',
+        marginVertical: -10,
     },
-    disabledLink: {
+    disabledButton: {
         padding: 10,
-        opacity: 0.5, // Wyszarz link, jeśli nie jest aktywny
-    },
-    arrow: {
-        fontSize: 24,
-        color: 'black',
-    },
-    disabledArrow: {
-        fontSize: 24,
-        color: 'gray',
+        opacity: 0.5,
+        alignItems: 'center',
+        marginVertical: -10,
     },
     floorText: {
         fontSize: 20,
-        marginHorizontal: 10,
+    },
+    image: {
+        width: 40,
+        height: 40,
     },
 });

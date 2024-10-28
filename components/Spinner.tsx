@@ -10,7 +10,7 @@ export const Spinner = (props: SpinnerProps) => {
     if (!props.isLoading) return null;
 
     return (
-        <View style={styles.container} pointerEvents="box-none">
+        <View style={styles.container} pointerEvents="none">
             <ActivityIndicator size="large" color={Colors.primary} />
         </View>
     );
@@ -25,9 +25,10 @@ const styles = StyleSheet.create({
         bottom: 30,
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 2,
+        zIndex: 100,
         backgroundColor: 'rgba(128, 128, 128, 0.7)',
         width: '100%',
         height: '100%',
+        pointerEvents: 'none',
     },
 });

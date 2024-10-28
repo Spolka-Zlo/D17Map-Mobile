@@ -7,19 +7,22 @@ import useControls from 'r3f-native-orbitcontrols';
 import { Model } from '@/components/map_components/Model';
 import { ChangeFloorPanel } from '@/components/map_components/ChangeFloorPanel';
 import { Spinner } from '@/components/Spinner';
+import { RoomInfoPanel } from '@/components/map_components/RoomInfoPanel';
+import Colors from '@/constants/Colors';
 
 export default function Floor() {
     const { floor } = useLocalSearchParams();
     const floorNumber = typeof floor === 'string' ? parseInt(floor, 10) : 0;
     const [OrbitControls, events] = useControls();
-    const [modelLoading, setModelLoading] = useState(true);    
+    const [modelLoading, setModelLoading] = useState(true);
+    const [selectedRoomKey, setSelectedRoomKey] = useState<string | null>(null);
 
     return (
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View style={styles.container} pointerEvents={modelLoading ? 'none' : 'auto'}>
             <Spinner
                 isLoading={modelLoading}
             />
-            {ChangeFloorPanel(floorNumber)}
+            <ChangeFloorPanel floor={floorNumber} />
             <View style={styles.canvasElement} {...events}>
                 <Canvas>
                     <OrbitControls minZoom={2} maxZoom={100} enablePan ignoreQuickPress />
@@ -30,18 +33,25 @@ export default function Floor() {
                         <Environment preset="park" />
                         {typeof floor === 'string' && (
                             <Model
-                                model={parseInt(floor, 10)}
+                                model={floorNumber}
                                 onLoad={() => setModelLoading(false)}
+                                selectedRoomKey={selectedRoomKey}
+                                setSelectedRoomKey={setSelectedRoomKey}
                             />
                         )}
                     </Suspense>
                 </Canvas>
             </View>
+            <RoomInfoPanel RoomKey={selectedRoomKey}/>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: Colors.mapGrey,
+    },
     canvasElement: {
         width: '100%',
         height: '100%',
