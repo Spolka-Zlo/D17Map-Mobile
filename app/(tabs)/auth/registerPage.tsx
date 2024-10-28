@@ -18,20 +18,15 @@ export default function RegisterScreen() {
             return
         }
         try {
-            console.log('Registering...')
             const response = await onRegister(username, password)
             if (response) {
                 console.log('Registration successful')
                 router.push('/auth/loginPage')
-                setError('')
-                setUsername('')
-                setPassword('')
-                setConfirmPassword('')
             } else {
-                setError('Błąd podczas rezerwacji. Spróbuj ponownie.')
+                setError('Błąd podczas rejestracji. Spróbuj ponownie.')
             }
         } catch {
-            setError('Błąd podczas rezerwacji. Spróbuj ponownie.')
+            setError('Błąd podczas rejestracji. Spróbuj ponownie.')
         }
     }
 
@@ -112,6 +107,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: -20,
         marginBottom: 10,
+        maxWidth: 277,
     },
     loginText: {
         color: Colors.white,

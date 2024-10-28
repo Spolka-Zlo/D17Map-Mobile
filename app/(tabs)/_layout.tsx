@@ -49,7 +49,7 @@ export default function TabLayout() {
         { name: "reservation/components/ReservationList", params: {onmountBlur: false} },
         { name: "reservation/components/ReservationManager", params: {onmountBlur: false} },
         { name: "auth/loginPage", params: {onmountBlur: true} },
-        { name: "auth/registerPage", params: {onmountBlur: false} },
+        { name: "auth/registerPage", params: {onmountBlur: true} },
     ]
 
     if (authState?.userType !== 'STUDENT' && authState?.authenticated) {

@@ -76,10 +76,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const response = await axios.post('auth/register', {
                 username,
                 password,
+            }, {
+                timeout: 5000
             })
             return response.status === 201
         } catch (error) {
-            return error
+            return false
         }
     }
 

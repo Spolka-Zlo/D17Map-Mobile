@@ -15,13 +15,9 @@ export default function LoginScreen() {
         try {
             const response = await onLogin(username, password)
             if (response?.token) {
-                console.log('Login successful')
                 router.push('/(tabs)')
-                setError('')
-                setUsername('')
-                setPassword('')
             } else {
-                setError('Login failed. Please check your credentials.')
+                setError('Logowanie nieudane, spróbuj ponownie za chwilę.')
             }
         } catch (err) {
             console.error(err)
@@ -99,6 +95,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: -20,
         marginBottom: 10,
+        maxWidth: 277,
     },
     joinText: {
         color: Colors.white,
