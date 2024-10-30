@@ -1,15 +1,15 @@
 import { useGLTF } from '@react-three/drei/native'
 import Floor1 from '@/assets/models/floor1_2.glb'
 import Floor2 from '@/assets/models/floor2.glb'
+import Floor3 from '@/assets/models/floor3.glb'
 import { Mesh, MeshStandardMaterial, Vector3 } from 'three'
 import { useEffect, useRef, useState } from 'react'
 import React from 'react'
-import { RoomInfoPanel } from './RoomInfoPanel'
 
 const models: Record<string, string> = {
     1: Floor1,
     2: Floor2,
-    3: Floor1,
+    3: Floor3,
     4: Floor2,
 }
 
@@ -25,7 +25,7 @@ type ModelProps = {
 
 export const Model = (props: ModelProps) => {
     const gltf_model = models[props.model]
-    const { nodes, materials } = useGLTF(gltf_model)
+    const { nodes } = useGLTF(gltf_model)
     const meshRefs = useRef<{ [key: string]: Mesh }>({})
 
     useEffect(() => {
@@ -101,3 +101,4 @@ export const Model = (props: ModelProps) => {
 
 useGLTF.preload(Floor1)
 useGLTF.preload(Floor2)
+useGLTF.preload(Floor3)
