@@ -2,15 +2,16 @@ import { useGLTF } from '@react-three/drei/native'
 import Floor1 from '@/assets/models/floor1_2.glb'
 import Floor2 from '@/assets/models/floor2.glb'
 import Floor3 from '@/assets/models/floor3.glb'
+import Floor4 from '@/assets/models/floor4.glb'
 import { Mesh, MeshStandardMaterial, Vector3 } from 'three'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import React from 'react'
 
 const models: Record<string, string> = {
     1: Floor1,
     2: Floor2,
     3: Floor3,
-    4: Floor2,
+    4: Floor4,
 }
 
 const activeRooms = ['138', '119', '122', '110']
@@ -102,3 +103,4 @@ export const Model = (props: ModelProps) => {
 useGLTF.preload(Floor1)
 useGLTF.preload(Floor2)
 useGLTF.preload(Floor3)
+useGLTF.preload(Floor4)

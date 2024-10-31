@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber/native';
 import { Environment } from '@react-three/drei/native';
 import { useLocalSearchParams } from 'expo-router';

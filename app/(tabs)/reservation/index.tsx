@@ -6,7 +6,7 @@ import ReservationManager from './components/ReservationManager'
 import { OrangeAddButton } from '@/components/OrangeAddButton'
 import { useState } from 'react'
 import { useUserFutureReservations } from '@/services/reservationService'
-import InfoModal from '@/app/modals/errrorModal'
+import InfoModal from '@/components/InfoModal'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { SimpleReservation } from '@/constants/types'
 
