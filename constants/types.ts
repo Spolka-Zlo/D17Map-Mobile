@@ -3,6 +3,7 @@ export type Room = {
     name: string
     capacity: number
     equipmentIds: string[]
+    modelKey: string
 }
 
 export type Reservation = {
@@ -24,4 +25,9 @@ export type SimpleReservation = {
     startTime: string
     endTime: string
     type: string
+}
+
+export type Equipment = {
+    id: string
+    name: string
 }

@@ -4,7 +4,8 @@ import Floor2 from '@/assets/models/floor2.glb'
 import Floor3 from '@/assets/models/floor3.glb'
 import Floor4 from '@/assets/models/floor4.glb'
 import { Mesh, MeshStandardMaterial, Vector3 } from 'three'
-import { useEffect, useRef } from 'react'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useEffect, useRef, useState } from 'react'
 import React from 'react'
 
 const models: Record<string, string> = {
@@ -14,14 +15,12 @@ const models: Record<string, string> = {
     4: Floor4,
 }
 
-const activeRooms = ['138', '119', '122', '110']
-
-
 type ModelProps = {
     model: number
     onLoad?: () => void
     selectedRoomKey: string | null
     setSelectedRoomKey: (key: string | null) => void
+    activeRoomsKeys: string[]
 }
 
 export const Model = (props: ModelProps) => {
@@ -37,6 +36,19 @@ export const Model = (props: ModelProps) => {
         }
     }, [nodes, props])
 
+    // const loader = new GLTFLoader()
+    // loader.load(
+    //     // "http://192.168.33.12:8080/equipments",
+    //     require('@/assets/models/floor1_2.glb'),
+    //     (gltf) => {
+    //         console.log('loaded', gltf)
+    //     },
+    //     () => {},
+    //     (error) => {
+    //         console.log('An error happened', error)
+    //     }
+    // )
+
     useEffect(() => {
         if (nodes) {
             Object.entries(nodes).forEach(([key, node]) => {
@@ -46,27 +58,27 @@ export const Model = (props: ModelProps) => {
                         const originalMaterial =
                             node.material as MeshStandardMaterial
                         const newMaterial = originalMaterial.clone()
-                        const newPosition = new Vector3().copy(mesh.position);
-                        if (key === props.selectedRoomKey) {
+                        const newPosition = new Vector3().copy(mesh.position)
+                        if (
+                            key === props.selectedRoomKey &&
+                            props.activeRoomsKeys.includes(key)
+                        ) {
                             newMaterial.color.set(0xf6a200)
-                            newPosition.z += 0.3;
-                        } else if (key.includes('TEXT')) {
-                            newPosition.z = node.position.z;
-                            newMaterial.color.set(0x000000);
-                        } else if (activeRooms.includes(key)) {
+                            newPosition.z += 0.3
+                        } else if (props.activeRoomsKeys.includes(key)) {
                             newMaterial.color.set(0x6fd8ed)
-                            newPosition.z = node.position.z;
+                            newPosition.z = node.position.z
                         } else {
-                            newMaterial.color.set(0xffffff);
-                            newPosition.z = node.position.z;
+                            newMaterial.color.set(0xffffff)
+                            newPosition.z = node.position.z
                         }
                         mesh.material = newMaterial
-                        mesh.position.copy(newPosition);
+                        mesh.position.copy(newPosition)
                     }
                 }
             })
         }
-    }, [nodes, props.selectedRoomKey])
+    }, [nodes, props.selectedRoomKey, props.activeRoomsKeys])
 
     return (
         <>
@@ -85,11 +97,11 @@ export const Model = (props: ModelProps) => {
                                 scale={node.scale}
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    if (!key.includes('TEXT')){
-                                        props.setSelectedRoomKey(
-                                            props.selectedRoomKey === key ? null : key
-                                        )
-                                    }
+                                    props.setSelectedRoomKey(
+                                        props.selectedRoomKey === key
+                                            ? null
+                                            : key
+                                    )
                                 }}
                             />
                         )}

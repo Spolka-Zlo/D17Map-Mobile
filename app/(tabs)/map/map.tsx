@@ -2,9 +2,7 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import { Link } from 'expo-router'
 
-
 export default function Map() {
-
     return (
         <View style={{backgroundColor: "white"}}>
             <Text >Reservations</Text>
