@@ -2,6 +2,7 @@ import Colors from '@/constants/Colors'
 import { Equipment, Room } from '@/constants/types'
 import { useEquipmentOptions } from '@/services/classroomService'
 import { View, Text, StyleSheet,  TouchableOpacity } from 'react-native'
+import SpherePhoto from '../spherephoto_components/SpherePhoto'
 
 type RoomInfoModalProps = {
     onClose: () => void
@@ -19,10 +20,12 @@ export const RoomInfoModal = (props: RoomInfoModalProps) => {
         return (
             <View style={styles.container}>
                 <View style={styles.innerContainer}>
-                    {/* <Image source={{ uri: imageUrl }} style={styles.image}/> */}
+                    <View style={styles.placeholder}>
+                        <SpherePhoto/>
+                    </View>
                     <Text style={styles.title}>{props.room.name}</Text>
                     <Text>Pojemność sali: {props.room.capacity}</Text>
-                    <Text>Wyposażenie: {roomEquipment || 'No equipment available'}</Text>
+                    <Text>Wyposażenie: {roomEquipment || 'Brak wyposażenia'}</Text>
                     <TouchableOpacity onPress={props.onClose} style={styles.closeButton}>
                         <Text style={styles.closeButtonText}>Zamknij</Text>
                     </TouchableOpacity>
@@ -46,15 +49,15 @@ const styles = StyleSheet.create({
     innerContainer: {
         width: '80%',
         backgroundColor: Colors.white,
+        display: 'flex',
         padding: 20,
         borderRadius: 10,
         alignItems: 'center',
     },
-    image: {
+    placeholder: {
+        height: 400,
         width: '100%',
-        height: 150,
-        borderRadius: 10,
-        marginBottom: 10,
+        zIndex: 12,
     },
     title: {
         fontSize: 18,

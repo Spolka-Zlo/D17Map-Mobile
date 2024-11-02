@@ -4,8 +4,8 @@ import Floor2 from '@/assets/models/floor2.glb'
 import Floor3 from '@/assets/models/floor3.glb'
 import Floor4 from '@/assets/models/floor4.glb'
 import { Mesh, MeshStandardMaterial, Vector3 } from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { useEffect, useRef, useState } from 'react'
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useEffect, useRef } from 'react'
 import React from 'react'
 
 const models: Record<string, string> = {

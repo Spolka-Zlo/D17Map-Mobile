@@ -1,5 +1,5 @@
 import Colors from '@/constants/Colors'
-import { View, Text, StyleSheet,  TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { Room } from '@/constants/types'
 import { useState } from 'react'
 import { RoomInfoModal } from './RoomInfoModal'
@@ -27,10 +27,14 @@ export const RoomInfoPanel = (props: RoomInfoPanelProps) => {
                 )}
             </View>
         )
-    }
-    return (
-        <RoomInfoModal onClose={() => setModalVisible(false)} {...props} />
-    );
+    } else if (props.room) {
+        return (
+            <RoomInfoModal
+                onClose={() => setModalVisible(false)}
+                room={props.room}
+            />
+        )
+    } else return null
 }
 
 const styles = StyleSheet.create({
