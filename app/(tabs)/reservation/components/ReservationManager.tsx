@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native'
 import Colors from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
@@ -7,19 +7,26 @@ import { useDeleteReservation } from '@/services/reservationService'
 import InfoModal from '@/app/modals/errrorModal'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { OrangeButton } from '@/components/OrangeButton'
-import { SimpleReservation } from '@/constants/types'
+import { Reservation } from '@/constants/types'
+
 
 type ReservationManagerProps = {
-    reservation: SimpleReservation
-    setReservation: Dispatch<SetStateAction<SimpleReservation | null>>
+    reservation: Reservation
+    setReservation: Dispatch<SetStateAction<Reservation | null>>
 }
 
 export default function ReservationManager(props: ReservationManagerProps) {
+    const [editSectionVisible, setEditSectionVisible] = useState(false)
+    
+
     const mutation = useDeleteReservation()
 
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: string) => {
         mutation.mutate(id)
     }
+
+
+
 
     return (
         <View>
@@ -66,7 +73,7 @@ export default function ReservationManager(props: ReservationManagerProps) {
                                     <Text style={Styles.h2}>
                                         {props.reservation?.title}
                                     </Text>
-                                    <Text>{props.reservation?.classroom.name}</Text>
+                                    <Text>{props.reservation?.classroomId}</Text>
                                     <Text>
                                         {props.reservation?.date}{' '}
                                         {formatTime(

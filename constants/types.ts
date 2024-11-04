@@ -6,6 +6,7 @@ export type Room = {
 }
 
 export type Reservation = {
+    id: string
     title: string
     description: string
     date: string

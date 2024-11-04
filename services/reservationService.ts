@@ -36,7 +36,7 @@ export const useDayReservations = (date: Date | null) => {
     }
 }
 
-const fetchDeleteReservation = async (reservationId: number) => {
+const fetchDeleteReservation = async (reservationId: string) => {
     const response = await axios.delete(`reservations/${reservationId}/`, {
         timeout: 2000,
     })
