@@ -97,7 +97,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 },
                 timeout: 5000
             });
-            console.log(response)
             await SecureStore.setItemAsync(TOKEN_KEY, response.data.token)
             await SecureStore.setItemAsync(
                 USER_TYPE_KEY,
@@ -110,10 +109,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             })
             axios.defaults.headers.common['Authorization'] =
                 `Bearer ${response.data.token}`
-            console.log('Logged in')
             return response.data
         } catch (error) {
-            console.log(error)
             return error
         }
     }

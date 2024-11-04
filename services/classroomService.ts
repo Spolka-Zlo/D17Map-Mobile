@@ -12,6 +12,8 @@ export const useClassrooms = () => {
         fetchClassrooms,
         {
             retry: 1,
+            staleTime: 1000 * 60 * 5,
+            cacheTime: 1000 * 60 * 5,
         }
     )
     return { rooms: data, isRoomsError: isError, isRoomsLoading: isLoading }
@@ -19,7 +21,6 @@ export const useClassrooms = () => {
 
 const fetchEquipment = async () => {
     const response = await axios.get('equipments')
-    console.log(response.data, 'equipments')
     return response.data
 }
 

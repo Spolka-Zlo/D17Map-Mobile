@@ -14,7 +14,7 @@ import { router } from 'expo-router'
 import { useReservationTypes } from '@/services/reservationTypeService'
 import { useCreateReservation } from '@/services/reservationService'
 import Spinner from 'react-native-loading-spinner-overlay'
-import InfoModal from '@/app/modals/errrorModal'
+import InfoModal from '@/components/InfoModal'
 import { useEquipmentOptions } from '@/services/classroomService'
 
 

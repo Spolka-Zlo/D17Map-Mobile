@@ -1,20 +1,40 @@
 import Colors from '@/constants/Colors'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { Room } from '@/constants/types'
+import { useState } from 'react'
+import { RoomInfoModal } from './RoomInfoModal'
 
 type RoomInfoPanelProps = {
-    RoomKey: string | null
+    room: Room | null
 }
 
 export const RoomInfoPanel = (props: RoomInfoPanelProps) => {
-    return (
-        <View style={styles.container}>
-            {!props.RoomKey ? (
-                <Text>Dwukrotnie kliknij na pokój, żeby zobaczyć informacje</Text>
-            ) : (
-                <Text>Room Info Panel {props.RoomKey} key</Text>
-            )}
-        </View>
-    )
+    const [isModalVisible, setModalVisible] = useState(false)
+
+    if (!isModalVisible) {
+        return (
+            <View style={styles.container}>
+                {!props.room ? (
+                    <Text>
+                        Dwukrotnie kliknij na pokój, żeby zobaczyć informacje
+                    </Text>
+                ) : (
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <Text>
+                            Sala {props.room.name}, kliknij po więcej szczegółów
+                        </Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+        )
+    } else if (props.room) {
+        return (
+            <RoomInfoModal
+                onClose={() => setModalVisible(false)}
+                room={props.room}
+            />
+        )
+    } else return null
 }
 
 const styles = StyleSheet.create({
