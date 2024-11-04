@@ -21,7 +21,6 @@ export const useClassrooms = () => {
 
 const fetchEquipment = async () => {
     const response = await axios.get('equipments')
-    console.log(response.data, 'equipments')
     return response.data
 }
 

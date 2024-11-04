@@ -4,7 +4,6 @@ import { getApiUrl } from '@/providers/AuthProvider'
 import { useEquipmentOptions } from '@/services/classroomService'
 import { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native'
-// import SpherePhoto from '../spherephoto_components/SpherePhoto'
 
 type RoomInfoModalProps = {
     onClose: () => void
@@ -14,7 +13,7 @@ type RoomInfoModalProps = {
 export const RoomInfoModal = (props: RoomInfoModalProps) => {
     const { equipmentOptions } = useEquipmentOptions();
     const [imageUrl, setImageUrl] = useState('');
-    const [imageLoaded, setImageLoaded] = useState(false); // Stan do śledzenia, czy obrazek został załadowany
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     useEffect(() => {
         const fetchApiUrl = async () => {
@@ -24,7 +23,7 @@ export const RoomInfoModal = (props: RoomInfoModalProps) => {
         };
 
         fetchApiUrl();
-    }, [props.room.id]); // Dodaj 'props.room.id' jako zależność
+    }, [props.room.id]);
 
     const roomEquipment = equipmentOptions
         .filter((equipment: Equipment) => props.room.equipmentIds.includes(equipment.id))
@@ -34,14 +33,14 @@ export const RoomInfoModal = (props: RoomInfoModalProps) => {
     return (
         <View style={styles.container}>
             <View style={styles.innerContainer}>
-                {imageUrl ? ( // Sprawdzanie, czy imageUrl jest dostępny
+                {imageUrl ? ( 
                     <ImageBackground
                         source={{ uri: imageUrl }}
                         style={styles.image}
-                        onLoadEnd={() => setImageLoaded(true)} // Ustaw na true, gdy obrazek zostanie załadowany
+                        onLoadEnd={() => setImageLoaded(true)} 
                         onError={() => {
-                            setImageLoaded(false); // Ustaw na false, gdy wystąpi błąd
-                            setImageUrl(''); // Opcjonalnie: wyczyść imageUrl, aby wymusić ponowne renderowanie
+                            setImageLoaded(false);
+                            setImageUrl('');
                         }}
                     >
                         {!imageLoaded && (
