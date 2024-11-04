@@ -1,5 +1,5 @@
-import { Room } from '@/app/(tabs)/reservation/newReservation'
 import Colors from '@/constants/Colors'
+import { Room } from '@/constants/types'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, TouchableOpacity, Text, TextInput, Alert } from 'react-native'
 import { MultiSelect } from 'react-native-element-dropdown'

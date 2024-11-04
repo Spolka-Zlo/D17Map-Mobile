@@ -1,67 +1,52 @@
-import React, { useState } from 'react';
-import { Dispatch, SetStateAction } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, TextInput } from 'react-native';
-import Colors from '@/constants/Colors';
-import { Styles } from '@/constants/Styles';
-import { useDeleteReservation, useEditReservation } from '@/services/reservationService';
-import InfoModal from '@/app/modals/errrorModal';
-import { OrangeButton } from '@/components/OrangeButton';
-import Dropdown from '@/components/Dropdown';
-import { Reservation } from '@/constants/types';
-import { useReservationTypes } from '@/services/reservationTypeService';
+import { Dispatch, SetStateAction } from 'react'
+import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native'
+import Colors from '@/constants/Colors'
+import { Styles } from '@/constants/Styles'
+import { formatTime } from '@/app/utils/timeUtils'
+import { useDeleteReservation } from '@/services/reservationService'
+import InfoModal from '@/components/InfoModal'
+import Spinner from 'react-native-loading-spinner-overlay'
+import { OrangeButton } from '@/components/OrangeButton'
+import { Reservation } from '@/constants/types'
 
 type ReservationManagerProps = {
-    reservation: Reservation;
-    setReservation: Dispatch<SetStateAction<Reservation | null>>;
-};
+    reservation: Reservation
+    setReservation: Dispatch<SetStateAction<Reservation | null>>
+}
 
 export default function ReservationManager(props: ReservationManagerProps) {
-    const deleteMutation = useDeleteReservation();
-    const editMutation = useEditReservation();
-    const { reservationTypes } = useReservationTypes();
-
-    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-    const [editedTitle, setEditedTitle] = useState(props.reservation?.title || '');
-    const [editedDescription, setEditedDescription] = useState(props.reservation?.description || '');
-    const [selectedClassroomId, setSelectedClassroomId] = useState(props.reservation?.classroomId || '');
-    const [selectedReservationType, setSelectedReservationType] = useState(props.reservation?.type || '');
-    const [numberOfParticipants, setNumberOfParticipants] = useState(props.reservation?.numberOfParticipants || 0);
-    const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+    const mutation = useDeleteReservation()
 
     const handleDelete = (id: number) => {
-        deleteMutation.mutate(id);
-    };
-
-    const handleEdit = () => {
-        if (props.reservation) {
-            editMutation.mutate({
-                id: props.reservation.id,
-                title: editedTitle,
-                description: editedDescription,
-                classroomId: selectedClassroomId,
-                type: selectedReservationType,
-                numberOfParticipants,
-            });
-        }
-    };
+        mutation.mutate(id)
+    }
 
     return (
         <View>
-            {deleteMutation.isSuccess && (
+            {mutation.isSuccess && (
                 <InfoModal
                     text="Rezerwacja usunięta"
-                    visible={deleteMutation.isSuccess}
+                    visible={mutation.isSuccess}
                     onClose={() => props.setReservation(null)}
                 />
             )}
-            {deleteMutation.isError ? (
+            {mutation.isError ? (
                 <InfoModal
                     text="Nie udało się usunąć rezerwacji"
-                    visible={deleteMutation.isError}
-                    onClose={() => deleteMutation.reset()}
+                    visible={mutation.isError}
+                    onClose={() => mutation.reset()}
                 />
             ) : (
                 <View>
+                    <View onTouchStart={(e) => e.stopPropagation()}>
+                        <Spinner
+                            visible={mutation.isLoading}
+                            cancelable={false}
+                            textContent="Usuwanie rezerwacji"
+                            overlayColor='rgba(0, 0, 0, 0.7)'
+                            textStyle={{ color: Colors.white }}
+                        />
+                    </View>
                     <Modal
                         animationType="fade"
                         transparent={true}
@@ -78,52 +63,31 @@ export default function ReservationManager(props: ReservationManagerProps) {
                                 onTouchStart={(e) => e.stopPropagation()}
                             >
                                 <View style={styles.box}>
-                                    <Text style={Styles.h2}>Edytuj Rezerwację</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Tytuł"
-                                        value={editedTitle}
-                                        onChangeText={setEditedTitle}
-                                    />
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Opis"
-                                        value={editedDescription}
-                                        onChangeText={setEditedDescription}
-                                    />
-                                    <Dropdown
-                                        options={reservationTypes!}
-                                        selected={selectedReservationType}
-                                        setSelected={setSelectedReservationType}
-                                        isOpen={isDropDownOpen}
-                                        setIsOpen={setIsDropDownOpen}
-                                    />
-                                    <Dropdown
-                                        options={[]} // Zostawiamy puste, na razie nie ma dostępnych pokoi
-                                        selected={selectedClassroomId}
-                                        setSelected={setSelectedClassroomId}
-                                        isOpen={isDropDownOpen}
-                                        setIsOpen={setIsDropDownOpen}
-                                    />
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="Liczba uczestników"
-                                        value={String(numberOfParticipants)}
-                                        keyboardType="numeric"
-                                        onChangeText={(text) => setNumberOfParticipants(Number(text))}
-                                    />
+                                    <Text style={Styles.h2}>
+                                        {props.reservation?.title}
+                                    </Text>
+                                    <Text>{props.reservation?.classroom.name}</Text>
+                                    <Text>
+                                        {props.reservation?.date}{' '}
+                                        {formatTime(
+                                            props.reservation?.startTime
+                                        )}
+                                        -
+                                        {formatTime(props.reservation?.endTime)}
+                                    </Text>
                                     <OrangeButton
-                                        text="Zapisz"
-                                        onPress={() => {
-                                            handleEdit();
-                                            setIsEditModalVisible(false);
-                                        }}
+                                        text="Edytuj"
+                                        onPress={() => {}}
                                     />
                                     <TouchableOpacity
-                                        onPress={() => setIsEditModalVisible(false)}
+                                        onPress={() =>
+                                            handleDelete(props.reservation.id)
+                                        }
                                         style={styles.errorButton}
                                     >
-                                        <Text style={styles.errorButtonText}>Anuluj</Text>
+                                        <Text style={styles.errorButtonText}>
+                                            Usuń rezerwacje
+                                        </Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -132,7 +96,7 @@ export default function ReservationManager(props: ReservationManagerProps) {
                 </View>
             )}
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -141,6 +105,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    container: {
+        flex: 1,
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        backgroundColor: Colors.primary + '80',
+        zIndex: 1,
     },
     flex: {
         padding: 30,
@@ -167,12 +139,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
-    input: {
-        width: '100%',
-        padding: 10,
-        marginVertical: 10,
-        borderWidth: 1,
-        borderColor: Colors.primary,
-        borderRadius: 5,
-    },
-});
+})

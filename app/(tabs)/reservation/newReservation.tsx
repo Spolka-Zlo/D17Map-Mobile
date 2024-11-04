@@ -11,7 +11,7 @@ import SearchByTermSection from '@/components/SearchByTermSection'
 import { useClassrooms } from '@/services/classroomService'
 import { useDayReservations } from '@/services/reservationService'
 import Spinner from 'react-native-loading-spinner-overlay'
-import InfoModal from '@/app/modals/errrorModal'
+import InfoModal from '@/components/InfoModal'
 import { router } from 'expo-router'
 
 type RooomReservation = {

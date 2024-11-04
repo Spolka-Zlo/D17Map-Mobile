@@ -72,7 +72,6 @@ export const useEditReservation = () => {
 }
 
 async function createReservation(reservation: Reservation) {
-    console.log(reservation, 'asdfasdasdfasdfasfdasdfaf')
     const response = await axios.post('reservations', reservation, {
         timeout: 5000,
     })
