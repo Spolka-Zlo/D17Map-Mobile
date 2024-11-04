@@ -1,7 +1,9 @@
 import Colors from '@/constants/Colors'
 import { Equipment, Room } from '@/constants/types'
+import { getApiUrl } from '@/providers/AuthProvider'
 import { useEquipmentOptions } from '@/services/classroomService'
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native'
 // import SpherePhoto from '../spherephoto_components/SpherePhoto'
 
 type RoomInfoModalProps = {
@@ -10,30 +12,59 @@ type RoomInfoModalProps = {
 }
 
 export const RoomInfoModal = (props: RoomInfoModalProps) => {
-    const { equipmentOptions } = useEquipmentOptions()
+    const { equipmentOptions } = useEquipmentOptions();
+    const [imageUrl, setImageUrl] = useState('');
+    const [imageLoaded, setImageLoaded] = useState(false); // Stan do śledzenia, czy obrazek został załadowany
+
+    useEffect(() => {
+        const fetchApiUrl = async () => {
+            const baseUrl = await getApiUrl();
+            const newImageUrl = `${baseUrl}classrooms/${props.room.id}/photo.jpg`;
+            setImageUrl(newImageUrl);
+        };
+
+        fetchApiUrl();
+    }, [props.room.id]); // Dodaj 'props.room.id' jako zależność
 
     const roomEquipment = equipmentOptions
         .filter((equipment: Equipment) => props.room.equipmentIds.includes(equipment.id))
         .map((equipment: Equipment) => equipment.name)
-        .join(', ')
+        .join(', ');
 
-        return (
-            <View style={styles.container}>
-                <View style={styles.innerContainer}>
-                    {/* <View style={styles.placeholder}>
-                        <SpherePhoto/>
-                    </View> */}
-                    <Image source={{ uri: 'http://192.168.33.12:8080/classrooms/1/photo.jpg' }} style={styles.image} />
-                    <Text style={styles.title}>{props.room.name}</Text>
-                    <Text>Pojemność sali: {props.room.capacity}</Text>
-                    <Text>Wyposażenie: {roomEquipment || 'Brak wyposażenia'}</Text>
-                    <TouchableOpacity onPress={props.onClose} style={styles.closeButton}>
-                        <Text style={styles.closeButtonText}>Zamknij</Text>
-                    </TouchableOpacity>
-                </View>
+    return (
+        <View style={styles.container}>
+            <View style={styles.innerContainer}>
+                {imageUrl ? ( // Sprawdzanie, czy imageUrl jest dostępny
+                    <ImageBackground
+                        source={{ uri: imageUrl }}
+                        style={styles.image}
+                        onLoadEnd={() => setImageLoaded(true)} // Ustaw na true, gdy obrazek zostanie załadowany
+                        onError={() => {
+                            setImageLoaded(false); // Ustaw na false, gdy wystąpi błąd
+                            setImageUrl(''); // Opcjonalnie: wyczyść imageUrl, aby wymusić ponowne renderowanie
+                        }}
+                    >
+                        {!imageLoaded && (
+                            <View style={styles.placeholder}>
+                                <Text style={styles.placeholderText}>Ładowanie zdjęcia...</Text>
+                            </View>
+                        )}
+                    </ImageBackground>
+                ) : (
+                    <View style={styles.placeholder}>
+                        <Text style={styles.placeholderText}>Brak zdjęcia</Text>
+                    </View>
+                )}
+                <Text style={styles.title}>{props.room.name}</Text>
+                <Text>Pojemność sali: {props.room.capacity}</Text>
+                <Text>Wyposażenie: {roomEquipment || 'Brak wyposażenia'}</Text>
+                <TouchableOpacity onPress={props.onClose} style={styles.closeButton}>
+                    <Text style={styles.closeButtonText}>Zamknij</Text>
+                </TouchableOpacity>
             </View>
-        )
-}
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -59,6 +90,13 @@ const styles = StyleSheet.create({
         height: 400,
         width: '100%',
         zIndex: 12,
+    },
+    placeholderText: {
+        color: Colors.primary,
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: 20,
     },
     image:{
         width: '100%',
