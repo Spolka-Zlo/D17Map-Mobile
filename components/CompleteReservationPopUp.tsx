@@ -1,100 +1,191 @@
-import { Dispatch, SetStateAction } from 'react'
-import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native'
+import {
+    StyleSheet,
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Modal,
+} from 'react-native'
+import React, { useEffect, useState } from 'react'
 import Colors from '@/constants/Colors'
-import { Styles } from '@/constants/Styles'
-import { formatTime } from '@/app/utils/timeUtils'
-import { useDeleteReservation } from '@/services/reservationService'
-import InfoModal from '@/components/InfoModal'
+import { Reservation, Room } from '@/constants/types'
+import Dropdown from './Dropdown'
+import { router } from 'expo-router'
+import { useReservationTypes } from '@/services/reservationTypeService'
+import { useCreateReservation } from '@/services/reservationService'
 import Spinner from 'react-native-loading-spinner-overlay'
-import { OrangeButton } from '@/components/OrangeButton'
-import { Reservation } from '@/constants/types'
+import InfoModal from '@/components/InfoModal'
+import { useEquipmentOptions } from '@/services/classroomService'
 
-type ReservationManagerProps = {
-    reservation: Reservation
-    setReservation: Dispatch<SetStateAction<Reservation | null>>
+
+
+type CompleteReservationPopUpProps = {
+    setSelectedRoom: (room: Room | null) => void
+    setScrollAvailable: React.Dispatch<React.SetStateAction<boolean>>
+    room: Room
+    date: Date | null
+    startTime: string
+    endTime: string
 }
 
-export default function ReservationManager(props: ReservationManagerProps) {
-    const mutation = useDeleteReservation()
+export default function CompleteReservationPopUp({
+    setSelectedRoom,
+    setScrollAvailable,
+    room,
+    date,
+    startTime,
+    endTime,
+}: CompleteReservationPopUpProps) {
+    const [isDropDownOpen, setIsDropDownOpen] = useState(false)
+    const [name, setName] = useState('')
+    const { reservationTypes } = useReservationTypes()
+    const [selectedReservationType, setSelectedReservationType] = useState(
+        'Wybierz typ rezerwacji'
+    )
+    const [description, setDescription] = useState('')
+    const [numberOfParticipants, setNumberOfParticipants ] = useState(room.capacity)
+    const { equipmentOptions } = useEquipmentOptions()
+    const [error, setError] = useState(false)
+    const createMutation = useCreateReservation()
 
-    const handleDelete = (id: number) => {
-        mutation.mutate(id)
+    useEffect(() => {
+        setScrollAvailable(false)
+        setError(false)
+    }, [])
+
+    const handleSubmit = async () => {
+        const reservation: Reservation = {
+            id: '',
+            title: name,
+            description: description,
+            classroomId: room.id,
+            date: date ? date.toISOString().split('T')[0] : '',
+            startTime: startTime.split(':').map((unit: string) => unit.padStart(2, '0')).join(':'),
+            endTime: endTime.split(':').map((unit: string) => unit.padStart(2, '0')).join(':'),
+            type: selectedReservationType,
+            numberOfParticipants: numberOfParticipants,
+        }
+        createMutation.mutate(reservation, {
+            onSuccess: () => {
+                setSelectedRoom(null)
+                setScrollAvailable(true)
+                setSelectedReservationType('Wybierz typ rezerwacji')
+                router.navigate('/reservation')
+            },
+            onError: () => {
+                setError(true)
+            },
+        })
     }
 
     return (
         <View>
-            {mutation.isSuccess && (
-                <InfoModal
-                    text="Rezerwacja usunięta"
-                    visible={mutation.isSuccess}
-                    onClose={() => props.setReservation(null)}
-                />
-            )}
-            {mutation.isError ? (
-                <InfoModal
-                    text="Nie udało się usunąć rezerwacji"
-                    visible={mutation.isError}
-                    onClose={() => mutation.reset()}
-                />
-            ) : (
-                <View>
-                    <View onTouchStart={(e) => e.stopPropagation()}>
-                        <Spinner
-                            visible={mutation.isLoading}
-                            cancelable={false}
-                            textContent="Usuwanie rezerwacji"
-                            overlayColor='rgba(0, 0, 0, 0.7)'
-                            textStyle={{ color: Colors.white }}
+            <Spinner
+                visible={createMutation.isLoading}
+                cancelable={false}
+                textContent="Tworzenie rezerwacji"
+                overlayColor="rgba(0, 0, 0, 0.7)"
+                textStyle={{ color: Colors.white }}
+            />
+            <InfoModal
+                text="Nie udało się utworzyć rezerwacji"
+                visible={createMutation.isError}
+                onClose={() => router.navigate('/')}
+            />
+            <Modal transparent={true} animationType="fade">
+                <View style={styles.modalBackground}>
+                    <View style={styles.box}>
+                        <TextInput
+                            placeholder="Nazwa rezerwacji"
+                            onChangeText={setName}
+                            value={name}
+                            style={styles.input}
+                            placeholderTextColor={Colors.secondary}
                         />
-                    </View>
-                    <Modal
-                        animationType="fade"
-                        transparent={true}
-                        visible={!!props.reservation}
-                        onRequestClose={() => props.setReservation(null)}
-                    >
+                        <TextInput
+                            placeholder="Opis rezerwacji"
+                            onChangeText={setDescription}
+                            value={description}
+                            style={styles.input}
+                            placeholderTextColor={Colors.secondary}
+                        />
+                        <Text>
+                            Liczba uczestników: {numberOfParticipants}
+                        </Text>
+                        <TextInput
+                            placeholder="Liczba uczestników"
+                            onChangeText={(value) => setNumberOfParticipants(Number(value))}
+                            value={numberOfParticipants.toString()}
+                            style={styles.input}
+                            placeholderTextColor={Colors.secondary}
+                            keyboardType="numeric"
+                        />
+                        <View style={{ zIndex: 2 }}>
+                            <Dropdown
+                                options={reservationTypes!}
+                                selected={selectedReservationType}
+                                setSelected={setSelectedReservationType}
+                                isOpen={isDropDownOpen}
+                                setIsOpen={setIsDropDownOpen}
+                            />
+                        </View>
+                        {date && (
+                            <Text>
+                                {date?.toISOString().split('T')[0] || ''}
+                            </Text>
+                        )}
+                        <Text>
+                            {startTime} - {endTime}
+                        </Text>
+                        <Text>{room.name}</Text>
+                        <Text>{room.capacity} miejsc</Text>
+                        <Text>
+                            {room.equipmentIds.map((equipmentId) => {
+                                const equipment = equipmentOptions?.find(
+                                    (option: { id: string }) => option.id === equipmentId
+                                )
+                                return equipment ? equipment.name : ''
+                            })}
+                        </Text>
+                        {selectedReservationType ===
+                            'Wybierz typ rezerwacji' && (
+                            <Text style={styles.error}>
+                                Wybierz typ rezerwacji
+                            </Text>
+                        )}
+                        {name === '' && (
+                            <Text style={styles.error}>
+                                Podaj nazwę rezerwacji
+                            </Text>
+                        )}
+                        {name !== '' &&
+                            selectedReservationType !==
+                                'Wybierz typ rezerwacji' &&
+                            !error && (
+                                <TouchableOpacity
+                                    onPress={handleSubmit}
+                                    style={styles.submit}
+                                >
+                                    <Text style={styles.label}>Rezerwuj</Text>
+                                </TouchableOpacity>
+                            )}
+                        {error && (
+                            <Text style={styles.error}>
+                                Wystąpił błąd, spróbuj ponownie
+                            </Text>
+                        )}
                         <TouchableOpacity
-                            style={styles.modalBackground}
-                            activeOpacity={1}
-                            onPress={() => props.setReservation(null)}
+                            onPress={() => {
+                                setSelectedRoom(null)
+                                setScrollAvailable(true)
+                            }}
+                            style={styles.cancel}
                         >
-                            <View
-                                style={styles.flex}
-                                onTouchStart={(e) => e.stopPropagation()}
-                            >
-                                <View style={styles.box}>
-                                    <Text style={Styles.h2}>
-                                        {props.reservation?.title}
-                                    </Text>
-                                    <Text>{props.reservation?.classroom.name}</Text>
-                                    <Text>
-                                        {props.reservation?.date}{' '}
-                                        {formatTime(
-                                            props.reservation?.startTime
-                                        )}
-                                        -
-                                        {formatTime(props.reservation?.endTime)}
-                                    </Text>
-                                    <OrangeButton
-                                        text="Edytuj"
-                                        onPress={() => {}}
-                                    />
-                                    <TouchableOpacity
-                                        onPress={() =>
-                                            handleDelete(props.reservation.id)
-                                        }
-                                        style={styles.errorButton}
-                                    >
-                                        <Text style={styles.errorButtonText}>
-                                            Usuń rezerwacje
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
+                            <Text style={styles.label}>Zamknij</Text>
                         </TouchableOpacity>
-                    </Modal>
+                    </View>
                 </View>
-            )}
+            </Modal>
         </View>
     )
 }
@@ -104,15 +195,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    container: {
-        flex: 1,
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        backgroundColor: Colors.primary + '80',
-        zIndex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     flex: {
         padding: 30,
@@ -127,16 +210,44 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    errorButton: {
-        backgroundColor: 'red',
+    input: {
+        backgroundColor: Colors.primary,
+        fontWeight: 'bold',
+        color: Colors.secondary,
+        borderRadius: 10,
         padding: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
+        marginBottom: 20,
+        width: 200,
     },
-    errorButtonText: {
-        color: 'white',
+    error: {
+        color: 'red',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    cancel: {
+        backgroundColor: Colors.secondary,
+        borderRadius: 10,
+        padding: 10,
+        width: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+    },
+    submit: {
+        backgroundColor: Colors.secondary,
+        borderRadius: 10,
+        padding: 10,
+        width: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: Colors.primary,
+    },
+    label: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: Colors.primary,
     },
 })
