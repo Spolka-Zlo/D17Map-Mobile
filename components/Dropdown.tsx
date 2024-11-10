@@ -51,7 +51,7 @@ export default function Dropdown({
 
 const styles = StyleSheet.create({
     dropdownContainer: {
-        width: 150,
+        width: '100%',
     },
     dropdownButton: {
         padding: 12,
@@ -62,11 +62,11 @@ const styles = StyleSheet.create({
     },
     dropdownList: {
         position: 'absolute',
-        width: 150,
+        width: '100%',
         backgroundColor: Colors.primary,
         borderRadius: 8,
         borderWidth: 1,
-        zIndex: 1,
+        zIndex: 3,
     },
     dropdownItem: {
         padding: 12,

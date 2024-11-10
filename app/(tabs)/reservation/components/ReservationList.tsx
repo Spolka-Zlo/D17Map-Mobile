@@ -1,5 +1,5 @@
 import { StyleSheet, View, ScrollView } from 'react-native'
-import { Reservation } from '..'
+import { Reservation } from '@/constants/types'
 import ListElement from '@/components/ListElement'
 import Colors from '@/constants/Colors'
 import { formatTime } from '@/app/utils/timeUtils'

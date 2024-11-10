@@ -55,7 +55,7 @@ export const useDeleteReservation = () => {
 }
 
 const fetchEditReservation = async (reservation: Reservation) => {
-    const response = await axios.put(`reservations/`, reservation, {
+    const response = await axios.put(`reservations/${reservation.id}`, reservation, {
         timeout: 2000,
     })
     return response.data

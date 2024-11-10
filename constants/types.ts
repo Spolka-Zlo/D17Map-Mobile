@@ -18,14 +18,16 @@ export type Reservation = {
     numberOfParticipants: number
 }
 
-export type SimpleReservation = {
-    id: number
-    classroom: Room
+export type ReservationWithClassRoomInfo = {
+    id: string
     title: string
+    description: string
     date: string
     startTime: string
     endTime: string
+    classroom: Room
     type: string
+    numberOfParticipants: number
 }
 
 export type Equipment = {
