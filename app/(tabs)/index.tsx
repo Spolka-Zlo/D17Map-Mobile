@@ -1,16 +1,18 @@
-import { StyleSheet, View, Text, TextInput, Button } from 'react-native'
-import { OrangeButton } from '@/components/OrangeButton'
-import ListElement from '@/components/ListElement'
-import Dropdown from '@/components/Dropdown'
+import { StyleSheet, View, Text, TextInput, Button, ScrollView } from 'react-native'
 import { useState } from 'react'
 import { useAuth } from '@/providers/AuthProvider'
 import Colors from '@/constants/Colors'
-import { Link } from 'expo-router'
+import { router } from 'expo-router'
+import { ReservationWithClassRoomInfo } from '@/constants/types'
+import { Styles } from '@/constants/Styles'
+import Spinner from 'react-native-loading-spinner-overlay'
+import ReservationList from './reservation/components/ReservationList'
+import ReservationManager from './reservation/components/ReservationManager'
+import InfoModal from '@/components/InfoModal'
+import { useFutureEvents } from '@/services/eventsService'
 
 export default function TabOneScreen() {
-    const [selected, setSelected] = useState('Option 1')
-    const [isOpen, setIsOpen] = useState(false)
-    const { authState, setApiUrl } = useAuth()
+    const { setApiUrl } = useAuth()
 
     const [ip, setIp] = useState('');
 
@@ -18,13 +20,13 @@ export default function TabOneScreen() {
         await setApiUrl(ip);
         alert('Zmieniono adres IP');
     };
+    const [reservation, setReservation] = useState<ReservationWithClassRoomInfo | null>(null)
+    const { events = [], isEventsError, isEventsLoading } = useFutureEvents()
 
     return (
         <View
-            style={styles.container}
-            onTouchStart={() => {
-                setIsOpen(false)
-            }}
+            onTouchStart={() => setReservation(null)}
+            style={Styles.background}
         >
             <TextInput
                 value={ip}
@@ -33,19 +35,32 @@ export default function TabOneScreen() {
                 style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
             />
             <Button title="Zmień adres IP" onPress={handleChangeIp} />
-            <Text style={styles.title}>{authState?.userType} adsf</Text>
-            <Link href="/auth/loginPage">Logowanie</Link>
-            <ListElement text="Event number one" onPress={() => {}} />
-            <OrangeButton text="Click Me" onPress={() => {}} />
-            <Dropdown
-                options={['Option 1', 'Option 2', 'Option 3']}
-                selected={selected}
-                setSelected={setSelected}
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-            />
+            <ScrollView style={styles.scroll}>
+                <Spinner visible={isEventsLoading} textContent='Ładowanie wydarzeń' />
+                <View style={Styles.background}>
+                    <Text style={[Styles.h1, styles.title]}>
+                        Nadchodzące wydarzenia
+                    </Text>
+                    {isEventsError && (
+                        <Text>
+                            Nie udało się załadować wydarzeń, spróbuj ponownie za chwilę.
+                        </Text>
+                    )}
+                    <ReservationList
+                        reservations={events}
+                        setReservation={setReservation}
+                    />
+                </View>
+            </ScrollView>
+            {reservation && (
+                <ReservationManager
+                    reservation={reservation}
+                    setReservation={setReservation}
+                />
+            )}
         </View>
     )
+
 }
 
 const styles = StyleSheet.create({
@@ -63,5 +78,8 @@ const styles = StyleSheet.create({
         marginVertical: 30,
         height: 1,
         width: '80%',
+    },
+    scroll: {
+        width: '100%',
     },
 })

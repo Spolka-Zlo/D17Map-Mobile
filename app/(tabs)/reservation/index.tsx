@@ -8,12 +8,12 @@ import { useState } from 'react'
 import { useUserFutureReservations } from '@/services/reservationService'
 import InfoModal from '@/components/InfoModal'
 import Spinner from 'react-native-loading-spinner-overlay'
-import { Reservation } from '@/constants/types'
+import { ReservationWithClassRoomInfo } from '@/constants/types'
 
 
 
 export default function Reservations() {
-    const [reservation, setReservation] = useState<Reservation | null>(null)
+    const [reservation, setReservation] = useState<ReservationWithClassRoomInfo | null>(null)
     const {
         reservations = [],
         isReservationLoading,
