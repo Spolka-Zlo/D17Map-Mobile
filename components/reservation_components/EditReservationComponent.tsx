@@ -150,9 +150,11 @@ export default function EditReservationComponent(
                                             value={selectedType}
                                             labelField={'label'}
                                             valueField={'value'}
-                                            onChange={(value) =>
-                                                setSelectedType(value.value)
-                                            }
+                                            onChange={(value: {
+                                                label: string
+                                                value: string
+                                                _index: number
+                                            }) => setSelectedType(value.value)}
                                             maxHeight={200}
                                             style={styles.dropdown}
                                         />
