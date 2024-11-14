@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     box: {
         width: '80%',
         padding: 20,
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         borderRadius: 10,
         alignItems: 'center',
     },
