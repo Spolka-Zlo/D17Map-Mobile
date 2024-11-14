@@ -79,8 +79,10 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.mapGrey,
     },
     title: {
-        fontSize: 20,
-        fontWeight: 'bold',
+        marginTop: 16,
+        marginBottom: 16,
+        textAlign: 'center',
+        padding: 10,
     },
     separator: {
         marginVertical: 30,
