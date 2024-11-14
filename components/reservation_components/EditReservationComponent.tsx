@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     editButton: {
-        backgroundColor: 'green',
+        backgroundColor: Colors.primary,
         padding: 10,
         borderRadius: 8,
         marginVertical: 10,

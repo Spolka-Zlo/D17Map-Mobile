@@ -1,5 +1,4 @@
 import Colors from '@/constants/Colors';
-import React from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 
 type SpinnerProps = {

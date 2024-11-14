@@ -1,66 +1,74 @@
-import { StyleSheet, View, Text, TextInput, Button, ScrollView } from 'react-native'
+import {
+    StyleSheet,
+    View,
+    Text,
+    TextInput,
+    Button,
+    ScrollView,
+} from 'react-native'
 import { useState } from 'react'
 import { useAuth } from '@/providers/AuthProvider'
 import Colors from '@/constants/Colors'
-import { router } from 'expo-router'
 import { ReservationWithClassRoomInfo } from '@/constants/types'
 import { Styles } from '@/constants/Styles'
-import Spinner from 'react-native-loading-spinner-overlay'
 import ReservationList from './reservation/components/ReservationList'
-import ReservationManager from './reservation/components/ReservationManager'
-import InfoModal from '@/components/InfoModal'
 import { useFutureEvents } from '@/services/eventsService'
+import { Spinner } from '@/components/Spinner'
+import EventManager from '@/components/reservation_components/EventManager'
 
 export default function TabOneScreen() {
     const { setApiUrl } = useAuth()
 
-    const [ip, setIp] = useState('');
+    const [ip, setIp] = useState('')
 
     const handleChangeIp = async () => {
-        await setApiUrl(ip);
-        alert('Zmieniono adres IP');
-    };
-    const [reservation, setReservation] = useState<ReservationWithClassRoomInfo | null>(null)
+        await setApiUrl(ip)
+        alert('Zmieniono adres IP')
+    }
+    const [reservation, setReservation] =
+        useState<ReservationWithClassRoomInfo | null>(null)
     const { events = [], isEventsError, isEventsLoading } = useFutureEvents()
 
     return (
-        <View
-            onTouchStart={() => setReservation(null)}
-            style={Styles.background}
-        >
-            <TextInput
-                value={ip}
-                onChangeText={setIp}
-                placeholder="Podaj nowy adres IP"
-                style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
-            />
-            <Button title="Zmień adres IP" onPress={handleChangeIp} />
-            <ScrollView style={styles.scroll}>
-                <Spinner visible={isEventsLoading} textContent='Ładowanie wydarzeń' />
-                <View style={Styles.background}>
-                    <Text style={[Styles.h1, styles.title]}>
-                        Nadchodzące wydarzenia
-                    </Text>
-                    {isEventsError && (
-                        <Text>
-                            Nie udało się załadować wydarzeń, spróbuj ponownie za chwilę.
+        <>
+            <Spinner isLoading={isEventsLoading} />
+            <View
+                onTouchStart={() => setReservation(null)}
+                style={Styles.background}
+            >
+                <ScrollView style={styles.scroll}>
+                    <View style={Styles.background}>
+                        <Text style={[Styles.h1, styles.title]}>
+                            Nadchodzące wydarzenia w budynku D-17
                         </Text>
-                    )}
-                    <ReservationList
-                        reservations={events}
+                        {isEventsError && (
+                            <Text>
+                                Nie udało się załadować wydarzeń, spróbuj
+                                ponownie za chwilę.
+                            </Text>
+                        )}
+                        <ReservationList
+                            reservations={events}
+                            setReservation={setReservation}
+                        />
+                    </View>
+                </ScrollView>
+                <TextInput
+                    value={ip}
+                    onChangeText={setIp}
+                    placeholder="Podaj nowy adres IP"
+                    style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
+                />
+                <Button title="Zmień adres IP" onPress={handleChangeIp} />
+                {reservation && (
+                    <EventManager
+                        reservation={reservation}
                         setReservation={setReservation}
                     />
-                </View>
-            </ScrollView>
-            {reservation && (
-                <ReservationManager
-                    reservation={reservation}
-                    setReservation={setReservation}
-                />
-            )}
-        </View>
+                )}
+            </View>
+        </>
     )
-
 }
 
 const styles = StyleSheet.create({
