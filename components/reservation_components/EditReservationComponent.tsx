@@ -150,9 +150,11 @@ export default function EditReservationComponent(
                                             value={selectedType}
                                             labelField={'label'}
                                             valueField={'value'}
-                                            onChange={(value) =>
-                                                setSelectedType(value.value)
-                                            }
+                                            onChange={(value: {
+                                                label: string
+                                                value: string
+                                                _index: number
+                                            }) => setSelectedType(value.value)}
                                             maxHeight={200}
                                             style={styles.dropdown}
                                         />
@@ -160,7 +162,7 @@ export default function EditReservationComponent(
                                     <Text style={styles.textStyle}>
                                         Dostępne sale:
                                     </Text>
-                                    {/* <View style={styles.dropdownContainer}>
+                                    <View style={styles.dropdownContainer}>
                                         <Dropdown
                                             data={availableClassroomsData}
                                             value={selectedClassroomId}
@@ -174,7 +176,7 @@ export default function EditReservationComponent(
                                             maxHeight={200}
                                             style={styles.dropdown}
                                         />
-                                    </View> */}
+                                    </View>
                                     <TouchableOpacity
                                         onPress={handleEdit}
                                         style={styles.editButton}
@@ -218,7 +220,7 @@ const styles = StyleSheet.create({
     box: {
         width: '80%',
         padding: 20,
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         borderRadius: 10,
         alignItems: 'center',
     },
