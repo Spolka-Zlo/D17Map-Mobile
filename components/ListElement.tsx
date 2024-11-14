@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.primary,
         borderRadius: 8,
         shadowColor: Colors.primary,
+        width: '100%',
     },
     pointerCursor: {
         shadowColor: Colors.primary,

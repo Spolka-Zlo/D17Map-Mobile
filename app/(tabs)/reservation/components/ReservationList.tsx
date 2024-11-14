@@ -1,12 +1,12 @@
 import { StyleSheet, View, ScrollView } from 'react-native'
-import { Reservation } from '..'
+import { ReservationWithClassRoomInfo } from '@/constants/types'
 import ListElement from '@/components/ListElement'
 import Colors from '@/constants/Colors'
 import { formatTime } from '@/app/utils/timeUtils'
 
 type ReservationListProps = {
-    reservations: Reservation[]
-    setReservation: (reservation: Reservation) => void
+    reservations: ReservationWithClassRoomInfo[]
+    setReservation: (reservation: ReservationWithClassRoomInfo) => void
 }
 
 export default function ReservationList({

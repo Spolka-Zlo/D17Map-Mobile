@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     Modal,
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Colors from '@/constants/Colors'
 import { Reservation, Room } from '@/constants/types'
 import Dropdown from './Dropdown'
@@ -55,6 +55,7 @@ export default function CompleteReservationPopUp({
 
     const handleSubmit = async () => {
         const reservation: Reservation = {
+            id: '',
             title: name,
             description: description,
             classroomId: room.id,
@@ -119,7 +120,7 @@ export default function CompleteReservationPopUp({
                             placeholderTextColor={Colors.secondary}
                             keyboardType="numeric"
                         />
-                        <View style={{ zIndex: 2 }}>
+                        <View style={styles.dropdown}>
                             <Dropdown
                                 options={reservationTypes!}
                                 selected={selectedReservationType}
@@ -143,7 +144,7 @@ export default function CompleteReservationPopUp({
                                 const equipment = equipmentOptions?.find(
                                     (option: { id: string }) => option.id === equipmentId
                                 )
-                                return equipment ? equipment.name : ''
+                                return equipment ? equipment.name + ' ' : ''
                             })}
                         </Text>
                         {selectedReservationType ===
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     flex: {
         padding: 30,
@@ -208,15 +209,21 @@ const styles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
+        width: '80%'
     },
     input: {
         backgroundColor: Colors.primary,
         fontWeight: 'bold',
         color: Colors.secondary,
-        borderRadius: 10,
+        borderRadius: 8,
         padding: 10,
         marginBottom: 20,
-        width: 200,
+        width: '90%',
+    },
+    dropdown : {
+        zIndex: 2,
+        display: 'flex',
+        width: '90%',
     },
     error: {
         color: 'red',
@@ -227,16 +234,16 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.secondary,
         borderRadius: 10,
         padding: 10,
-        width: 200,
+        width: '90%',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,
     },
     submit: {
         backgroundColor: Colors.secondary,
-        borderRadius: 10,
+        borderRadius: 8,
         padding: 10,
-        width: 200,
+        width: '90%',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,

@@ -32,3 +32,22 @@ export const useEquipmentOptions = () => {
         isEquipmentOptionsLoading: isLoading,
     }
 }
+
+const fetchAvailableClassrooms = async (date: string, startTime: string, endTime: string, numberOfParticipants: number) => {
+    const response = await axios.get(`classrooms/available?date=${date}&timeRange=${startTime}-${endTime}&peopleCount=${numberOfParticipants}`)
+    return response.data
+}
+
+export const useAvailableClassrooms = (date: string, startTime: string, endTime: string, numberOfParticipants: number) => {
+    const queryResult = useQuery(
+        ['availableClassrooms', date, startTime, endTime],
+        () => fetchAvailableClassrooms(date, startTime, endTime, numberOfParticipants),
+        {
+            retry: 1,
+        }
+    )
+
+    return {
+        availableClassrooms: queryResult.isError ? [] : queryResult.data,
+    }
+}
