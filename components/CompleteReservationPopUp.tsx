@@ -9,15 +9,14 @@ import {
 import { useEffect, useState } from 'react'
 import Colors from '@/constants/Colors'
 import { Reservation, Room } from '@/constants/types'
-import Dropdown from './Dropdown'
 import { router } from 'expo-router'
 import { useReservationTypes } from '@/services/reservationTypeService'
 import { useCreateReservation } from '@/services/reservationService'
 import Spinner from 'react-native-loading-spinner-overlay'
 import InfoModal from '@/components/InfoModal'
 import { useEquipmentOptions } from '@/services/classroomService'
-
-
+import { Dropdown } from 'react-native-element-dropdown'
+import { OrangeButton } from './OrangeButton'
 
 type CompleteReservationPopUpProps = {
     setSelectedRoom: (room: Room | null) => void
@@ -36,14 +35,22 @@ export default function CompleteReservationPopUp({
     startTime,
     endTime,
 }: CompleteReservationPopUpProps) {
-    const [isDropDownOpen, setIsDropDownOpen] = useState(false)
     const [name, setName] = useState('')
     const { reservationTypes } = useReservationTypes()
-    const [selectedReservationType, setSelectedReservationType] = useState(
-        'Wybierz typ rezerwacji'
+    const reservationTypesData = reservationTypes
+        ? reservationTypes.map((type: string) => {
+              return { label: type, value: type }
+          })
+        : []
+
+    const [selectedType, setSelectedType] = useState(
+        reservationTypesData[0]?.value || 'Wybierz typ rezerwacji'
     )
+
     const [description, setDescription] = useState('')
-    const [numberOfParticipants, setNumberOfParticipants ] = useState(room.capacity)
+    const [numberOfParticipants, setNumberOfParticipants] = useState(
+        room.capacity
+    )
     const { equipmentOptions } = useEquipmentOptions()
     const [error, setError] = useState(false)
     const createMutation = useCreateReservation()
@@ -60,16 +67,22 @@ export default function CompleteReservationPopUp({
             description: description,
             classroomId: room.id,
             date: date ? date.toISOString().split('T')[0] : '',
-            startTime: startTime.split(':').map((unit: string) => unit.padStart(2, '0')).join(':'),
-            endTime: endTime.split(':').map((unit: string) => unit.padStart(2, '0')).join(':'),
-            type: selectedReservationType,
+            startTime: startTime
+                .split(':')
+                .map((unit: string) => unit.padStart(2, '0'))
+                .join(':'),
+            endTime: endTime
+                .split(':')
+                .map((unit: string) => unit.padStart(2, '0'))
+                .join(':'),
+            type: selectedType,
             numberOfParticipants: numberOfParticipants,
         }
         createMutation.mutate(reservation, {
             onSuccess: () => {
                 setSelectedRoom(null)
                 setScrollAvailable(true)
-                setSelectedReservationType('Wybierz typ rezerwacji')
+                setSelectedType('Wybierz typ rezerwacji')
                 router.navigate('/reservation')
             },
             onError: () => {
@@ -90,45 +103,55 @@ export default function CompleteReservationPopUp({
             <InfoModal
                 text="Nie udało się utworzyć rezerwacji"
                 visible={createMutation.isError}
-                onClose={() => router.navigate('/')}
+                onClose={() => router.navigate('/(tabs)/reservation')}
             />
             <Modal transparent={true} animationType="fade">
                 <View style={styles.modalBackground}>
                     <View style={styles.box}>
+                        <Text style={styles.textStyle}>Tytuł rezerwacji:</Text>
                         <TextInput
-                            placeholder="Nazwa rezerwacji"
+                            placeholder="Tytuł rezerwacji"
                             onChangeText={setName}
                             value={name}
                             style={styles.input}
-                            placeholderTextColor={Colors.secondary}
                         />
+                        <Text style={styles.textStyle}>Opis rezerwacji:</Text>
                         <TextInput
                             placeholder="Opis rezerwacji"
                             onChangeText={setDescription}
                             value={description}
                             style={styles.input}
-                            placeholderTextColor={Colors.secondary}
                         />
-                        <Text>
-                            Liczba uczestników: {numberOfParticipants}
+                        <Text style={styles.textStyle}>
+                            Liczba uczestników:
                         </Text>
                         <TextInput
                             placeholder="Liczba uczestników"
-                            onChangeText={(value) => setNumberOfParticipants(Number(value))}
+                            onChangeText={(value) =>
+                                setNumberOfParticipants(Number(value))
+                            }
                             value={numberOfParticipants.toString()}
                             style={styles.input}
-                            placeholderTextColor={Colors.secondary}
                             keyboardType="numeric"
                         />
-                        <View style={styles.dropdown}>
+                        <Text style={styles.textStyle}>Typ rezerwacji:</Text>
+                        <View style={styles.dropdownContainer}>
                             <Dropdown
-                                options={reservationTypes!}
-                                selected={selectedReservationType}
-                                setSelected={setSelectedReservationType}
-                                isOpen={isDropDownOpen}
-                                setIsOpen={setIsDropDownOpen}
+                                data={reservationTypesData}
+                                value={selectedType}
+                                labelField={'label'}
+                                valueField={'value'}
+                                onChange={(value: {
+                                    label: string
+                                    value: string
+                                    _index: number
+                                }) => setSelectedType(value.value)}
+                                maxHeight={200}
+                                style={styles.dropdown}
+                                placeholder="Wybierz typ rezerwacji"
                             />
                         </View>
+                        <Text style={styles.textStyle}>Inne informacje:</Text>
                         {date && (
                             <Text>
                                 {date?.toISOString().split('T')[0] || ''}
@@ -142,13 +165,13 @@ export default function CompleteReservationPopUp({
                         <Text>
                             {room.equipmentIds.map((equipmentId) => {
                                 const equipment = equipmentOptions?.find(
-                                    (option: { id: string }) => option.id === equipmentId
+                                    (option: { id: string }) =>
+                                        option.id === equipmentId
                                 )
                                 return equipment ? equipment.name + ' ' : ''
                             })}
                         </Text>
-                        {selectedReservationType ===
-                            'Wybierz typ rezerwacji' && (
+                        {selectedType === 'Wybierz typ rezerwacji' && (
                             <Text style={styles.error}>
                                 Wybierz typ rezerwacji
                             </Text>
@@ -159,14 +182,13 @@ export default function CompleteReservationPopUp({
                             </Text>
                         )}
                         {name !== '' &&
-                            selectedReservationType !==
-                                'Wybierz typ rezerwacji' &&
+                            selectedType !== 'Wybierz typ rezerwacji' &&
                             !error && (
                                 <TouchableOpacity
                                     onPress={handleSubmit}
                                     style={styles.submit}
                                 >
-                                    <Text style={styles.label}>Rezerwuj</Text>
+                                    <Text style={styles.submitText}>Rezerwuj</Text>
                                 </TouchableOpacity>
                             )}
                         {error && (
@@ -174,15 +196,15 @@ export default function CompleteReservationPopUp({
                                 Wystąpił błąd, spróbuj ponownie
                             </Text>
                         )}
-                        <TouchableOpacity
-                            onPress={() => {
-                                setSelectedRoom(null)
-                                setScrollAvailable(true)
-                            }}
-                            style={styles.cancel}
-                        >
-                            <Text style={styles.label}>Zamknij</Text>
-                        </TouchableOpacity>
+                        <View style={{ width: '90%', marginTop: 10 }}>
+                            <OrangeButton
+                                text="Powrót"
+                                onPress={() => {
+                                    setSelectedRoom(null)
+                                    setScrollAvailable(true)
+                                }}
+                            />
+                        </View>
                     </View>
                 </View>
             </Modal>
@@ -209,21 +231,32 @@ const styles = StyleSheet.create({
         padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        width: '80%'
+        width: '80%',
+    },
+    textStyle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: Colors.primary,
     },
     input: {
-        backgroundColor: Colors.primary,
-        fontWeight: 'bold',
-        color: Colors.secondary,
+        borderWidth: 1,
+        borderColor: Colors.mapGrey,
+        padding: 8,
+        marginVertical: 10,
         borderRadius: 8,
-        padding: 10,
-        marginBottom: 20,
         width: '90%',
     },
-    dropdown : {
-        zIndex: 2,
-        display: 'flex',
+    dropdownContainer: {
         width: '90%',
+        zIndex: 2,
+        marginVertical: 10,
+    },
+    dropdown: {
+        width: '100%',
+        borderWidth: 1,
+        borderColor: Colors.mapGrey,
+        borderRadius: 8,
+        padding: 10,
     },
     error: {
         color: 'red',
@@ -240,20 +273,16 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     submit: {
-        backgroundColor: Colors.secondary,
-        borderRadius: 8,
+        backgroundColor: Colors.primary,
         padding: 10,
+        borderRadius: 8,
+        marginTop: 10,
         width: '90%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 20,
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: Colors.primary,
     },
-    label: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: Colors.primary,
+    submitText: {
+        color: 'white',
+        textAlign: 'center',
+        fontSize: 16,
+        fontWeight: '800',
     },
 })

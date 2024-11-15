@@ -1,13 +1,12 @@
 import Colors from '@/constants/Colors'
-import React from 'react'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native'
 import { TextStyle } from 'react-native'
 
 type ButtonProps = {
     text: string
     textClassName?: TextStyle
     onPress: () => void
-    buttonStyle?: TextStyle
+    buttonStyle?: ViewStyle
 }
 
 export function OrangeButton({ text, textClassName, onPress, buttonStyle }: ButtonProps) {
