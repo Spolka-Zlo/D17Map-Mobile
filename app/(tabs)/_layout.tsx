@@ -1,4 +1,3 @@
-import React from 'react'
 import { Tabs } from 'expo-router'
 import 'react-native-reanimated'
 import Colors from '@/constants/Colors'
@@ -39,6 +38,7 @@ export default function TabLayout() {
                         color={Colors.secondary}
                     />
                 ),
+                unmountOnBlur: true,
             }}
         />,
     ]

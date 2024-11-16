@@ -6,7 +6,6 @@ import {
 } from '@react-navigation/native'
 import { router, Stack } from 'expo-router'
 import 'react-native-reanimated'
-import React from 'react'
 import { StyleSheet } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
