@@ -116,6 +116,7 @@ export default function EditReservationComponent(
                         visible={!!props.reservation}
                         onRequestClose={() => props.setReservation(null)}
                     >
+                        
                         <TouchableOpacity
                             style={styles.modalBackground}
                             activeOpacity={1}

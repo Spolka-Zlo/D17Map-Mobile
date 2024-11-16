@@ -1,20 +1,22 @@
-import Colors from '@/constants/Colors';
-import React from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import Colors from '@/constants/Colors'
+import React from 'react'
+import { ActivityIndicator, View, StyleSheet, Text } from 'react-native'
 
 type SpinnerProps = {
-    isLoading: boolean;
-};
+    isLoading: boolean
+    text?: string
+}
 
-export const Spinner = (props: SpinnerProps) => {
-    if (!props.isLoading) return null;
+export const Spinner = ({ isLoading, text }: SpinnerProps) => {
+    if (!isLoading) return null
 
     return (
         <View style={styles.container} pointerEvents="none">
             <ActivityIndicator size="large" color={Colors.primary} />
+            {text && <Text style={styles.text}>{text}</Text>}
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -29,6 +31,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(128, 128, 128, 0.7)',
         width: '100%',
         height: '100%',
-        pointerEvents: 'none',
     },
-});
+    text: {
+        marginTop: 10,
+        color: Colors.white,
+        fontSize: 16,
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
+})

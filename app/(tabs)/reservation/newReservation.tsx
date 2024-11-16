@@ -10,9 +10,9 @@ import SearchByTermSection from '@/components/SearchByTermSection'
 
 import { useClassrooms } from '@/services/classroomService'
 import { useDayReservations } from '@/services/reservationService'
-import Spinner from 'react-native-loading-spinner-overlay'
 import InfoModal from '@/components/InfoModal'
 import { router } from 'expo-router'
+import { Spinner } from '@/components/Spinner'
 
 type RooomReservation = {
     id: string
@@ -26,8 +26,6 @@ export type DayReservation = {
     endTime: string
     classroom: RooomReservation
 }
-
-
 
 export default function newReservation() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -65,76 +63,79 @@ export default function newReservation() {
     }
 
     return (
-        <ScrollView
-            style={styles.background}
-            scrollEnabled={scrollAvailable}
-            ref={scrollViewRef}
-        >
+        <>
             <Spinner
-                visible={isRoomsLoading || isReservationsLoading}
-                textContent={'Ładowanie...'}
-                textStyle={{ color: Colors.primary }}
+                isLoading={isRoomsLoading || isReservationsLoading}
+                text={'Ładowanie...'}
             />
-            <InfoModal
-                text="Wystąpił błąd po stronie serwera"
-                visible={isRoomsError || isReservationsError}
-                onClose={() => {
-                    router.back()
-                }}
-            />
-            <SafeAreaView style={Styles.background}>
-                <Text style={[Styles.h1, styles.h1]}>Nowa rezerwacja</Text>
-                <Calendar onDateChange={onDateChange} />
+            <ScrollView
+                style={styles.background}
+                scrollEnabled={scrollAvailable}
+                ref={scrollViewRef}
+            >
+                <InfoModal
+                    text="Wystąpił błąd po stronie serwera"
+                    visible={isRoomsError || isReservationsError}
+                    onClose={() => {
+                        router.back()
+                    }}
+                />
+                <SafeAreaView style={Styles.background}>
+                    <Text style={[Styles.h1, styles.h1]}>Nowa rezerwacja</Text>
+                    <Calendar onDateChange={onDateChange} />
 
-                {!buttonsVisible && (
-                    <Text style={Styles.h2}>Wybierz datę, aby kontynuować</Text>
-                )}
+                    {!buttonsVisible && (
+                        <Text style={Styles.h2}>
+                            Wybierz datę, aby kontynuować
+                        </Text>
+                    )}
 
-                {buttonsVisible && (
-                    <View style={styles.buttons}>
-                        <OrangeButton
-                            text="Wybieraj po salach"
-                            onPress={handleRoomSection}
-                            textClassName={{
-                                textAlign: 'center',
-                                color: Colors.primary,
-                            }}
-                            buttonStyle={{
-                                width: 170,
-                                alignContent: 'center',
-                            }}
+                    {buttonsVisible && (
+                        <View style={styles.buttons}>
+                            <OrangeButton
+                                text="Wybieraj po salach"
+                                onPress={handleRoomSection}
+                                textClassName={{
+                                    textAlign: 'center',
+                                    color: Colors.primary,
+                                }}
+                                buttonStyle={{
+                                    width: 170,
+                                    alignContent: 'center',
+                                }}
+                            />
+                            <OrangeButton
+                                text="Wybieraj po godzinach"
+                                onPress={handleTimeSection}
+                                textClassName={{
+                                    textAlign: 'center',
+                                    color: Colors.primary,
+                                }}
+                                buttonStyle={{ width: 170 }}
+                            />
+                        </View>
+                    )}
+
+                    {roomSectionOpen && (
+                        <RoomAvailabilitySection
+                            reservations={reservations}
+                            rooms={rooms}
+                            date={selectedDate}
+                            setScrollAvailable={setScrollAvailable}
                         />
-                        <OrangeButton
-                            text="Wybieraj po godzinach"
-                            onPress={handleTimeSection}
-                            textClassName={{
-                                textAlign: 'center',
-                                color: Colors.primary,
-                            }}
-                            buttonStyle={{ width: 170 }}
+                    )}
+
+                    {termSectionOpen && (
+                        <SearchByTermSection
+                            reservations={reservations}
+                            rooms={rooms}
+                            date={selectedDate}
+                            setScrollAvailable={setScrollAvailable}
                         />
-                    </View>
-                )}
-
-                {roomSectionOpen && (
-                    <RoomAvailabilitySection
-                        reservations={reservations}
-                        rooms={rooms}
-                        date={selectedDate}
-                        setScrollAvailable={setScrollAvailable}
-                    />
-                )}
-
-                {termSectionOpen && (
-                    <SearchByTermSection
-                        reservations={reservations}
-                        rooms={rooms}
-                        date={selectedDate}
-                        setScrollAvailable={setScrollAvailable}
-                    />
-                )}
-            </SafeAreaView>
-        </ScrollView>
+                    )}
+                </SafeAreaView>
+            </ScrollView>
+        </>
     )
 }
 
