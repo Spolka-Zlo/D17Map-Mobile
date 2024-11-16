@@ -106,6 +106,7 @@ export const useUserFutureReservations = () => {
         {
             retry: 1,
             enabled: authState?.authenticated ?? false,
+            refetchInterval: 15000,
         }
     )
     return {

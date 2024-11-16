@@ -1,15 +1,16 @@
 import { StyleSheet, View, Text, ScrollView } from 'react-native'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { Styles } from '@/constants/Styles'
 import ReservationList from './components/ReservationList'
 import ReservationManager from './components/ReservationManager'
 import { OrangeAddButton } from '@/components/OrangeAddButton'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useUserFutureReservations } from '@/services/reservationService'
 import InfoModal from '@/components/InfoModal'
 
 import { ReservationWithClassRoomInfo } from '@/constants/types'
 import { Spinner } from '@/components/Spinner'
+import { useAuth } from '@/providers/AuthProvider'
 
 export default function Reservations() {
     const [reservation, setReservation] =
@@ -19,6 +20,28 @@ export default function Reservations() {
         isReservationLoading,
         isReservationError,
     } = useUserFutureReservations()
+
+    const { onLogout } = useAuth()
+    
+    const [hasFocus, setHasFocus] = useState(false)
+    
+    useFocusEffect(
+        useCallback(() => {
+            setHasFocus(true)
+            return () => {
+                setHasFocus(false)
+            }
+        }, [])
+    )
+
+    const handleModalClose = () => {
+        onLogout()
+        router.push('/auth/loginPage')
+    }
+    
+    if (!hasFocus) {
+        return null
+    }
 
     return (
         <>
@@ -55,9 +78,7 @@ export default function Reservations() {
                 <InfoModal
                     text="Wystąpił błąd po stronie serwera. Spróbuj ponownie później."
                     visible={isReservationError}
-                    onClose={() => {
-                        router.back()
-                    }}
+                    onClose={handleModalClose}
                 />
             </View>
         </>
