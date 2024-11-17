@@ -116,6 +116,7 @@ export default function EditReservationComponent(
                         visible={!!props.reservation}
                         onRequestClose={() => props.setReservation(null)}
                     >
+                        
                         <TouchableOpacity
                             style={styles.modalBackground}
                             activeOpacity={1}
@@ -259,5 +260,7 @@ const styles = StyleSheet.create({
     editButtonText: {
         color: 'white',
         textAlign: 'center',
+        fontSize: 16,
+        fontWeight: '800',
     },
 })
