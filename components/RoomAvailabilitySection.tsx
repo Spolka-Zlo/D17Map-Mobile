@@ -14,13 +14,8 @@ type RoomAvailabilitySectionProps = {
     setScrollAvailable: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function RoomAvailabilitySection({
-    reservations,
-    rooms,
-    date,
-    setScrollAvailable,
-}: RoomAvailabilitySectionProps) {
-    const [selectedRoomsId, setSelectedRoomsId] = useState<string[]>([])
+export default function RoomAvailabilitySection(props: RoomAvailabilitySectionProps) {
+    const [selectedRoomId, setSelectedRoomId] = useState<string>('')
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
@@ -29,19 +24,18 @@ export default function RoomAvailabilitySection({
         <View style={styles.background}>
             <View style={[
                 styles.container,
-                { marginBottom: selectedRoomsId.length === 0 ? 600 : 0 }
+                { marginBottom: selectedRoomId.length === 0 ? 600 : 0 }
             ]}>
                 <RoomDropdown
-                    setSelectedRooms={setSelectedRoomsId}
-                    selectedRooms={selectedRoomsId}
-                    rooms={rooms}
+                    setSelectedRoomId={setSelectedRoomId}
+                    selectedRoomId={selectedRoomId}
+                    {...props}
                 />
             </View>
-            {selectedRoomsId.length > 0 && (
+            {selectedRoomId !== '' && (
                 <TimeSlotPicker
-                    reservations={reservations}
-                    selectedRoomsId={selectedRoomsId}
-                    rooms={rooms}
+                    {...props}
+                    selectedRoomId={selectedRoomId}
                     setStartTime={setStartTime}
                     setEndTime={setEndTime}
                     setSelectedRoom={setSelectedRoom}
@@ -49,10 +43,9 @@ export default function RoomAvailabilitySection({
             )}
             {selectedRoom && (
                 <CompleteReservationPopUp
+                    {...props}
                     setSelectedRoom={setSelectedRoom}
-                    setScrollAvailable={setScrollAvailable}
                     room={selectedRoom}
-                    date={date}
                     startTime={startTime}
                     endTime={endTime}
                 />

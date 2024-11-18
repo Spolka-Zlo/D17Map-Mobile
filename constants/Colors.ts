@@ -24,9 +24,4 @@ export default {
   secondary: secondary,
   mapGrey: mapGrey,
   white: white,
-  roomColors: [
-    secondary,
-    mapGrey,
-    primary,
-  ],
 };
