@@ -8,7 +8,6 @@ import {
 } from 'react-native'
 import { useState } from 'react'
 import { useAuth } from '@/providers/AuthProvider'
-import Colors from '@/constants/Colors'
 import { ReservationWithClassRoomInfo } from '@/constants/types'
 import { Styles } from '@/constants/Styles'
 import ReservationList from './reservation/components/ReservationList'
@@ -37,7 +36,7 @@ export default function TabOneScreen() {
                 style={Styles.background}
             >
                 <ScrollView style={styles.scroll}>
-                    <View style={Styles.background}>
+                    <View style={[Styles.background, {width: '100%'}]}>
                         <Text style={[Styles.h1, styles.title]}>
                             Nadchodzące wydarzenia w budynku D-17
                         </Text>
@@ -72,22 +71,11 @@ export default function TabOneScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: Colors.mapGrey,
-    },
     title: {
         marginTop: 16,
         marginBottom: 16,
         textAlign: 'center',
         padding: 10,
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
     },
     scroll: {
         width: '100%',

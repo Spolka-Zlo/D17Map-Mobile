@@ -7,14 +7,37 @@ type ButtonProps = {
     textClassName?: TextStyle
     onPress: () => void
     buttonStyle?: ViewStyle
+    disabled?: boolean
 }
 
-export function OrangeButton({ text, textClassName, onPress, buttonStyle }: ButtonProps) {
+export function OrangeButton({
+    text,
+    textClassName,
+    onPress,
+    buttonStyle,
+    disabled = false,
+}: ButtonProps) {
     return (
-        <TouchableOpacity style={[styles.button, buttonStyle]} onPress={onPress}>
-            <Text style={[styles.buttonText, textClassName]}>{text}</Text>
+        <TouchableOpacity
+            style={[
+                styles.button,
+                buttonStyle,
+                disabled && styles.buttonDisabled,
+            ]}
+            onPress={!disabled ? onPress : undefined}
+            activeOpacity={disabled ? 1 : 0.7}
+        >
+            <Text
+                style={[
+                    styles.buttonText,
+                    textClassName,
+                    disabled && styles.textDisabled,
+                ]}
+            >
+                {text}
+            </Text>
         </TouchableOpacity>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -34,9 +57,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    buttonDisabled: {
+        backgroundColor: Colors.mapGrey,
+        shadowOpacity: 0,
+        elevation: 0,
+    },
     buttonText: {
         fontSize: 16,
         fontWeight: '800',
         textAlign: 'center',
     },
-})
+    textDisabled: {
+        color: 'black',
+    },
+});

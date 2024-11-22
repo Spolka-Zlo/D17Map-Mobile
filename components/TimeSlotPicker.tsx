@@ -47,7 +47,11 @@ export default function TimeSlotPicker({
                 if (reservation.classroom.id === selectedRoomId) {
                     const startSlotId = getSlotId(reservation.startTime)
                     const endSlotId = getSlotId(reservation.endTime) - 1
-                    for (let slotId = startSlotId; slotId <= endSlotId; slotId++) {
+                    for (
+                        let slotId = startSlotId;
+                        slotId <= endSlotId;
+                        slotId++
+                    ) {
                         availability[slotId] = false
                     }
                 }
@@ -60,7 +64,7 @@ export default function TimeSlotPicker({
     useEffect(() => {
         setFirstSelectedSlot(null)
         setSecondSelectedSlot(null)
-    }, [rooms])
+    }, [rooms, reservations, selectedRoomId])
 
     const handlePress = (slotId: number) => {
         if (firstSelectedSlot !== null && slotId < firstSelectedSlot) {
@@ -132,7 +136,8 @@ export default function TimeSlotPicker({
                     ((secondSelectedSlot + 1) % 4) * 15
                 ).padStart(2, '0')}`
             )
-            const room = rooms.find((room) => room.id === selectedRoomId) ?? null
+            const room =
+                rooms.find((room) => room.id === selectedRoomId) ?? null
             setSelectedRoom(room)
         }
     }
@@ -146,8 +151,9 @@ export default function TimeSlotPicker({
                     <View style={styles.rowContainer}>
                         {Array.from({ length: 4 }, (_, j) => {
                             const slotId = i * 4 + j
-                            const isUnavailable = !roomAvailabilityBySlots[slotId]
-    
+                            const isUnavailable =
+                                !roomAvailabilityBySlots[slotId]
+
                             return (
                                 <TouchableOpacity
                                     key={slotId}
@@ -163,7 +169,8 @@ export default function TimeSlotPicker({
                                     <View
                                         style={[
                                             styles.colorContainer,
-                                            isUnavailable && styles.blockUnavailable,
+                                            isUnavailable &&
+                                                styles.blockUnavailable,
                                             isBlockSelected(slotId) && {
                                                 backgroundColor: darkenColor(
                                                     '#F6A200',
@@ -188,16 +195,18 @@ export default function TimeSlotPicker({
     }
 
     return (
-        <View>
-            <View style={styles.container}>
-                {renderRows()}
-                {firstSelectedSlot !== null && secondSelectedSlot !== null && (
-                    <OrangeButton
-                        text="Potwierdź"
-                        onPress={handleConfirm}
-                        buttonStyle={styles.botton}
-                    />
-                )}
+        <View style={styles.container}>
+            {renderRows()}
+            <View style={styles.submitButton}>
+                <OrangeButton
+                    text="Dalej"
+                    onPress={handleConfirm}
+                    buttonStyle={styles.botton}
+                    disabled={
+                        firstSelectedSlot === null ||
+                        secondSelectedSlot === null
+                    }
+                />
             </View>
         </View>
     )
@@ -246,6 +255,8 @@ const styles = StyleSheet.create({
         top: -13,
     },
     botton: {
-        marginLeft: 29,
+        marginLeft: 30,
+        marginBottom: 10,
     },
+    submitButton: {},
 })
