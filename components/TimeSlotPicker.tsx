@@ -1,12 +1,13 @@
-import { DayReservation, Room } from '@/app/(tabs)/reservation/newReservation'
+import { DayReservation } from '@/app/(tabs)/reservation/newReservation'
 import Colors from '@/constants/Colors'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { OrangeButton } from './OrangeButton'
+import { Room } from '@/constants/types'
 
 interface TimeSlotPickerProps {
     reservations: DayReservation[]
-    selectedRoomsId: string[]
+    selectedRoomId: string
     rooms: Room[]
     setStartTime: React.Dispatch<React.SetStateAction<string>>
     setEndTime: React.Dispatch<React.SetStateAction<string>>
@@ -15,7 +16,7 @@ interface TimeSlotPickerProps {
 
 export default function TimeSlotPicker({
     reservations,
-    selectedRoomsId,
+    selectedRoomId,
     rooms,
     setStartTime,
     setEndTime,
@@ -27,10 +28,9 @@ export default function TimeSlotPicker({
     const [secondSelectedSlot, setSecondSelectedSlot] = useState<number | null>(
         null
     )
-    const [RoomAvailabilityBySlots, setRoomAvailabilityBySlots] = useState<{
-        [key: number]: string[]
+    const [roomAvailabilityBySlots, setRoomAvailabilityBySlots] = useState<{
+        [key: number]: boolean
     }>({})
-    const [roomColors, setRoomColors] = useState<{ [key: string]: string }>({})
 
     const getSlotId = (time: string): number => {
         const [hours, minutes] = time.split(':').map((x) => parseInt(x))
@@ -38,38 +38,33 @@ export default function TimeSlotPicker({
     }
 
     useEffect(() => {
-        const roomColors: { [key: string]: string } = {}
-        for (let i = 0; i < rooms.length; i++) {
-            roomColors[selectedRoomsId[i]] = Colors.roomColors[i]
-        }
-        setRoomColors(roomColors)
-    }, [selectedRoomsId])
-
-    useEffect(() => {
-        const getRoomAvailabilityBySlots = (): { [key: number]: string[] } => {
-            const roomAvailabilityBySlots: { [key: number]: string[] } = {}
+        const getRoomAvailabilityBySlots = (): { [key: number]: boolean } => {
+            const availability: { [key: number]: boolean } = {}
             for (let slotId = 0; slotId < 60; slotId++) {
-                roomAvailabilityBySlots[slotId] = selectedRoomsId
+                availability[slotId] = true
             }
-            reservations.forEach((reservation) => {
-                const startSlotId = getSlotId(reservation.startTime)
-                const endSlotId = getSlotId(reservation.endTime) - 1
-                for (let slotId = startSlotId; slotId <= endSlotId; slotId++) {
-                    roomAvailabilityBySlots[slotId] = roomAvailabilityBySlots[
-                        slotId
-                    ].filter((roomId) => roomId !== reservation.classroom.id)
+            reservations?.forEach((reservation) => {
+                if (reservation.classroom.id === selectedRoomId) {
+                    const startSlotId = getSlotId(reservation.startTime)
+                    const endSlotId = getSlotId(reservation.endTime) - 1
+                    for (
+                        let slotId = startSlotId;
+                        slotId <= endSlotId;
+                        slotId++
+                    ) {
+                        availability[slotId] = false
+                    }
                 }
             })
-
-            return roomAvailabilityBySlots
+            return availability
         }
         setRoomAvailabilityBySlots(getRoomAvailabilityBySlots())
-    }, [reservations, selectedRoomsId])
+    }, [reservations, selectedRoomId])
 
     useEffect(() => {
         setFirstSelectedSlot(null)
         setSecondSelectedSlot(null)
-    }, [rooms])
+    }, [rooms, reservations, selectedRoomId])
 
     const handlePress = (slotId: number) => {
         if (firstSelectedSlot !== null && slotId < firstSelectedSlot) {
@@ -94,17 +89,8 @@ export default function TimeSlotPicker({
         if (firstSelectedSlot !== null && secondSelectedSlot !== null) {
             return true
         }
-        const roomsAvailable = Array.from(
-            { length: selectedRoomsId.length },
-            () => true
-        )
         for (let i = firstSelectedSlot; i <= slotId; i++) {
-            selectedRoomsId.forEach((roomId, index) => {
-                if (!RoomAvailabilityBySlots[i].includes(roomId)) {
-                    roomsAvailable[index] = false
-                }
-            })
-            if (roomsAvailable.every((x) => !x)) {
+            if (!roomAvailabilityBySlots[i]) {
                 return false
             }
         }
@@ -150,31 +136,9 @@ export default function TimeSlotPicker({
                     ((secondSelectedSlot + 1) % 4) * 15
                 ).padStart(2, '0')}`
             )
-            setSelectedRoom(
-                rooms.find((room) => {
-                    for (
-                        let i = firstSelectedSlot;
-                        i <= secondSelectedSlot;
-                        i++
-                    ) {
-                        if (!RoomAvailabilityBySlots[i].includes(room.id)) {
-                            return false
-                        }
-                    }
-                    return true
-                }) ?? null
-            )
-            console.log(
-                rooms.find(
-                    (room) =>
-                        RoomAvailabilityBySlots[firstSelectedSlot].includes(
-                            room.id
-                        ) &&
-                        RoomAvailabilityBySlots[secondSelectedSlot].includes(
-                            room.id
-                        )
-                )
-            )
+            const room =
+                rooms.find((room) => room.id === selectedRoomId) ?? null
+            setSelectedRoom(room)
         }
     }
 
@@ -187,56 +151,34 @@ export default function TimeSlotPicker({
                     <View style={styles.rowContainer}>
                         {Array.from({ length: 4 }, (_, j) => {
                             const slotId = i * 4 + j
-                            const colors: string[] = []
-                            let disabled = false
-                            if (RoomAvailabilityBySlots[slotId] !== undefined) {
-                                RoomAvailabilityBySlots[slotId].map(
-                                    (roomId) => {
-                                        colors.push(roomColors[roomId])
-                                    }
-                                )
-                                if (
-                                    RoomAvailabilityBySlots[slotId].length === 0
-                                ) {
-                                    disabled = true
-                                }
-                            }
+                            const isUnavailable =
+                                !roomAvailabilityBySlots[slotId]
+
                             return (
                                 <TouchableOpacity
                                     key={slotId}
                                     style={[
                                         styles.block,
                                         j === 3 && { borderBottomWidth: 3 },
-                                        disabled && styles.blockUnavailable,
                                     ]}
                                     disabled={
-                                        disabled || !canSelectBlock(slotId)
+                                        isUnavailable || !canSelectBlock(slotId)
                                     }
                                     onPress={() => handlePress(slotId)}
                                 >
-                                    <View style={styles.colorContainer}>
-                                        {colors.map((color, index) => (
-                                            <View
-                                                key={index}
-                                                style={[
-                                                    {
-                                                        backgroundColor: color,
-                                                        height: '100%',
-                                                        width: `${100 / colors.length}%`,
-                                                    },
-                                                    isBlockSelected(slotId) && [
-                                                        {
-                                                            backgroundColor:
-                                                                darkenColor(
-                                                                    color,
-                                                                    0.25
-                                                                ),
-                                                        },
-                                                    ],
-                                                ]}
-                                            />
-                                        ))}
-                                    </View>
+                                    <View
+                                        style={[
+                                            styles.colorContainer,
+                                            isUnavailable &&
+                                                styles.blockUnavailable,
+                                            isBlockSelected(slotId) && {
+                                                backgroundColor: darkenColor(
+                                                    '#F6A200',
+                                                    0.25
+                                                ),
+                                            },
+                                        ]}
+                                    />
                                 </TouchableOpacity>
                             )
                         })}
@@ -253,16 +195,18 @@ export default function TimeSlotPicker({
     }
 
     return (
-        <View>
-            <View style={styles.container}>
-                {renderRows()}
-                {firstSelectedSlot !== null && secondSelectedSlot !== null && (
-                    <OrangeButton
-                        text="Potwierdź"
-                        onPress={handleConfirm}
-                        buttonStyle={styles.botton}
-                    />
-                )}
+        <View style={styles.container}>
+            {renderRows()}
+            <View style={styles.submitButton}>
+                <OrangeButton
+                    text="Dalej"
+                    onPress={handleConfirm}
+                    buttonStyle={styles.botton}
+                    disabled={
+                        firstSelectedSlot === null ||
+                        secondSelectedSlot === null
+                    }
+                />
             </View>
         </View>
     )
@@ -295,6 +239,7 @@ const styles = StyleSheet.create({
     colorContainer: {
         flexDirection: 'row',
         height: '98%',
+        backgroundColor: '#F6A200',
     },
     blockUnavailable: {
         backgroundColor: '#d60202',
@@ -310,6 +255,8 @@ const styles = StyleSheet.create({
         top: -13,
     },
     botton: {
-        marginLeft: 29,
+        marginLeft: 30,
+        marginBottom: 10,
     },
+    submitButton: {},
 })

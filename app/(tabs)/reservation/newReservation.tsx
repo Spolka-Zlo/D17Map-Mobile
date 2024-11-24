@@ -7,7 +7,6 @@ import Colors from '@/constants/Colors'
 import { OrangeButton } from '@/components/OrangeButton'
 import RoomAvailabilitySection from '@/components/RoomAvailabilitySection'
 import SearchByTermSection from '@/components/SearchByTermSection'
-
 import { useClassrooms } from '@/services/classroomService'
 import { useDayReservations } from '@/services/reservationService'
 import InfoModal from '@/components/InfoModal'
@@ -151,6 +150,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         marginTop: 10,
+        marginBottom: 10,
         width: '90%',
     },
 })

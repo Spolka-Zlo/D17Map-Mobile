@@ -14,13 +14,17 @@ export default function ReservationList({
     setReservation,
 }: ReservationListProps) {
     return (
-        <View>
-            <ScrollView>
+        <View style={styles.container}>
+            <ScrollView style={{ width: '90%' }}>
                 <View style={styles.container}>
                     {reservations.map((reservation) => (
                         <ListElement
                             key={reservation.id}
-                            text={`${reservation.title} - ${reservation.date} ${formatTime(reservation.startTime)}-${formatTime(reservation.endTime)}`}
+                            text={`${reservation.title} - ${
+                                reservation.date
+                            } ${formatTime(reservation.startTime)}-${formatTime(
+                                reservation.endTime
+                            )}`}
                             onPress={() => setReservation(reservation)}
                             textStyle={{
                                 fontSize: 16,
@@ -41,6 +45,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         gap: 16,
         marginBottom: 100,
+        width: '100%',
     },
     title: {
         fontSize: 20,
