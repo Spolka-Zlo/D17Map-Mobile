@@ -12,7 +12,7 @@ export const Spinner = ({ isLoading, text }: SpinnerProps) => {
 
     return (
         <View style={styles.container} pointerEvents="none">
-            <ActivityIndicator size="large" color={Colors.primary} />
+            <ActivityIndicator size="large" color={Colors.primary} testID='spinner-indicator'/>
             {text && <Text style={styles.text}>{text}</Text>}
         </View>
     )
