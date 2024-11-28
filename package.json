@@ -20,7 +20,6 @@
     "@react-navigation/native": "^6.1.18",
     "@react-three/drei": "^9.115.0",
     "@react-three/fiber": "^8.17.10",
-    "@testing-library/jest-native": "^5.4.3",
     "axios": "^1.7.7",
     "expo": "~51.0.38",
     "expo-asset": "~10.0.10",
@@ -47,6 +46,7 @@
     "three": "^0.166.0"
   },
   "devDependencies": {
+    "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.8.1",
     "@types/react-test-renderer": "18.0.7",
     "@babel/core": "^7.26.0",
