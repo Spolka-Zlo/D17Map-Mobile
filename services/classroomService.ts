@@ -33,15 +33,33 @@ export const useEquipmentOptions = () => {
     }
 }
 
-const fetchAvailableClassrooms = async (date: string, startTime: string, endTime: string, numberOfParticipants: number) => {
-    const response = await axios.get(`classrooms/available?date=${date}&timeRange=${startTime}-${endTime}&peopleCount=${numberOfParticipants}`)
+const fetchAvailableClassrooms = async (
+    date: string,
+    startTime: string,
+    endTime: string,
+    numberOfParticipants: number
+) => {
+    const response = await axios.get(
+        `classrooms/available?date=${date}&timeRange=${startTime}-${endTime}&peopleCount=${numberOfParticipants}`
+    )
     return response.data
 }
 
-export const useAvailableClassrooms = (date: string, startTime: string, endTime: string, numberOfParticipants: number) => {
+export const useAvailableClassrooms = (
+    date: string,
+    startTime: string,
+    endTime: string,
+    numberOfParticipants: number
+) => {
     const queryResult = useQuery(
         ['availableClassrooms', date, startTime, endTime],
-        () => fetchAvailableClassrooms(date, startTime, endTime, numberOfParticipants),
+        () =>
+            fetchAvailableClassrooms(
+                date,
+                startTime,
+                endTime,
+                numberOfParticipants
+            ),
         {
             retry: 1,
         }
@@ -49,5 +67,35 @@ export const useAvailableClassrooms = (date: string, startTime: string, endTime:
 
     return {
         availableClassrooms: queryResult.isError ? [] : queryResult.data,
+    }
+}
+
+const fetchExtraRooms = async () => {
+    // const response = await axios.get('extraRooms')
+    // return response.data
+    return [
+        {
+            id: '1',
+            name: '1.33',
+            modelKey: '133',
+            description: 'Stołówka studencka',
+            type: 'OTHER',
+        },
+        {
+            id: '2',
+            name: 'WC',
+            modelKey: 'E7',
+            description: 'WC męskie',
+            type: 'WC',
+        },
+    ]
+}
+
+export const useExtraRooms = () => {
+    const { data, isError, isLoading } = useQuery('extraRooms', fetchExtraRooms)
+    return {
+        extraRooms: isError ? [] : data,
+        isExtraRoomsError: isError,
+        isExtraRoomsLoading: isLoading,
     }
 }

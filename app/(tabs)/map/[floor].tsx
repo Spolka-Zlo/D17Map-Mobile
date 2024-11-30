@@ -8,9 +8,10 @@ import { Model } from '@/components/map_components/Model'
 import { ChangeFloorPanel } from '@/components/map_components/ChangeFloorPanel'
 import { Spinner } from '@/components/Spinner'
 import { RoomInfoPanel } from '@/components/map_components/RoomInfoPanel'
-import Colors from '@/constants/Colors'
-import { useClassrooms } from '@/services/classroomService'
-import { Room } from '@/constants/types'
+import Colors, { colorMapping } from '@/constants/Colors'
+import { useClassrooms, useExtraRooms } from '@/services/classroomService'
+import { ExtraRoom, Room } from '@/constants/types'
+import { Legend } from '@/components/map_components/Legend'
 
 export default function Floor() {
     const { floor } = useLocalSearchParams()
@@ -18,23 +19,29 @@ export default function Floor() {
     const [OrbitControls, events] = useControls()
     const [modelLoading, setModelLoading] = useState(true)
     let activeRoomsKeys: string[] = []
-    let selectedRoom: Room | null = null
+    let selectedRoom: Room | ExtraRoom | null = null
+    const extraRoomColors: Record<string, number> = {}
 
     const [selectedRoomKey, setSelectedRoomKey] = useState<string | null>(null)
     const { rooms } = useClassrooms() // to change with useFloorClassrooms
-    
-    if (rooms) {
-        const roomsWithKey = rooms.map((room: Room) => ({
-            ...room,
-            modelKey: room.name.replace(/\./g, ''),
-        }))
-        activeRoomsKeys = roomsWithKey
-            .filter((room: Room) => room.modelKey !== null)
-            .map((room: Room) => room.modelKey)
+    const { extraRooms } = useExtraRooms()
 
-        selectedRoom = roomsWithKey.find(
-            (room: Room) => room.modelKey === selectedRoomKey
-        )
+    if (rooms && extraRooms) {
+        activeRoomsKeys =
+            rooms.map((room: Room) => room.modelKey) +
+            extraRooms.map((room: ExtraRoom) => room.modelKey)
+
+        selectedRoom =
+            rooms.find((room: Room) => room.modelKey === selectedRoomKey) ||
+            extraRooms.find(
+                (room: ExtraRoom) => room.modelKey === selectedRoomKey
+            )
+        for (const room of extraRooms) {
+            if (room.type in colorMapping) {
+                const color = colorMapping[room.type]
+                extraRoomColors[room.modelKey] = color
+            }
+        }
     }
 
     return (
@@ -43,6 +50,7 @@ export default function Floor() {
             pointerEvents={modelLoading ? 'none' : 'auto'}
         >
             <Spinner isLoading={modelLoading} />
+            <Legend extraRooms={extraRooms} />
             <ChangeFloorPanel floor={floorNumber} />
             <View style={styles.canvasElement} {...events}>
                 <Canvas>
@@ -67,6 +75,7 @@ export default function Floor() {
                                 selectedRoomKey={selectedRoomKey}
                                 setSelectedRoomKey={setSelectedRoomKey}
                                 activeRoomsKeys={activeRoomsKeys}
+                                extraRoomColors={extraRoomColors}
                             />
                         )}
                     </Suspense>

@@ -21,6 +21,7 @@ type ModelProps = {
     selectedRoomKey: string | null
     setSelectedRoomKey: (key: string | null) => void
     activeRoomsKeys: string[]
+    extraRoomColors: Record<string, number>
 }
 
 export const Model = (props: ModelProps) => {
@@ -65,6 +66,9 @@ export const Model = (props: ModelProps) => {
                         ) {
                             newMaterial.color.set(0xf6a200)
                             newPosition.z += 0.3
+                        } else if (props.extraRoomColors[key]) {
+                            newMaterial.color.set(props.extraRoomColors[key]);
+                            newPosition.z = node.position.z;
                         } else if (props.activeRoomsKeys.includes(key)) {
                             newMaterial.color.set(0x6fd8ed)
                             newPosition.z = node.position.z

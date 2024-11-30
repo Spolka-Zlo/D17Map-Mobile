@@ -2,8 +2,17 @@ export type Room = {
     id: string
     name: string
     capacity: number
+    description: string
     equipmentIds: string[]
     modelKey: string
+}
+
+export type ExtraRoom = {
+    id: string
+    name: string
+    modelKey: string
+    description: string
+    type: string
 }
 
 export type Reservation = {
