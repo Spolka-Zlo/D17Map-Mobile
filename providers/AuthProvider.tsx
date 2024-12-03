@@ -69,7 +69,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             }
         }
         loadToken()
-    }, [])
+
+        const responseInterceptor = axios.interceptors.response.use(
+            response => response,
+            async (error) => {
+                if (error.response?.status === 401) {
+                    await logout();
+                    router.push('/auth/loginPage');
+                }
+                return Promise.reject(error);
+            }
+        );
+        return () => {
+            axios.interceptors.response.eject(responseInterceptor);
+        };
+    }, []);
     
     const register = async (username: string, password: string) => {
         try {
