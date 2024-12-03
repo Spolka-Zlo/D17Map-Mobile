@@ -14,7 +14,7 @@ import { ExtraRoom, Room } from '@/constants/types'
 import { Legend } from '@/components/map_components/Legend'
 
 export default function Floor() {
-    const { floor } = useLocalSearchParams()
+    const { floor, key } = useLocalSearchParams()
     const floorNumber = typeof floor === 'string' ? parseInt(floor, 10) : 0
     const [OrbitControls, events] = useControls()
     const [modelLoading, setModelLoading] = useState(true)
@@ -22,8 +22,10 @@ export default function Floor() {
     let selectedRoom: Room | ExtraRoom | null = null
     const extraRoomColors: Record<string, number> = {}
 
-    const [selectedRoomKey, setSelectedRoomKey] = useState<string | null>(null)
-    const { rooms } = useClassrooms() // to change with useFloorClassrooms
+    const [selectedRoomKey, setSelectedRoomKey] = useState<string | null>(
+        typeof key === 'string' ? key : Array.isArray(key) ? key[0] : null
+    )
+    const { rooms } = useClassrooms()
     const { extraRooms } = useExtraRooms()
 
     if (rooms && extraRooms) {

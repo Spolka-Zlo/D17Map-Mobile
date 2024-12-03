@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonDisabled: {
-        backgroundColor: Colors.mapGrey,
+        backgroundColor: 'grey',
         shadowOpacity: 0,
         elevation: 0,
     },
