@@ -14,11 +14,13 @@ export default function Map() {
     const { extraRooms } = useExtraRooms()
 
     // sort roomData by name
-    const roomData = rooms ? rooms
-        .concat(extraRooms)
-        .sort((a: Room | ExtraRoom, b: Room | ExtraRoom) =>
-            a.name.localeCompare(b.name)
-        ) : []
+    const roomData = rooms
+        ? rooms
+              .concat(extraRooms)
+              .sort((a: Room | ExtraRoom, b: Room | ExtraRoom) =>
+                  a.name.localeCompare(b.name)
+              )
+        : []
 
     if (isRoomsError) {
         router.push('/(tabs)/map/1')

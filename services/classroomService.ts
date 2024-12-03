@@ -80,6 +80,7 @@ const fetchExtraRooms = async () => {
             modelKey: '133',
             description: 'Stołówka studencka',
             type: 'OTHER',
+            floor: 1,
         },
         {
             id: '2',
@@ -87,6 +88,7 @@ const fetchExtraRooms = async () => {
             modelKey: 'E7',
             description: 'WC męskie',
             type: 'WC',
+            floor: 1,
         },
     ]
 }

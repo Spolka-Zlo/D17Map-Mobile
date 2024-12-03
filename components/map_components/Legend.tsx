@@ -8,10 +8,9 @@ type LegendProps = {
 
 export const Legend = (props: LegendProps) => {
     if (!props.extraRooms) {
-        return null; // Zwraca null zamiast `undefined` dla React
+        return null;
     }
 
-    // Wyciąganie unikalnych typów pokoi i ich kolorów
     const roomTypesWithColors = Array.from(
         new Set(props.extraRooms.map((room) => room.type))
     ).map((type) => ({

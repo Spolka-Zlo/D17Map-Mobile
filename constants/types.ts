@@ -4,7 +4,8 @@ export type Room = {
     capacity: number
     description: string
     equipmentIds: string[]
-    modelKey: string
+    modelKey: string,
+    floor: number
 }
 
 export type ExtraRoom = {
@@ -12,7 +13,8 @@ export type ExtraRoom = {
     name: string
     modelKey: string
     description: string
-    type: string
+    type: string,
+    floor: number
 }
 
 export type Reservation = {

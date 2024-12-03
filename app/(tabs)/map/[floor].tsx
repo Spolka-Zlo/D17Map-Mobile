@@ -29,9 +29,9 @@ export default function Floor() {
     const { extraRooms } = useExtraRooms()
 
     if (rooms && extraRooms) {
-        activeRoomsKeys =
-            rooms.map((room: Room) => room.modelKey) +
-            extraRooms.map((room: ExtraRoom) => room.modelKey)
+        activeRoomsKeys = rooms
+            .map((room: Room) => room.modelKey)
+            .concat(extraRooms.map((room: ExtraRoom) => room.modelKey))
 
         selectedRoom =
             rooms.find((room: Room) => room.modelKey === selectedRoomKey) ||
