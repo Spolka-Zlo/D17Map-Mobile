@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native'
-import React, { Suspense, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber/native'
 import { Environment } from '@react-three/drei/native'
 import { useLocalSearchParams } from 'expo-router'
@@ -12,6 +12,8 @@ import Colors, { colorMapping } from '@/constants/Colors'
 import { useClassrooms, useExtraRooms } from '@/services/classroomService'
 import { ExtraRoom, Room } from '@/constants/types'
 import { Legend } from '@/components/map_components/Legend'
+import { Mesh, PerspectiveCamera } from 'three'
+import { gsap } from 'gsap'
 
 export default function Floor() {
     const { floor, key } = useLocalSearchParams()
@@ -46,6 +48,31 @@ export default function Floor() {
         }
     }
 
+    const [camera] = useState(new PerspectiveCamera())
+
+    const setCameraPosition = (
+        x: number,
+        y: number,
+        z: number,
+        target: Mesh
+    ) => {
+        gsap.to(camera.position, {
+            x,
+            y,
+            z,
+            duration: 1,
+            ease: 'power1.inOut',
+            onUpdate: () => {
+                camera.lookAt(target.position)
+                camera.updateProjectionMatrix()
+            },
+        })
+    }
+
+    useEffect(() => {
+        camera.position.set(0, -20, 36)
+    }, [camera])
+
     return (
         <View
             style={styles.container}
@@ -55,13 +82,8 @@ export default function Floor() {
             <Legend extraRooms={extraRooms} />
             <ChangeFloorPanel floor={floorNumber} />
             <View style={styles.canvasElement} {...events}>
-                <Canvas>
-                    <OrbitControls
-                        minZoom={2}
-                        maxZoom={100}
-                        enablePan
-                        ignoreQuickPress
-                    />
+                <Canvas camera={camera}>
+                    <OrbitControls minZoom={2} maxZoom={100} ignoreQuickPress />
                     <directionalLight
                         intensity={1.1}
                         position={[0.5, 0, 0.866]}
@@ -78,6 +100,7 @@ export default function Floor() {
                                 setSelectedRoomKey={setSelectedRoomKey}
                                 activeRoomsKeys={activeRoomsKeys}
                                 extraRoomColors={extraRoomColors}
+                                setCameraPosition={setCameraPosition}
                             />
                         )}
                     </Suspense>

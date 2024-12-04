@@ -22,6 +22,7 @@ type ModelProps = {
     setSelectedRoomKey: (key: string | null) => void
     activeRoomsKeys: string[]
     extraRoomColors: Record<string, number>
+    setCameraPosition: (x: number, y: number, z: number, target: Mesh) => void
 }
 
 export const Model = (props: ModelProps) => {
@@ -66,6 +67,13 @@ export const Model = (props: ModelProps) => {
                         ) {
                             newMaterial.color.set(0xf6a200)
                             newPosition.z += 0.3
+                            console.log('newPosition', newPosition)
+                            props.setCameraPosition(
+                                3 * newPosition.x,
+                                3 * newPosition.y,
+                                9,
+                                mesh
+                            )
                         } else if (props.extraRoomColors[key]) {
                             newMaterial.color.set(props.extraRoomColors[key]);
                             newPosition.z = node.position.z;
