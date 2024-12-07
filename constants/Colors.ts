@@ -29,4 +29,5 @@ export default {
 export const colorMapping: Record<string, number> = {
   WC: 0x3498db,
   OTHER: 0x2ecc71,
+  default: 0x9b59b6,
 };

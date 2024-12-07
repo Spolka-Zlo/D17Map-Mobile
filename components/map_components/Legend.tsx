@@ -15,8 +15,8 @@ export const Legend = (props: LegendProps) => {
         new Set(props.extraRooms.map((room) => room.type))
     ).map((type) => ({
         type,
-        color: colorMapping[type],
-    }));
+        color: colorMapping[type] ?? colorMapping['default'],
+    }))
 
     return (
         <View style={styles.container}>
