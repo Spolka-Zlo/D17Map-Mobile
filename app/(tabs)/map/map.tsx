@@ -1,4 +1,5 @@
 import { OrangeButton } from '@/components/OrangeButton'
+import { Spinner } from '@/components/Spinner'
 import Colors from '@/constants/Colors'
 import { ExtraRoom, Room } from '@/constants/types'
 import {
@@ -14,9 +15,9 @@ import { Dropdown } from 'react-native-element-dropdown'
 export default function Map() {
     const [selectedRoomKey, setSelectedRoomKey] = useState<string | null>(null)
 
-    const { rooms, isRoomsError } = useClassrooms()
+    const { rooms, isRoomsError, isRoomsLoading } = useClassrooms()
     const { extraRooms } = useExtraRooms()
-    const { floors } = useFloors()
+    const { floors, isFloorsLoading } = useFloors()
 
     const roomData = rooms
         ? rooms
@@ -26,7 +27,7 @@ export default function Map() {
               )
         : []
 
-    if (isRoomsError) {
+    if (isRoomsError ) {
         router.push('/(tabs)/map/1')
         return <View></View>
     }
@@ -40,6 +41,7 @@ export default function Map() {
 
     return (
         <View style={styles.container}>
+            <Spinner isLoading={isRoomsLoading || isFloorsLoading} />
             <View style={styles.buttonContainer}>
                 <OrangeButton
                     text="Przejdź do interaktywnej mapy budynku"

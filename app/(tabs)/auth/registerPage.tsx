@@ -2,8 +2,18 @@ import { OrangeButton } from '@/components/OrangeButton'
 import Colors from '@/constants/Colors'
 import { useAuth } from '@/providers/AuthProvider'
 import { router } from 'expo-router'
-import React, { useState } from 'react'
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import React, { useRef, useState } from 'react'
+import { 
+    Keyboard, 
+    KeyboardAvoidingView, 
+    Platform, 
+    ScrollView, 
+    StyleSheet, 
+    Text, 
+    TextInput, 
+    TouchableWithoutFeedback, 
+    View 
+} from 'react-native'
 
 export default function RegisterScreen() {
     const { onRegister } = useAuth()
@@ -12,9 +22,13 @@ export default function RegisterScreen() {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState('')
 
+    const passwordInputRef = useRef<TextInput>(null)
+    const confirmPasswordInputRef = useRef<TextInput>(null)
+
     const handleRegister = async () => {
+        Keyboard.dismiss()
         if (password !== confirmPassword) {
-            setError('Passwords do not match.')
+            setError('Hasła nie zgadzają się.')
             return
         }
         try {
@@ -31,49 +45,70 @@ export default function RegisterScreen() {
     }
 
     const handleLoginButton = () => {
+        Keyboard.dismiss() 
         router.push('/auth/loginPage')
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.registerContainer}>
-                <TextInput
-                    style={styles.placeholder}
-                    placeholder="Nazwa użytkownika"
-                    value={username}
-                    onChangeText={setUsername}
-                />
-                <TextInput
-                    style={styles.placeholder}
-                    placeholder="Hasło"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-                <TextInput
-                    style={styles.placeholder}
-                    placeholder="Potwierdź hasło"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry
-                />
-                {error ? <Text style={styles.errorText}>{error}</Text> : null}
-                <OrangeButton
-                    text="ZAREJESTRUJ SIĘ"
-                    onPress={handleRegister}
-                    textClassName={styles.textClassName}
-                />
-                <Text style={styles.loginText}>
-                    Masz już konto? Zaloguj się!
-                </Text>
-                <OrangeButton
-                    text="ZALOGUJ SIĘ"
-                    onPress={handleLoginButton}
-                    textClassName={styles.textClassName}
-                />
-            </View>
-        </View>
-    )
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ScrollView
+                    contentContainerStyle={styles.container}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <View style={styles.registerContainer}>
+                        <TextInput
+                            style={styles.placeholder}
+                            placeholder="Nazwa użytkownika"
+                            value={username}
+                            onChangeText={setUsername}
+                            returnKeyType="next"
+                            onSubmitEditing={() => passwordInputRef.current?.focus()}
+                            blurOnSubmit={false}
+                        />
+                        <TextInput
+                            ref={passwordInputRef}
+                            style={styles.placeholder}
+                            placeholder="Hasło"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            returnKeyType="next" 
+                            onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
+                            blurOnSubmit={false}
+                        />
+                        <TextInput
+                            ref={confirmPasswordInputRef}
+                            style={styles.placeholder}
+                            placeholder="Potwierdź hasło"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            secureTextEntry
+                            returnKeyType="done"
+                            onSubmitEditing={handleRegister} 
+                        />
+                        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+                        <OrangeButton
+                            text="ZAREJESTRUJ SIĘ"
+                            onPress={handleRegister}
+                            textClassName={styles.textClassName}
+                        />
+                        <Text style={styles.loginText}>
+                            Masz już konto? Zaloguj się!
+                        </Text>
+                        <OrangeButton
+                            text="ZALOGUJ SIĘ"
+                            onPress={handleLoginButton}
+                            textClassName={styles.textClassName}
+                        />
+                    </View>
+                </ScrollView>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+    );
 }
 
 const styles = StyleSheet.create({

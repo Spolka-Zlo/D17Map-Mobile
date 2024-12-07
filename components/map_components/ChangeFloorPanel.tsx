@@ -7,6 +7,9 @@ type ChangeFloorPanelProps = {
 }
 
 export const ChangeFloorPanel = (props: ChangeFloorPanelProps) => {
+    if (!props.availableFloors) {
+        return null
+    }
     const router = useRouter()
     const currentFloorIndex = props.availableFloors.indexOf(props.floor)
     const isUpEnabled = currentFloorIndex < props.availableFloors.length - 1

@@ -50,7 +50,6 @@ export default function FloorComponent() {
 
     const { floors } = useFloors()
     const availableFloors = floors?.map((floor: Floor) => floor.name).sort() 
-    console.log(availableFloors)
 
     const [camera] = useState(new PerspectiveCamera())
 
