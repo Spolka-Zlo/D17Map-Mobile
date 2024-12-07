@@ -94,8 +94,8 @@ const fetchFloors = async () => {
 export const useFloors = () => {
     const { data, isError, isLoading } = useQuery('floors', fetchFloors, {
         retry: 1,
-        // staleTime: 1000 * 60 * 5,
-        // cacheTime: 1000 * 60 * 5,
+        staleTime: 1000 * 60 * 5,
+        cacheTime: 1000 * 60 * 5,
     })
     return {
         floors: isError ? [] : data,

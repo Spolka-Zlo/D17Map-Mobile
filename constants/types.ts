@@ -23,7 +23,7 @@ export type Floor = {
     building: string
 }
 
-export type Builidng = {
+export type Building = {
     id: string
     name: string
 }
