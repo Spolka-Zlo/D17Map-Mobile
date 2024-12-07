@@ -1,14 +1,14 @@
-import { colorMapping } from '@/constants/Colors';
-import { ExtraRoom } from '@/constants/types';
-import { StyleSheet, Text, View } from 'react-native';
+import { colorMapping } from '@/constants/Colors'
+import { ExtraRoom } from '@/constants/types'
+import { StyleSheet, Text, View } from 'react-native'
 
 type LegendProps = {
-    extraRooms: ExtraRoom[] | undefined;
-};
+    extraRooms: ExtraRoom[] | undefined
+}
 
 export const Legend = (props: LegendProps) => {
     if (!props.extraRooms) {
-        return null;
+        return null
     }
 
     const roomTypesWithColors = Array.from(
@@ -26,7 +26,11 @@ export const Legend = (props: LegendProps) => {
                         <View
                             style={[
                                 styles.colorBox,
-                                { backgroundColor: `#${color.toString(16).padStart(6, '0')}` },
+                                {
+                                    backgroundColor: `#${color
+                                        .toString(16)
+                                        .padStart(6, '0')}`,
+                                },
                             ]}
                         />
                         <Text style={styles.legendText}>{type}</Text>
@@ -34,8 +38,8 @@ export const Legend = (props: LegendProps) => {
                 ))}
             </View>
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -70,4 +74,4 @@ const styles = StyleSheet.create({
     legendText: {
         fontSize: 14,
     },
-});
+})
