@@ -1,7 +1,11 @@
 import { OrangeButton } from '@/components/OrangeButton'
 import Colors from '@/constants/Colors'
 import { ExtraRoom, Room } from '@/constants/types'
-import { useClassrooms, useExtraRooms } from '@/services/classroomService'
+import {
+    useClassrooms,
+    useExtraRooms,
+    useFloors,
+} from '@/services/classroomService'
 import { Href, router } from 'expo-router'
 import { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
@@ -12,8 +16,8 @@ export default function Map() {
 
     const { rooms, isRoomsError } = useClassrooms()
     const { extraRooms } = useExtraRooms()
+    const { floors } = useFloors()
 
-    // sort roomData by name
     const roomData = rooms
         ? rooms
               .concat(extraRooms)
@@ -27,17 +31,18 @@ export default function Map() {
         return <View></View>
     }
 
-    const roomFloor: string = roomData
-        ? roomData.find(
-              (room: Room | ExtraRoom) => room.modelKey === selectedRoomKey
-          )?.floor || '1'
-        : '1'
+    const roomFloor: string =
+        roomData && floors
+            ? roomData?.find(
+                  (room: Room | ExtraRoom) => room?.modelKey === selectedRoomKey
+              )?.floor.name || '1'
+            : '1'
 
     return (
         <View style={styles.container}>
             <View style={styles.buttonContainer}>
                 <OrangeButton
-                    text="Przejdź do mapki"
+                    text="Przejdź do interaktywnej mapy budynku"
                     onPress={() => {
                         router.push('/(tabs)/map/1')
                     }}
@@ -62,10 +67,11 @@ export default function Map() {
                     </View>
                     <View style={styles.buttonContainer}>
                         <OrangeButton
-                            text="Przejdź do sali"
+                            text="Pokaż salę na mapie"
                             onPress={() => {
                                 {
-                                    console.log(selectedRoomKey)
+                                    console.log('selectedRoomKey', selectedRoomKey)
+                                    console.log('roomFloor', roomFloor)
                                     const url: Href = `/(tabs)/map/${roomFloor}?key=${selectedRoomKey}`
                                     router.push(url)
                                 }

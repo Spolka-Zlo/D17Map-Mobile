@@ -9,14 +9,14 @@ import { useEffect, useRef } from 'react'
 import React from 'react'
 
 const models: Record<string, string> = {
-    1: Floor1,
-    2: Floor2,
-    3: Floor3,
-    4: Floor4,
+    '1': Floor1,
+    '2': Floor2,
+    '3': Floor3,
+    '4': Floor4,
 }
 
 type ModelProps = {
-    model: number
+    model: string
     onLoad?: () => void
     selectedRoomKey: string | null
     setSelectedRoomKey: (key: string | null) => void
@@ -26,6 +26,10 @@ type ModelProps = {
 }
 
 export const Model = (props: ModelProps) => {
+    if (!models[props.model]) {
+        return null
+    }
+
     const gltf_model = models[props.model]
     const { nodes } = useGLTF(gltf_model)
     const meshRefs = useRef<{ [key: string]: Mesh }>({})
@@ -57,6 +61,7 @@ export const Model = (props: ModelProps) => {
                 if (node instanceof Mesh) {
                     const mesh = meshRefs.current[key]
                     if (mesh) {
+                        console.log(key)
                         const originalMaterial =
                             node.material as MeshStandardMaterial
                         const newMaterial = originalMaterial.clone()
@@ -69,14 +74,14 @@ export const Model = (props: ModelProps) => {
                             newPosition.z += 0.3
                             console.log('newPosition', newPosition)
                             props.setCameraPosition(
-                                3 * newPosition.x,
-                                3 * newPosition.y,
+                                2.7 * newPosition.x,
+                                2.7 * newPosition.y,
                                 9,
                                 mesh
                             )
                         } else if (props.extraRoomColors[key]) {
-                            newMaterial.color.set(props.extraRoomColors[key]);
-                            newPosition.z = node.position.z;
+                            newMaterial.color.set(props.extraRoomColors[key])
+                            newPosition.z = node.position.z
                         } else if (props.activeRoomsKeys.includes(key)) {
                             newMaterial.color.set(0x6fd8ed)
                             newPosition.z = node.position.z

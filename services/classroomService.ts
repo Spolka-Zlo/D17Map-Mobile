@@ -71,26 +71,8 @@ export const useAvailableClassrooms = (
 }
 
 const fetchExtraRooms = async () => {
-    // const response = await axios.get('extraRooms')
-    // return response.data
-    return [
-        {
-            id: '1',
-            name: '1.33',
-            modelKey: '133',
-            description: 'Stołówka studencka',
-            type: 'OTHER',
-            floor: 1,
-        },
-        {
-            id: '2',
-            name: 'WC',
-            modelKey: 'E7',
-            description: 'WC męskie',
-            type: 'WC',
-            floor: 1,
-        },
-    ]
+    const response = await axios.get('extra-rooms')
+    return response.data
 }
 
 export const useExtraRooms = () => {
@@ -99,5 +81,25 @@ export const useExtraRooms = () => {
         extraRooms: isError ? [] : data,
         isExtraRoomsError: isError,
         isExtraRoomsLoading: isLoading,
+    }
+}
+
+const fetchFloors = async () => {
+    const response = await axios.get('floors', {
+        timeout: 2000,
+    })
+    return response.data
+}
+
+export const useFloors = () => {
+    const { data, isError, isLoading } = useQuery('floors', fetchFloors, {
+        retry: 1,
+        // staleTime: 1000 * 60 * 5,
+        // cacheTime: 1000 * 60 * 5,
+    })
+    return {
+        floors: isError ? [] : data,
+        isFloorsError: isError,
+        isFloorsLoading: isLoading,
     }
 }

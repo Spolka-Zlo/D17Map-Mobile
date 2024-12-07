@@ -9,15 +9,15 @@ import { ChangeFloorPanel } from '@/components/map_components/ChangeFloorPanel'
 import { Spinner } from '@/components/Spinner'
 import { RoomInfoPanel } from '@/components/map_components/RoomInfoPanel'
 import Colors, { colorMapping } from '@/constants/Colors'
-import { useClassrooms, useExtraRooms } from '@/services/classroomService'
-import { ExtraRoom, Room } from '@/constants/types'
+import { useClassrooms, useExtraRooms, useFloors } from '@/services/classroomService'
+import { ExtraRoom, Floor, Room } from '@/constants/types'
 import { Legend } from '@/components/map_components/Legend'
 import { Mesh, PerspectiveCamera } from 'three'
 import { gsap } from 'gsap'
 
-export default function Floor() {
+export default function FloorComponent() {
     const { floor, key } = useLocalSearchParams()
-    const floorNumber = typeof floor === 'string' ? parseInt(floor, 10) : 0
+    const floorNumber = typeof floor === 'string' ? floor : '1'
     const [OrbitControls, events] = useControls()
     const [modelLoading, setModelLoading] = useState(true)
     let activeRoomsKeys: string[] = []
@@ -47,6 +47,10 @@ export default function Floor() {
             }
         }
     }
+
+    const { floors } = useFloors()
+    const availableFloors = floors?.map((floor: Floor) => floor.name).sort() 
+    console.log(availableFloors)
 
     const [camera] = useState(new PerspectiveCamera())
 
@@ -80,7 +84,7 @@ export default function Floor() {
         >
             <Spinner isLoading={modelLoading} />
             <Legend extraRooms={extraRooms} />
-            <ChangeFloorPanel floor={floorNumber} />
+            <ChangeFloorPanel floor={floorNumber} availableFloors={availableFloors}/>
             <View style={styles.canvasElement} {...events}>
                 <Canvas camera={camera}>
                     <OrbitControls minZoom={2} maxZoom={100} ignoreQuickPress />

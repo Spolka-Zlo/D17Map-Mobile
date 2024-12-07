@@ -1,14 +1,16 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { useRouter } from 'expo-router'
 
 type ChangeFloorPanelProps = {
-    floor: number;
+    floor: string
+    availableFloors: string[]
 }
 
-export const ChangeFloorPanel = ({ floor }: ChangeFloorPanelProps) => {
-    const router = useRouter();
-    const isUpEnabled = floor < 4;
-    const isDownEnabled = floor > 1;
+export const ChangeFloorPanel = (props: ChangeFloorPanelProps) => {
+    const router = useRouter()
+    const currentFloorIndex = props.availableFloors.indexOf(props.floor)
+    const isUpEnabled = currentFloorIndex < props.availableFloors.length - 1
+    const isDownEnabled = currentFloorIndex > 0
 
     return (
         <View style={styles.container}>
@@ -18,7 +20,11 @@ export const ChangeFloorPanel = ({ floor }: ChangeFloorPanelProps) => {
                     disabled={!isUpEnabled}
                     onPress={() => {
                         if (isUpEnabled) {
-                            router.push(`/(tabs)/map/${floor + 1}`);
+                            router.push(
+                                `/(tabs)/map/${
+                                    props.availableFloors[currentFloorIndex + 1]
+                                }`
+                            )
                         }
                     }}
                 >
@@ -27,13 +33,19 @@ export const ChangeFloorPanel = ({ floor }: ChangeFloorPanelProps) => {
                         style={styles.image}
                     />
                 </TouchableOpacity>
-                <Text style={styles.floorText}>{floor}</Text>
+                <Text style={styles.floorText}>{props.floor}</Text>
                 <TouchableOpacity
-                    style={isDownEnabled ? styles.button : styles.disabledButton}
+                    style={
+                        isDownEnabled ? styles.button : styles.disabledButton
+                    }
                     disabled={!isDownEnabled}
                     onPress={() => {
                         if (isDownEnabled) {
-                            router.push(`/(tabs)/map/${floor - 1}`);
+                            router.push(
+                                `/(tabs)/map/${
+                                    props.availableFloors[currentFloorIndex - 1]
+                                }`
+                            )
                         }
                     }}
                 >
@@ -44,8 +56,8 @@ export const ChangeFloorPanel = ({ floor }: ChangeFloorPanelProps) => {
                 </TouchableOpacity>
             </View>
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -76,4 +88,4 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
     },
-});
+})
