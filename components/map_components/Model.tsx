@@ -61,7 +61,6 @@ export const Model = (props: ModelProps) => {
                 if (node instanceof Mesh) {
                     const mesh = meshRefs.current[key]
                     if (mesh) {
-                        console.log(key)
                         const originalMaterial =
                             node.material as MeshStandardMaterial
                         const newMaterial = originalMaterial.clone()
@@ -71,8 +70,7 @@ export const Model = (props: ModelProps) => {
                             props.activeRoomsKeys.includes(key)
                         ) {
                             newMaterial.color.set(0xf6a200)
-                            newPosition.z += 0.3
-                            console.log('newPosition', newPosition)
+                            newPosition.z = node.position.z + 0.3
                             props.setCameraPosition(
                                 2.7 * newPosition.x,
                                 2.7 * newPosition.y,
