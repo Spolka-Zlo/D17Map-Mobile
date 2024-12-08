@@ -8,6 +8,7 @@ import { Building } from '@/constants/types'
 
 interface BuildingProps {
     buildingId: string | null
+    buildingName: string | null
     setBuilding: (buildingId: string) => void
     availableBuildings: Building[] // Replace `Building` with your actual building type
     isBuildingsLoading: boolean
@@ -18,6 +19,7 @@ interface BuildingProps {
 const BUILDING_KEY = 'buildingId'
 const BuildingContext = createContext<BuildingProps>({
     buildingId: null,
+    buildingName: null,
     setBuilding: () => {},
     availableBuildings: [],
     isBuildingsLoading: false,
@@ -30,6 +32,7 @@ export const useBuilding = () => {
 
 export const BuildingProvider = ({ children }: { children: ReactNode }) => {
     const [buildingId, setBuildingId] = useState<string | null>(null)
+    const [buildingName, setBuildingName] = useState<string | null>(null)
 
     const fetchBuildings = async () => {
         // const response = await axios.get(`${ipaddress}/buildings`, {
@@ -63,7 +66,10 @@ export const BuildingProvider = ({ children }: { children: ReactNode }) => {
             const savedBuildingId = await SecureStore.getItemAsync(BUILDING_KEY)
             if (savedBuildingId) {
                 setBuildingId(savedBuildingId)
+                setBuildingName(availableBuildings.find((b) => b.id === savedBuildingId)?.name || null)
                 router.navigate('/(tabs)')
+            } else {
+                router.navigate('/pages/buildingPage')
             }
             if (!isLoading && availableBuildings.length == 0) {
                 router.navigate('/(tabs)')
@@ -74,11 +80,13 @@ export const BuildingProvider = ({ children }: { children: ReactNode }) => {
 
     const setBuilding = async (buildingId: string) => {
         setBuildingId(buildingId)
+        setBuildingName(availableBuildings.find((b) => b.id === buildingId)?.name || null)
         await SecureStore.setItemAsync(BUILDING_KEY, buildingId)
     }
 
     const value = {
         buildingId,
+        buildingName,
         setBuilding,
         availableBuildings,
         isBuildingsLoading: isLoading,

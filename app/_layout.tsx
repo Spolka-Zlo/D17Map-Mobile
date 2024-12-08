@@ -6,7 +6,7 @@ import {
 } from '@react-navigation/native'
 import { router, Stack } from 'expo-router'
 import 'react-native-reanimated'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
@@ -52,11 +52,17 @@ function RootLayoutNav() {
                         backgroundColor: Colors.primary,
                     },
                     headerTitle: () => (
-                        <Image
-                            // eslint-disable-next-line @typescript-eslint/no-require-imports
-                            source={require('../assets/images/logo.png')}
-                            style={styles.image}
-                        />
+                        <TouchableOpacity
+                            onPress={() => {
+                                router.push('/pages/buildingPage')
+                            }}
+                        >
+                            <Image
+                                // eslint-disable-next-line @typescript-eslint/no-require-imports
+                                source={require('../assets/images/logo.png')}
+                                style={styles.image}
+                            />
+                        </TouchableOpacity>
                     ),
                     headerRight: () => (
                         <OrangeButton
@@ -78,12 +84,17 @@ function RootLayoutNav() {
             >
                 <Stack.Screen
                     name="pages/buildingPage"
-                    options={{ headerRight: () => {
-                        return <></>
-                    }, title: 'Wybierz budynek' }}
-                    
+                    options={{
+                        headerRight: () => {
+                            return <></>
+                        },
+                        title: 'Wybierz budynek',
+                    }}
                 />
-                {/* <Stack.Screen name="(tabs)" options={{ headerShown: true }} /> */}
+                <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: true, headerBackVisible: false }}
+                />
             </Stack>
         </ThemeProvider>
     )

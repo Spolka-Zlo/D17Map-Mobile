@@ -1,9 +1,10 @@
+import Colors from '@/constants/Colors';
 import { useBuilding } from '@/providers/BuildingProvider';
 import { router } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function BuildingPage() {
-    const { availableBuildings, isBuildingsLoading, isBuildingsError } = useBuilding();
+    const { availableBuildings, isBuildingsLoading, isBuildingsError, setBuilding } = useBuilding();
 
     if (isBuildingsLoading) {
         return <Text>Loading buildings...</Text>;
@@ -20,17 +21,17 @@ export default function BuildingPage() {
                 <Text>No buildings found.</Text>
             ) : (
                 availableBuildings.map((building) => (
-                    <View key={building.id} style={styles.buildingItem}>
+                    <TouchableOpacity
+                        key={building.id}
+                        style={styles.buildingItem}
+                        onPress={() => {
+                            setBuilding(building.id);
+                            router.push('/(tabs)');
+                        }}
+                    >
                         <Text style={styles.buildingName}>{building.name}</Text>
-                        <TouchableOpacity
-                            onPress={() => {
-                                console.log('Building selected:', building);
-                                router.push('/(tabs)');
-                            }}
-                        >
-                            <Text>Wybierz</Text>
-                        </TouchableOpacity>
-                    </View>
+                    </TouchableOpacity>
+
                 ))
             )}
         </View>
@@ -51,10 +52,13 @@ const styles = StyleSheet.create({
     buildingItem: {
         padding: 10,
         marginBottom: 5,
-        backgroundColor: '#f9f9f9',
-        borderRadius: 5,
+        backgroundColor: Colors.primary,
+        borderRadius: 8,
+        alignItems: 'center',
     },
     buildingName: {
-        fontSize: 16,
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: Colors.white
     },
 });
