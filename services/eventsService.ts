@@ -9,16 +9,28 @@ const fetchFutureEvents = async () => {
 }
 
 export const useFutureEvents = () => {
-    const { data, isError, isLoading } = useQuery(
+    const { data, isError, isLoading, refetch } = useQuery(
         `events`,
         fetchFutureEvents,
         {
             retry: 1,
+            staleTime: 1000 * 60 * 5,
+            cacheTime: 1000 * 60 * 5,
         }
     )
+
+    const refreshEvents = async () => {
+        try {
+            await refetch()
+        } catch {
+            // Do nothing
+        }
+    }
+
     return {
         events: data || [],
         isEventsError: isError,
         isEventsLoading: isLoading,
+        refreshEvents,
     }
 }
