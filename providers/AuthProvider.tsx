@@ -93,11 +93,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 }
             )
             await SecureStore.setItemAsync(TOKEN_KEY, response.data.token)
-            await SecureStore.setItemAsync(USER_TYPE_KEY, response.data.role)
+            const stringifiedRole = JSON.stringify(response.data.roles)
+            await SecureStore.setItemAsync(USER_TYPE_KEY, stringifiedRole)
             setAuthState({
                 token: response.data.token,
                 authenticated: true,
-                userType: response.data.role,
+                userType: response.data.roles,
             })
             axios.defaults.headers.common[
                 'Authorization'

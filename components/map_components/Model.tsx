@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei/native'
-import Floor1 from '@/assets/models/floor1_2.glb'
+import Floor1 from '@/assets/models/floor1.glb'
 import Floor2 from '@/assets/models/floor2.glb'
 import Floor3 from '@/assets/models/floor3.glb'
 import Floor4 from '@/assets/models/floor4.glb'
@@ -111,6 +111,7 @@ export const Model = (props: ModelProps) => {
                                 rotation={node.rotation}
                                 scale={node.scale}
                                 onClick={(e) => {
+                                    console.log('clicked', key)
                                     e.stopPropagation()
                                     props.setSelectedRoomKey(
                                         props.selectedRoomKey === key

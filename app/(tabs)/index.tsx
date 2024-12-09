@@ -14,7 +14,6 @@ export default function TabOneScreen() {
         useFutureEvents()
 
     useEffect(() => {
-        console.log('Refreshing events')
         refreshEvents()
     }, [])
 
