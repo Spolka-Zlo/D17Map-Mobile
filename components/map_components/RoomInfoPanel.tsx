@@ -18,7 +18,7 @@ export const RoomInfoPanel = (props: RoomInfoPanelProps) => {
     if (props.room && isExtraRoom(props.room)) {
         return (
             <View style={styles.container}>
-                <Text>{props.room.name} - {props.room.description}</Text>
+                <Text>{props.room.name} {props.room.description != '' ? '-' : ''} {props.room.description}</Text>
             </View>
         )
     }

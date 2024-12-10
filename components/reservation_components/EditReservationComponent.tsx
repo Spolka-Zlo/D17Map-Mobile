@@ -75,7 +75,7 @@ export default function EditReservationComponent(
     )
 
     const handleEdit = () => {
-        if (title && description && selectedType) {
+        if (title && selectedType) {
             editMutation.mutate({
                 id: props.reservation.id,
                 title,

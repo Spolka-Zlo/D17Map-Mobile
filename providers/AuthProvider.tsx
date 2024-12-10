@@ -42,7 +42,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const loadToken = async () => {
             const token = await SecureStore.getItemAsync(TOKEN_KEY)
-            const userType = await SecureStore.getItemAsync(USER_TYPE_KEY)
+            const userTypeString = await SecureStore.getItemAsync(USER_TYPE_KEY);
+            const userType = userTypeString ? JSON.parse(userTypeString) : null
             axios.defaults.baseURL = ipaddress
             if (token) {
                 axios.defaults.headers.common[

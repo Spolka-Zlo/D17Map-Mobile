@@ -7,16 +7,23 @@ type LegendProps = {
 }
 
 export const Legend = (props: LegendProps) => {
-    if (!props.extraRooms) {
+    if (!props.extraRooms || props.extraRooms.length === 0) {
         return null
     }
 
-    const roomTypesWithColors = Array.from(
-        new Set(props.extraRooms.map((room) => room.type))
-    ).map((type) => ({
-        type,
-        color: colorMapping[type] ?? colorMapping['default'],
-    }))
+    const roomTypesWithColors = [
+        {
+            type: 'Klasy',
+            color: colorMapping.class,
+        },
+    ].concat(
+        Array.from(new Set(props.extraRooms.map((room) => room.type))).map(
+            (type) => ({
+                type,
+                color: colorMapping[type] ?? colorMapping.default,
+            })
+        )
+    )
 
     return (
         <View style={styles.container}>
@@ -55,6 +62,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
+        zIndex: 2,
     },
     legendList: {
         flexDirection: 'row',
@@ -70,6 +78,7 @@ const styles = StyleSheet.create({
         height: 20,
         marginRight: 5,
         borderRadius: 4,
+        marginTop: 2,
     },
     legendText: {
         fontSize: 14,

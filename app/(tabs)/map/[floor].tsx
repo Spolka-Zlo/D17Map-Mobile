@@ -44,6 +44,8 @@ export default function FloorComponent() {
             if (room.type in colorMapping) {
                 const color = colorMapping[room.type]
                 extraRoomColors[room.modelKey] = color
+            } else {
+                extraRoomColors[room.modelKey] = colorMapping.default
             }
         }
     }
