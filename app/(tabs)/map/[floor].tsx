@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native'
-import React, { Suspense, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber/native'
 import { Environment } from '@react-three/drei/native'
 import { useLocalSearchParams } from 'expo-router'
@@ -8,34 +8,75 @@ import { Model } from '@/components/map_components/Model'
 import { ChangeFloorPanel } from '@/components/map_components/ChangeFloorPanel'
 import { Spinner } from '@/components/Spinner'
 import { RoomInfoPanel } from '@/components/map_components/RoomInfoPanel'
-import Colors from '@/constants/Colors'
-import { useClassrooms } from '@/services/classroomService'
-import { Room } from '@/constants/types'
+import Colors, { colorMapping } from '@/constants/Colors'
+import { useClassrooms, useExtraRooms, useFloors } from '@/services/classroomService'
+import { ExtraRoom, Floor, Room } from '@/constants/types'
+import { Legend } from '@/components/map_components/Legend'
+import { Mesh, PerspectiveCamera } from 'three'
+import { gsap } from 'gsap'
 
-export default function Floor() {
-    const { floor } = useLocalSearchParams()
-    const floorNumber = typeof floor === 'string' ? parseInt(floor, 10) : 0
+export default function FloorComponent() {
+    const { floor, key } = useLocalSearchParams()
+    const floorNumber = typeof floor === 'string' ? floor : '1'
     const [OrbitControls, events] = useControls()
     const [modelLoading, setModelLoading] = useState(true)
     let activeRoomsKeys: string[] = []
-    let selectedRoom: Room | null = null
+    let selectedRoom: Room | ExtraRoom | null = null
+    const extraRoomColors: Record<string, number> = {}
 
-    const [selectedRoomKey, setSelectedRoomKey] = useState<string | null>(null)
-    const { rooms } = useClassrooms() // to change with useFloorClassrooms
-    
-    if (rooms) {
-        const roomsWithKey = rooms.map((room: Room) => ({
-            ...room,
-            modelKey: room.name.replace(/\./g, ''),
-        }))
-        activeRoomsKeys = roomsWithKey
-            .filter((room: Room) => room.modelKey !== null)
+    const [selectedRoomKey, setSelectedRoomKey] = useState<string | null>(
+        typeof key === 'string' ? key : Array.isArray(key) ? key[0] : null
+    )
+    const { rooms } = useClassrooms()
+    const { extraRooms } = useExtraRooms()
+
+    if (rooms && extraRooms) {
+        activeRoomsKeys = rooms
             .map((room: Room) => room.modelKey)
+            .concat(extraRooms.map((room: ExtraRoom) => room.modelKey))
 
-        selectedRoom = roomsWithKey.find(
-            (room: Room) => room.modelKey === selectedRoomKey
-        )
+        selectedRoom =
+            rooms.find((room: Room) => room.modelKey === selectedRoomKey) ||
+            extraRooms.find(
+                (room: ExtraRoom) => room.modelKey === selectedRoomKey
+            )
+        for (const room of extraRooms) {
+            if (room.type in colorMapping) {
+                const color = colorMapping[room.type]
+                extraRoomColors[room.modelKey] = color
+            } else {
+                extraRoomColors[room.modelKey] = colorMapping.default
+            }
+        }
     }
+
+    const { floors } = useFloors()
+    const availableFloors = floors?.map((floor: Floor) => floor.name).sort() 
+
+    const [camera] = useState(new PerspectiveCamera())
+
+    const setCameraPosition = (
+        x: number,
+        y: number,
+        z: number,
+        target: Mesh
+    ) => {
+        gsap.to(camera.position, {
+            x,
+            y,
+            z,
+            duration: 1,
+            ease: 'power1.inOut',
+            onUpdate: () => {
+                camera.lookAt(target.position)
+                camera.updateProjectionMatrix()
+            },
+        })
+    }
+
+    useEffect(() => {
+        camera.position.set(0, -20, 36)
+    }, [camera])
 
     return (
         <View
@@ -43,15 +84,11 @@ export default function Floor() {
             pointerEvents={modelLoading ? 'none' : 'auto'}
         >
             <Spinner isLoading={modelLoading} />
-            <ChangeFloorPanel floor={floorNumber} />
+            <Legend extraRooms={extraRooms} />
+            <ChangeFloorPanel floor={floorNumber} availableFloors={availableFloors}/>
             <View style={styles.canvasElement} {...events}>
-                <Canvas>
-                    <OrbitControls
-                        minZoom={2}
-                        maxZoom={100}
-                        enablePan
-                        ignoreQuickPress
-                    />
+                <Canvas camera={camera}>
+                    <OrbitControls minZoom={2} maxZoom={100} ignoreQuickPress />
                     <directionalLight
                         intensity={1.1}
                         position={[0.5, 0, 0.866]}
@@ -67,6 +104,8 @@ export default function Floor() {
                                 selectedRoomKey={selectedRoomKey}
                                 setSelectedRoomKey={setSelectedRoomKey}
                                 activeRoomsKeys={activeRoomsKeys}
+                                extraRoomColors={extraRoomColors}
+                                setCameraPosition={setCameraPosition}
                             />
                         )}
                     </Suspense>
