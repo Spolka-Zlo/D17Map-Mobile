@@ -72,8 +72,6 @@ export default function Map() {
                             text="Pokaż salę na mapie"
                             onPress={() => {
                                 {
-                                    console.log('selectedRoomKey', selectedRoomKey)
-                                    console.log('roomFloor', roomFloor)
                                     const url: Href = `/(tabs)/map/${roomFloor}?key=${selectedRoomKey}`
                                     router.push(url)
                                 }

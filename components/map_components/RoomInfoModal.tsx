@@ -20,7 +20,7 @@ export const RoomInfoModal = (props: RoomInfoModalProps) => {
     const { equipmentOptions } = useEquipmentOptions()
     const [imageLoaded, setImageLoaded] = useState(false)
     const [imageError, setImageError] = useState(false)
-    const imageUrl = `${ipaddress}classrooms/${props.room.id}/photo.jpg`
+    const imageUrl = `${ipaddress}classrooms/${props.room.id}/photo`
 
     const roomEquipment = equipmentOptions
         .filter((equipment: Equipment) =>

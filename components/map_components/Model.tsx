@@ -111,7 +111,6 @@ export const Model = (props: ModelProps) => {
                                 rotation={node.rotation}
                                 scale={node.scale}
                                 onClick={(e) => {
-                                    console.log('clicked', key)
                                     e.stopPropagation()
                                     props.setSelectedRoomKey(
                                         props.selectedRoomKey === key
