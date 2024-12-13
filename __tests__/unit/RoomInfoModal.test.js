@@ -2,15 +2,11 @@
 import { render, fireEvent, waitFor, } from '@testing-library/react-native';
 import { RoomInfoModal } from '../../components/map_components/RoomInfoModal';
 import { useEquipmentOptions } from '@/services/classroomService';
-import { getApiUrl } from '@/providers/AuthProvider';
 
 jest.mock('@/services/classroomService', () => ({
   useEquipmentOptions: jest.fn(),
 }));
 
-jest.mock('@/providers/AuthProvider', () => ({
-  getApiUrl: jest.fn(),
-}));
 
 describe('RoomInfoModal', () => {
   const mockClose = jest.fn();
@@ -30,7 +26,6 @@ describe('RoomInfoModal', () => {
         { id: 'eq2', name: 'Tablica' },
       ],
     });
-    (getApiUrl).mockResolvedValue('https://mockapi.com/');
   });
 
   it('check info about room displayed', async () => {
@@ -60,11 +55,13 @@ describe('RoomInfoModal', () => {
   });
 
   it('error when not image', async () => {
-    (getApiUrl).mockResolvedValue('https://mockapi.com/');
 
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <RoomInfoModal onClose={mockClose} room={mockRoom} />
     );
+
+    const image = getByTestId('image-background');
+    fireEvent(image, 'onError');
 
     await waitFor(() => {
       expect(getByText('Brak zdjęcia')).toBeTruthy();

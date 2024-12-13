@@ -1,0 +1,1 @@
+export const ipaddress = 'http://d17-map.fvemdyeybebwdqcp.polandcentral.azurecontainer.io:8080/';

@@ -54,7 +54,13 @@ export default function TabLayout() {
         { name: "map/[floor]", params: {onmountBlur: true} },
     ]
 
-    if (authState?.userType !== 'STUDENT' && authState?.authenticated) {
+    const roles = authState?.userType
+    if (
+        authState?.authenticated &&
+        (
+            (Array.isArray(roles) && !(roles.length === 1 && roles[0] === 'STUDENT'))
+        )
+    ) {
         screens.push(
             <Tabs.Screen
                 key="reservation/index"

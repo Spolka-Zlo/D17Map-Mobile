@@ -9,7 +9,7 @@ import {
     Platform,
     ScrollView,
 } from 'react-native'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Colors from '@/constants/Colors'
 import { Reservation, Room } from '@/constants/types'
 import { router } from 'expo-router'
@@ -30,14 +30,9 @@ type CompleteReservationPopUpProps = {
     endTime: string
 }
 
-export default function CompleteReservationPopUp({
-    setSelectedRoom,
-    setScrollAvailable,
-    room,
-    date,
-    startTime,
-    endTime,
-}: CompleteReservationPopUpProps) {
+export default function CompleteReservationPopUp(
+    props: CompleteReservationPopUpProps
+) {
     const [name, setName] = useState('')
     const { reservationTypes } = useReservationTypes()
     const reservationTypesData = reservationTypes
@@ -52,14 +47,19 @@ export default function CompleteReservationPopUp({
 
     const [description, setDescription] = useState('')
     const [numberOfParticipants, setNumberOfParticipants] = useState(
-        room.capacity
+        props.room.capacity
     )
+
+    const titleInputRef = useRef<TextInput>(null)
+    const descriptionInputRef = useRef<TextInput>(null)
+    const participantsInputRef = useRef<TextInput>(null)
+
     const { equipmentOptions } = useEquipmentOptions()
     const [error, setError] = useState(false)
     const createMutation = useCreateReservation()
 
     useEffect(() => {
-        setScrollAvailable(false)
+        props.setScrollAvailable(false)
         setError(false)
     }, [])
 
@@ -68,13 +68,13 @@ export default function CompleteReservationPopUp({
             id: '',
             title: name,
             description: description,
-            classroomId: room.id,
-            date: date ? date.toISOString().split('T')[0] : '',
-            startTime: startTime
+            classroomId: props.room.id,
+            date: props.date ? props.date.toISOString().split('T')[0] : '',
+            startTime: props.startTime
                 .split(':')
                 .map((unit: string) => unit.padStart(2, '0'))
                 .join(':'),
-            endTime: endTime
+            endTime: props.endTime
                 .split(':')
                 .map((unit: string) => unit.padStart(2, '0'))
                 .join(':'),
@@ -83,8 +83,8 @@ export default function CompleteReservationPopUp({
         }
         createMutation.mutate(reservation, {
             onSuccess: () => {
-                setSelectedRoom(null)
-                setScrollAvailable(true)
+                props.setSelectedRoom(null)
+                props.setScrollAvailable(true)
                 setSelectedType('Wybierz typ rezerwacji')
                 router.navigate('/reservation')
             },
@@ -122,24 +122,35 @@ export default function CompleteReservationPopUp({
                                 Tytuł rezerwacji:
                             </Text>
                             <TextInput
+                                ref={titleInputRef}
                                 placeholder="Tytuł rezerwacji"
                                 onChangeText={setName}
                                 value={name}
                                 style={styles.input}
+                                returnKeyType="next"
+                                onSubmitEditing={() => {
+                                    descriptionInputRef.current?.focus()
+                                }}
                             />
                             <Text style={styles.textStyle}>
                                 Opis rezerwacji:
                             </Text>
                             <TextInput
+                                ref={descriptionInputRef}
                                 placeholder="Opis rezerwacji"
                                 onChangeText={setDescription}
                                 value={description}
                                 style={styles.input}
+                                returnKeyType="next"
+                                onSubmitEditing={() => {
+                                    participantsInputRef.current?.focus()
+                                }}
                             />
                             <Text style={styles.textStyle}>
                                 Liczba uczestników:
                             </Text>
                             <TextInput
+                                ref={participantsInputRef}
                                 placeholder="Liczba uczestników"
                                 onChangeText={(value) =>
                                     setNumberOfParticipants(Number(value))
@@ -147,6 +158,7 @@ export default function CompleteReservationPopUp({
                                 value={numberOfParticipants.toString()}
                                 style={styles.input}
                                 keyboardType="numeric"
+                                returnKeyType="done"
                             />
                             <Text style={styles.textStyle}>
                                 Typ rezerwacji:
@@ -171,21 +183,22 @@ export default function CompleteReservationPopUp({
                                 Inne informacje:
                             </Text>
                             <View style={styles.dateTimeContainer}>
-                                {date && (
+                                {props.date && (
                                     <Text style={styles.textStyle}>
-                                        {date?.toISOString().split('T')[0] ||
-                                            ''}
+                                        {props.date
+                                            ?.toISOString()
+                                            .split('T')[0] || ''}
                                     </Text>
                                 )}
                                 <Text style={styles.textStyle}>
-                                    {startTime} - {endTime}
+                                    {props.startTime} - {props.endTime}
                                 </Text>
                             </View>
                             <Text style={styles.roomTextStyle}>
-                                {room.name} - {room.capacity} miejsc
+                                {props.room.name} - {props.room.capacity} miejsc
                             </Text>
                             <Text style={styles.textStyle}>
-                                {room.equipmentIds.map((equipmentId) => {
+                                {props.room.equipmentIds.map((equipmentId) => {
                                     const equipment = equipmentOptions?.find(
                                         (option: { id: string }) =>
                                             option.id === equipmentId
@@ -224,8 +237,8 @@ export default function CompleteReservationPopUp({
                                 <OrangeButton
                                     text="Powrót"
                                     onPress={() => {
-                                        setSelectedRoom(null)
-                                        setScrollAvailable(true)
+                                        props.setSelectedRoom(null)
+                                        props.setScrollAvailable(true)
                                     }}
                                 />
                             </View>

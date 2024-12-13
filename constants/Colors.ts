@@ -25,3 +25,12 @@ export default {
   mapGrey: mapGrey,
   white: white,
 };
+
+export const colorMapping: Record<string, number> = {
+  class: 0x6fd8ed,
+  WC: 0x3498db,
+  Inne: 0x2ecc71,
+  Windy: 0x9b59b6,
+  'Klatki schodowe': 0xe74c3c,
+  default: 0xf06493,
+};

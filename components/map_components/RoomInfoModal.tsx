@@ -1,9 +1,15 @@
 import Colors from '@/constants/Colors'
+import { ipaddress } from '@/constants/ip'
 import { Equipment, Room } from '@/constants/types'
-import { getApiUrl } from '@/providers/AuthProvider'
 import { useEquipmentOptions } from '@/services/classroomService'
-import { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native'
+import { useState } from 'react'
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ImageBackground,
+} from 'react-native'
 
 type RoomInfoModalProps = {
     onClose: () => void
@@ -11,41 +17,37 @@ type RoomInfoModalProps = {
 }
 
 export const RoomInfoModal = (props: RoomInfoModalProps) => {
-    const { equipmentOptions } = useEquipmentOptions();
-    const [imageUrl, setImageUrl] = useState('');
-    const [imageLoaded, setImageLoaded] = useState(false);
-
-    useEffect(() => {
-        const fetchApiUrl = async () => {
-            const baseUrl = await getApiUrl();
-            const newImageUrl = `${baseUrl}classrooms/${props.room.id}/photo.jpg`;
-            setImageUrl(newImageUrl);
-        };
-
-        fetchApiUrl();
-    }, [props.room.id]);
+    const { equipmentOptions } = useEquipmentOptions()
+    const [imageLoaded, setImageLoaded] = useState(false)
+    const [imageError, setImageError] = useState(false)
+    const imageUrl = `${ipaddress}classrooms/${props.room.id}/photo`
 
     const roomEquipment = equipmentOptions
-        .filter((equipment: Equipment) => props.room.equipmentIds.includes(equipment.id))
+        .filter((equipment: Equipment) =>
+            props.room.equipmentIds.includes(equipment.id)
+        )
         .map((equipment: Equipment) => equipment.name)
-        .join(', ');
+        .join(', ')
 
     return (
         <View style={styles.container}>
             <View style={styles.innerContainer}>
-                {imageUrl ? ( 
+                {!imageError ? (
                     <ImageBackground
                         source={{ uri: imageUrl }}
                         style={styles.image}
-                        onLoadEnd={() => setImageLoaded(true)} 
+                        onLoadEnd={() => setImageLoaded(true)}
                         onError={() => {
-                            setImageLoaded(false);
-                            setImageUrl('');
+                            setImageLoaded(false)
+                            setImageError(true)
                         }}
+                        testID="image-background"
                     >
                         {!imageLoaded && (
                             <View style={styles.placeholder}>
-                                <Text style={styles.placeholderText}>Ładowanie zdjęcia...</Text>
+                                <Text style={styles.placeholderText}>
+                                    Ładowanie zdjęcia...
+                                </Text>
                             </View>
                         )}
                     </ImageBackground>
@@ -55,15 +57,19 @@ export const RoomInfoModal = (props: RoomInfoModalProps) => {
                     </View>
                 )}
                 <Text style={styles.title}>{props.room.name}</Text>
+                <Text>{props.room.description}</Text>
                 <Text>Pojemność sali: {props.room.capacity}</Text>
                 <Text>Wyposażenie: {roomEquipment || 'Brak wyposażenia'}</Text>
-                <TouchableOpacity onPress={props.onClose} style={styles.closeButton}>
+                <TouchableOpacity
+                    onPress={props.onClose}
+                    style={styles.closeButton}
+                >
                     <Text style={styles.closeButtonText}>Zamknij</Text>
                 </TouchableOpacity>
             </View>
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -97,7 +103,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         padding: 20,
     },
-    image:{
+    image: {
         width: '100%',
         height: 400,
         borderRadius: 10,

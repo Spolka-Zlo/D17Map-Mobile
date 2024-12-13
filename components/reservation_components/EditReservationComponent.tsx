@@ -6,6 +6,7 @@ import {
     Modal,
     TextInput,
     TouchableWithoutFeedback,
+    Keyboard,
 } from 'react-native'
 import InfoModal from '../InfoModal'
 import { Room, ReservationWithClassRoomInfo } from '@/constants/types'
@@ -15,7 +16,7 @@ import Colors from '@/constants/Colors'
 import { OrangeButton } from '../OrangeButton'
 import { useAvailableClassrooms } from '@/services/classroomService'
 import { useReservationTypes } from '@/services/reservationTypeService'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Dropdown } from 'react-native-element-dropdown'
 
 type EditReservationComponentProps = {
@@ -34,6 +35,9 @@ export default function EditReservationComponent(
     const [description, setDescription] = useState(
         props.reservation?.description || ''
     )
+
+    const titleInputRef = useRef(null)
+    const descriptionInputRef = useRef<TextInput>(null)
 
     const { availableClassrooms } = useAvailableClassrooms(
         props.reservation?.date,
@@ -71,7 +75,7 @@ export default function EditReservationComponent(
     )
 
     const handleEdit = () => {
-        if (title && description && selectedType) {
+        if (title && selectedType) {
             editMutation.mutate({
                 id: props.reservation.id,
                 title,
@@ -116,7 +120,6 @@ export default function EditReservationComponent(
                         visible={!!props.reservation}
                         onRequestClose={() => props.setReservation(null)}
                     >
-                        
                         <TouchableOpacity
                             style={styles.modalBackground}
                             activeOpacity={1}
@@ -131,16 +134,24 @@ export default function EditReservationComponent(
                                         Tytuł rezerwacji:
                                     </Text>
                                     <TextInput
+                                        ref={titleInputRef}
                                         style={styles.input}
                                         value={title}
                                         onChangeText={setTitle}
+                                        returnKeyType="next"
+                                        onSubmitEditing={() =>
+                                            descriptionInputRef.current?.focus()
+                                        }
                                     />
 
                                     <Text style={styles.textStyle}>Opis:</Text>
                                     <TextInput
+                                        ref={descriptionInputRef}
                                         style={styles.input}
                                         value={description}
                                         onChangeText={setDescription}
+                                        returnKeyType="done"
+                                        onSubmitEditing={Keyboard.dismiss}
                                     />
                                     <Text style={styles.textStyle}>
                                         Typ rezerwacji:
