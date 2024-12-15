@@ -3,7 +3,7 @@ import React from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react-native'
 import EditReservationComponent from '../../components/reservation_components/EditReservationComponent'
 import { useEditReservation } from '@/services/reservationService'
-import { useAvailableClassrooms } from '@/services/classroomService'
+import { useAvailableClassrooms, useEquipmentOptions } from '@/services/classroomService'
 import { useReservationTypes } from '@/services/reservationTypeService'
 
 jest.mock('@/services/reservationService', () => ({
@@ -12,6 +12,7 @@ jest.mock('@/services/reservationService', () => ({
 
 jest.mock('@/services/classroomService', () => ({
     useAvailableClassrooms: jest.fn(),
+    useEquipmentOptions: jest.fn(),
 }))
 
 jest.mock('@/services/reservationTypeService', () => ({
@@ -39,6 +40,12 @@ describe('EditReservationComponent', () => {
     const mockSetReservation = jest.fn()
     const mockSetEditSectionVisible = jest.fn()
 
+    const mockEquipment = [
+        { id: '1', name: 'Projector' },
+        { id: '2', name: 'Whiteboard' },
+        { id: '3', name: 'Microphone' },
+    ]
+
     beforeEach(() => {
         useEditReservation.mockReturnValue({
             mutate: jest.fn(),
@@ -50,6 +57,10 @@ describe('EditReservationComponent', () => {
 
         useAvailableClassrooms.mockReturnValue({
             availableClassrooms: mockClassrooms,
+        })
+        
+        useEquipmentOptions.mockReturnValue({
+            equipmentOptions: mockEquipment,
         })
 
         useReservationTypes.mockReturnValue({
@@ -150,7 +161,7 @@ describe('EditReservationComponent', () => {
             />
         )
 
-        expect(getByText('Rezerwacja zapisana')).toBeTruthy()
+        expect(getByText('Zmiany w rezerwacji zostały zapisane')).toBeTruthy()
     })
 
     it('should show an error message when saving the reservation fails', () => {
