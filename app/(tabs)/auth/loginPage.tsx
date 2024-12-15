@@ -1,4 +1,5 @@
 import { OrangeButton } from '@/components/OrangeButton'
+import { Spinner } from '@/components/Spinner'
 import Colors from '@/constants/Colors'
 import { useAuth } from '@/providers/AuthProvider'
 import { router } from 'expo-router'
@@ -13,28 +14,39 @@ import {
     Platform,
     TouchableWithoutFeedback,
     ScrollView,
+    TouchableOpacity,
 } from 'react-native'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 export default function LoginScreen() {
     const { onLogin } = useAuth()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [ isLoading, setIsLoading ] = useState(false)
 
     const passwordInputRef = useRef<TextInput>(null)
 
     const handleLogin = async () => {
         Keyboard.dismiss()
         try {
-            const response = await onLogin(username, password)
+            setIsLoading(true);
+            const response = await onLogin(username, password);
             if (response?.token) {
-                router.push('/(tabs)')
+                setIsLoading(false);
+                router.push('/(tabs)');
             } else {
-                setError('Logowanie nieudane, spróbuj ponownie za chwilę.')
+                setIsLoading(false);
+                if (response?.status === 401) {
+                    setError('Błędne dane logowania.');
+                } else {
+                    setError('Logowanie nieudane, spróbuj ponownie za chwilę.');
+                }
             }
-        } catch (err) {
-            console.error(err)
-            setError('An error occurred during login')
+        } catch {
+            setIsLoading(false);
+            setError('Wystąpił błąd, spróbuj ponownie później.');
         }
     }
 
@@ -48,6 +60,7 @@ export default function LoginScreen() {
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+            <Spinner isLoading={isLoading} text='Logowanie do serwisu'/>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <ScrollView
                     contentContainerStyle={styles.container}
@@ -65,16 +78,27 @@ export default function LoginScreen() {
                             }
                             blurOnSubmit={false}
                         />
-                        <TextInput
-                            ref={passwordInputRef}
-                            style={styles.placeholder}
-                            placeholder="Hasło"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                            returnKeyType="done"
-                            onSubmitEditing={handleLogin}
-                        />
+                        <View style={styles.passwordContainer}>
+                            <TextInput
+                                ref={passwordInputRef}
+                                style={styles.placeholder}
+                                placeholder="Hasło"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword} // Ukrywa/odsłania hasło
+                                returnKeyType="done"
+                                onSubmitEditing={handleLogin}
+                            />
+                            <TouchableOpacity
+                                style={styles.eyeIcon}
+                                onPress={() => setShowPassword(!showPassword)}
+                            >
+                                <Icon
+                                    name={showPassword ? 'visibility' : 'visibility-off'}
+                                    size={24}
+                                />
+                            </TouchableOpacity>
+                        </View>
                         {error ? (
                             <Text style={styles.errorText}>{error}</Text>
                         ) : null}
@@ -119,6 +143,15 @@ const styles = StyleSheet.create({
         width: 277,
         padding: 20,
         fontSize: 18,
+    },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    eyeIcon: {
+        position: 'absolute',
+        right: 15,
+        bottom: 40,
     },
     textClassName: {
         padding: 8,

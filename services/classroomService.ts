@@ -25,7 +25,15 @@ const fetchEquipment = async () => {
 }
 
 export const useEquipmentOptions = () => {
-    const { data, isError, isLoading } = useQuery('equipments', fetchEquipment)
+    const { data, isError, isLoading } = useQuery(
+        'equipments',
+        fetchEquipment,
+        {
+            retry: 1,
+            staleTime: 1000 * 60 * 5,
+            cacheTime: 1000 * 60,
+        }
+    )
     return {
         equipmentOptions: data || [],
         isEquipmentOptionsError: isError,

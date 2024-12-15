@@ -11,9 +11,11 @@ import {
     StyleSheet, 
     Text, 
     TextInput, 
+    TouchableOpacity,
     TouchableWithoutFeedback, 
     View 
 } from 'react-native'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 export default function RegisterScreen() {
     const { onRegister } = useAuth()
@@ -21,6 +23,9 @@ export default function RegisterScreen() {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState('')
+
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
     const passwordInputRef = useRef<TextInput>(null)
     const confirmPasswordInputRef = useRef<TextInput>(null)
@@ -69,27 +74,49 @@ export default function RegisterScreen() {
                             onSubmitEditing={() => passwordInputRef.current?.focus()}
                             blurOnSubmit={false}
                         />
-                        <TextInput
-                            ref={passwordInputRef}
-                            style={styles.placeholder}
-                            placeholder="Hasło"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                            returnKeyType="next" 
-                            onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
-                            blurOnSubmit={false}
-                        />
-                        <TextInput
-                            ref={confirmPasswordInputRef}
-                            style={styles.placeholder}
-                            placeholder="Potwierdź hasło"
-                            value={confirmPassword}
-                            onChangeText={setConfirmPassword}
-                            secureTextEntry
-                            returnKeyType="done"
-                            onSubmitEditing={handleRegister} 
-                        />
+                        <View style={styles.passwordContainer}>
+                            <TextInput
+                                ref={passwordInputRef}
+                                style={styles.placeholder}
+                                placeholder="Hasło"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                                returnKeyType="next" 
+                                onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
+                                blurOnSubmit={false}
+                            />
+                            <TouchableOpacity
+                                style={styles.eyeIcon}
+                                onPress={() => setShowPassword(!showPassword)}
+                            >
+                                <Icon 
+                                    name={showPassword ? 'visibility' : 'visibility-off'} 
+                                    size={24} 
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.passwordContainer}>
+                            <TextInput
+                                ref={confirmPasswordInputRef}
+                                style={styles.placeholder}
+                                placeholder="Potwierdź hasło"
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry={!showConfirmPassword}
+                                returnKeyType="done"
+                                onSubmitEditing={handleRegister} 
+                            />
+                            <TouchableOpacity
+                                style={styles.eyeIcon}
+                                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                                <Icon 
+                                    name={showConfirmPassword ? 'visibility' : 'visibility-off'} 
+                                    size={24} 
+                                />
+                            </TouchableOpacity>
+                        </View>
                         {error ? <Text style={styles.errorText}>{error}</Text> : null}
                         <OrangeButton
                             text="ZAREJESTRUJ SIĘ"
@@ -131,6 +158,16 @@ const styles = StyleSheet.create({
         width: 277,
         padding: 20,
         fontSize: 18,
+    },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        position: 'relative',
+    },
+    eyeIcon: {
+        position: 'absolute',
+        right: 15,
+        bottom: 40,
     },
     textClassName: {
         padding: 8,

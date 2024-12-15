@@ -14,7 +14,10 @@ import { useEditReservation } from '@/services/reservationService'
 import Spinner from 'react-native-loading-spinner-overlay'
 import Colors from '@/constants/Colors'
 import { OrangeButton } from '../OrangeButton'
-import { useAvailableClassrooms } from '@/services/classroomService'
+import {
+    useAvailableClassrooms,
+    useEquipmentOptions,
+} from '@/services/classroomService'
 import { useReservationTypes } from '@/services/reservationTypeService'
 import { useRef, useState } from 'react'
 import { Dropdown } from 'react-native-element-dropdown'
@@ -46,14 +49,45 @@ export default function EditReservationComponent(
         props.reservation?.numberOfParticipants
     )
 
+    const { equipmentOptions } = useEquipmentOptions()
+
     const availableClassroomsData = [
         {
-            label: props.reservation.classroom.name,
+            label:
+                props.reservation.classroom.name +
+                ' - ' +
+                props.reservation.classroom.capacity +
+                ' miejsc' +
+                ' - ' +
+                props.classRooms
+                    .find((room) => room.id === props.reservation.classroom.id)
+                    ?.equipmentIds.map(
+                        (id) =>
+                            equipmentOptions.find(
+                                (option: { id: string; name: string }) =>
+                                    option.id === id
+                            )?.name
+                    )
+                    .join(', '),
             value: props.reservation.classroom.id,
         },
         ...(availableClassrooms
-            ? availableClassrooms.map((room: Room) => ({
-                  label: room.name,
+            ? availableClassrooms!.map((room: Room) => ({
+                  label:
+                      room.name +
+                      ' - ' +
+                      room.capacity +
+                      ' miejsc' +
+                      ' - ' +
+                      room.equipmentIds
+                          .map(
+                              (id) =>
+                                  equipmentOptions.find(
+                                      (option: { id: string; name: string }) =>
+                                          option.id === id
+                                  )?.name
+                          )
+                          .join(', '),
                   value: room.id,
               }))
             : []),
@@ -94,7 +128,7 @@ export default function EditReservationComponent(
         <View>
             {editMutation.isSuccess && (
                 <InfoModal
-                    text="Rezerwacja zapisana"
+                    text="Zmiany w rezerwacji zostały zapisane"
                     visible={editMutation.isSuccess}
                     onClose={() => props.setReservation(null)}
                 />
@@ -243,6 +277,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         borderRadius: 8,
         width: '90%',
+        maxWidth: '90%',
     },
     dropdownContainer: {
         width: '90%',

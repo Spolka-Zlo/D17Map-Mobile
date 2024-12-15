@@ -48,13 +48,13 @@ export default function newReservation() {
     function handleRoomSection() {
         setTimeSectionOpen(false)
         setRoomSectionOpen(true)
-        scrollToPosition(378)
+        scrollToPosition(450)
     }
 
     function handleTimeSection() {
         setRoomSectionOpen(false)
         setTimeSectionOpen(true)
-        scrollToPosition(378)
+        scrollToPosition(450)
     }
 
     function scrollToPosition(position: number) {
@@ -104,7 +104,7 @@ export default function newReservation() {
                                 }}
                             />
                             <OrangeButton
-                                text="Wybieraj po godzinach"
+                                text="Wybieraj po godzinach i wyposażeniu"
                                 onPress={handleTimeSection}
                                 textClassName={{
                                     textAlign: 'center',

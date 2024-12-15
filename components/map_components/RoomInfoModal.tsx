@@ -57,7 +57,7 @@ export const RoomInfoModal = (props: RoomInfoModalProps) => {
                     </View>
                 )}
                 <Text style={styles.title}>{props.room.name}</Text>
-                <Text>{props.room.description}</Text>
+                <Text style={styles.description}>{props.room.description}</Text>
                 <Text>Pojemność sali: {props.room.capacity}</Text>
                 <Text>Wyposażenie: {roomEquipment || 'Brak wyposażenia'}</Text>
                 <TouchableOpacity
@@ -112,6 +112,11 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
+    },
+    description: {
+        marginBottom: 10,
+        textAlign: 'center',
+        fontSize: 16,
     },
     closeButton: {
         marginTop: 20,
