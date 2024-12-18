@@ -5,6 +5,11 @@ import { router } from 'expo-router'
 import { ReactNode } from 'react'
 import { ipaddress } from '@/constants/ip'
 
+interface LoginResponse {
+    token?: string;
+    roles?: string | null;
+    status?: number;
+}
 interface AuthProps {
     // authState?: { token: string | null; authenticated: boolean | null; userId: number | null; userType: string | null }
     authState?: {
@@ -13,7 +18,7 @@ interface AuthProps {
         userType: string | null
     }
     onRegister: (email: string, password: string) => Promise<unknown>
-    onLogin: (email: string, password: string) => Promise<unknown>
+    onLogin: (email: string, password: string) => Promise<LoginResponse | undefined>
     onLogout: () => Promise<unknown>
 }
 
@@ -23,7 +28,7 @@ const USERID_KEY = 'userId'
 const USER_TYPE_KEY = 'userType'
 const AuthContext = createContext<AuthProps>({
     onRegister: async () => {},
-    onLogin: async () => {},
+    onLogin: async () => undefined,
     onLogout: async () => {},
     authState: { token: null, authenticated: null, userType: null }
 })
@@ -77,7 +82,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const login = async (username: string, password: string) => {
+
+    const login = async (username: string, password: string):  Promise<LoginResponse | undefined> => {
         try {
             const response = await axios.post(
                 'auth/login',
@@ -104,9 +110,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             axios.defaults.headers.common[
                 'Authorization'
             ] = `Bearer ${response.data.token}`
-            return response.data
+            return { token: response.data.token }
         } catch (error) {
-            return error
+            if (axios.isAxiosError(error) && error.response) {
+                return { status: error.response.status };
+            }
+            return { status: undefined };
         }
     }
 

@@ -1,119 +1,129 @@
-import { Reservation } from '@/constants/types'
-import { useAuth } from '@/providers/AuthProvider'
-import axios from 'axios'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { Reservation } from '@/constants/types';
+import { useAuth } from '@/providers/AuthProvider';
+import { useBuilding } from '@/providers/BuildingProvider';
+import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-const fetchDayReservations = async (date: Date) => {
-    const day = date.toISOString().split('T')[0]
-    const response = await axios.get('reservations?day=' + day, {
+const fetchDayReservations = async (buildingName: string, date: Date) => {
+    const day = date.toISOString().split('T')[0];
+    const response = await axios.get(`buildings/${buildingName}/reservations?day=${day}`, {
         timeout: 2000,
-    })
-    return response.data
-}
+    });
+    return response.data;
+};
 
 export const useDayReservations = (date: Date | null) => {
-    const shouldFetch = !!date
+    const { buildingName } = useBuilding();
+    const shouldFetch = !!date && !!buildingName;
 
     const queryResult = useQuery(
-        ['dayReservations', date],
-        () => fetchDayReservations(date!),
+        ['dayReservations', buildingName, date],
+        () => fetchDayReservations(buildingName!, date!),
         {
             enabled: shouldFetch,
-            refetchInterval: (data, query) => {
-                if (query.state.error) {
-                    return false
-                }
-                return shouldFetch ? 15000 : false
-            },
+            refetchInterval: shouldFetch ? 15000 : false,
             retry: false,
         }
-    )
+    );
 
     return {
         reservations: queryResult.data || null,
         isReservationsError: queryResult.isError,
         isReservationsLoading: queryResult.isLoading,
-    }
-}
+    };
+};
 
-const fetchDeleteReservation = async (reservationId: string) => {
-    const response = await axios.delete(`reservations/${reservationId}`, {
+const fetchDeleteReservation = async (buildingName: string, reservationId: string) => {
+    const response = await axios.delete(`buildings/${buildingName}/reservations/${reservationId}`, {
         timeout: 2000,
-    })
-    return response.data
-}
+    });
+    return response.data;
+};
 
 export const useDeleteReservation = () => {
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
+    const { buildingName } = useBuilding();
 
-    return useMutation(fetchDeleteReservation, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['userReservations'])
-        },
-        retry: 1,
-    })
-}
+    return useMutation(
+        (reservationId: string) => fetchDeleteReservation(buildingName!, reservationId),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['userReservations']);
+            },
+            retry: 1,
+        }
+    );
+};
 
-const fetchEditReservation = async (reservation: Reservation) => {
-    const response = await axios.put(`reservations/${reservation.id}`, reservation, {
+const fetchEditReservation = async (buildingName: string, reservation: Reservation) => {
+    const response = await axios.put(`buildings/${buildingName}/reservations/${reservation.id}`, reservation, {
         timeout: 2000,
-    })
-    return response.data
-}
+    });
+    return response.data;
+};
 
 export const useEditReservation = () => {
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
+    const { buildingName } = useBuilding();
 
-    return useMutation(fetchEditReservation, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['userReservations'])
-        },
-    })
-}
+    return useMutation(
+        (reservation: Reservation) => fetchEditReservation(buildingName!, reservation),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['userReservations']);
+            },
+        }
+    );
+};
 
-async function createReservation(reservation: Reservation) {
-    const response = await axios.post('reservations', reservation, {
+const createReservation = async (buildingName: string, reservation: Reservation) => {
+    const response = await axios.post(`buildings/${buildingName}/reservations`, reservation, {
         timeout: 5000,
-    })
-    return response.data
-}
+    });
+    return response.data;
+};
 
 export const useCreateReservation = () => {
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
+    const { buildingName } = useBuilding();
 
-    return useMutation(createReservation, {
-        onSuccess: () => {
-            queryClient.invalidateQueries(['userReservations'])
-        },
-    })
-}
+    return useMutation(
+        (reservation: Reservation) => createReservation(buildingName!, reservation),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['userReservations']);
+            },
+        }
+    );
+};
 
-export const fetchUserReservations = async () => {
-    const response = await axios.get(`reservations/user/future`, {
+const fetchUserReservations = async (buildingName: string) => {
+    const response = await axios.get(`buildings/${buildingName}/reservations/user/future`, {
         timeout: 2000,
-    })
+    });
     if (response.status !== 200) {
-        throw new Error('Error fetching reservations')
+        throw new Error('Error fetching reservations');
     }
-    return response.data
-}
+    return response.data;
+};
 
 export const useUserFutureReservations = () => {
-    const { authState } = useAuth()
+    const { authState } = useAuth();
+    const { buildingName } = useBuilding();
+
     const { data, isLoading, isError } = useQuery(
-        ['userReservations'],
-        fetchUserReservations,
+        ['userReservations', buildingName],
+        () => fetchUserReservations(buildingName!),
         {
             retry: 1,
-            enabled: authState?.authenticated ?? false,
+            enabled: (authState?.authenticated ?? false) && !!buildingName,
             refetchInterval: 15000,
         }
-    )
+    );
+
     return {
         reservations: data,
         isReservationLoading: isLoading,
         isReservationError: isError,
-    }
-}
-
-
+    };
+};

@@ -1,5 +1,6 @@
 import Colors from '@/constants/Colors'
 import { Room } from '@/constants/types'
+import { useEquipmentOptions } from '@/services/classroomService'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Dropdown } from 'react-native-element-dropdown'
@@ -11,10 +12,13 @@ type RoomDropdownProps = {
 }
 
 const RoomDropdown = (props: RoomDropdownProps) => {
+    const { equipmentOptions } = useEquipmentOptions()
+
     const roomsData = props.rooms.map((room) => ({
         value: room.id,
-        label: room.name,
+        label: room.name + ' - ' + room.capacity + ' miejsc' + ' - ' + room.equipmentIds.map((id) => equipmentOptions.find((option: {id: string, name: string}) => option.id === id)?.name).join(', '),
     }))
+
 
     return (
         <View style={styles.dropdownContainer}>

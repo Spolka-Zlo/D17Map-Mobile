@@ -5,7 +5,7 @@ export type Room = {
     description: string
     equipmentIds: string[]
     modelKey: string
-    floor: Floor
+    floorName: string
 }
 
 export type ExtraRoom = {
@@ -14,7 +14,7 @@ export type ExtraRoom = {
     modelKey: string
     description: string
     type: string
-    floor: Floor
+    floorName: string
 }
 
 export type Floor = {

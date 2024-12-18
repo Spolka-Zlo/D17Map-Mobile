@@ -6,12 +6,15 @@ import ReservationList from './reservation/components/ReservationList'
 import { useFutureEvents } from '@/services/eventsService'
 import { Spinner } from '@/components/Spinner'
 import EventManager from '@/components/reservation_components/EventManager'
+import React from 'react'
+import { useBuilding } from '@/providers/BuildingProvider'
 
 export default function TabOneScreen() {
     const [reservation, setReservation] =
         useState<ReservationWithClassRoomInfo | null>(null)
     const { events, isEventsError, isEventsLoading, refreshEvents } =
         useFutureEvents()
+    const { buildingName } = useBuilding()
 
     useEffect(() => {
         refreshEvents()
@@ -53,7 +56,7 @@ export default function TabOneScreen() {
                 <ScrollView style={styles.scroll}>
                     <View style={[Styles.background, { width: '100%' }]}>
                         <Text style={[Styles.h1, styles.title]}>
-                            Nadchodzące wydarzenia w budynku D-17
+                            Nadchodzące wydarzenia w budynku {buildingName}
                         </Text>
                         {renderContent()}
                     </View>

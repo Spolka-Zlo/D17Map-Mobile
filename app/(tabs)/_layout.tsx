@@ -16,7 +16,7 @@ export default function TabLayout() {
             key="map"
             name="map/map"
             options={{
-                title: 'Map',
+                title: 'Mapa',
                 tabBarIcon: () => (
                     <FontAwesome5
                         size={28}
@@ -25,13 +25,16 @@ export default function TabLayout() {
                     />
                 ),
                 unmountOnBlur: true,
+                tabBarLabelStyle: {
+                    fontWeight: 'bold',
+                },
             }}
         />,
         <Tabs.Screen
             key="index"
             name="index"
             options={{
-                title: 'Home',
+                title: 'Start',
                 tabBarIcon: () => (
                     <FontAwesome5
                         size={28}
@@ -40,6 +43,9 @@ export default function TabLayout() {
                     />
                 ),
                 unmountOnBlur: true,
+                tabBarLabelStyle: {
+                    fontWeight: 'bold',
+                },
             }}
         />,
     ]
@@ -66,7 +72,7 @@ export default function TabLayout() {
                 key="reservation/index"
                 name="reservation/index"
                 options={{
-                    title: 'Reservation',
+                    title: 'Rezerwacje',
                     tabBarIcon: () => (
                         <FontAwesome5
                             size={28}
@@ -75,7 +81,11 @@ export default function TabLayout() {
                         />
                     ),
                     unmountOnBlur: true,
-                }}
+                    tabBarLabelStyle: {
+                        fontWeight: 'bold',
+                    },
+                }
+            }
             />
         )
     } else {

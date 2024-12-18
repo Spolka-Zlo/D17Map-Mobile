@@ -6,7 +6,7 @@ import {
 } from '@react-navigation/native'
 import { router, Stack } from 'expo-router'
 import 'react-native-reanimated'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
@@ -14,46 +14,28 @@ import { Image } from 'react-native'
 import { AuthProvider, useAuth } from '@/providers/AuthProvider'
 import { OrangeButton } from '@/components/OrangeButton'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { BuildingProvider } from '@/providers/BuildingProvider'
+import React from 'react'
 
 export {
-    // Catch any errors thrown by the Layout component.
     ErrorBoundary,
 } from 'expo-router'
 
 export const unstable_settings = {
-    // Ensure that reloading on `/modal` keeps a back button present.
-    initialRouteName: '(tabs)',
+    initialRouteName: 'pages/buildingPage',
 }
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-// SplashScreen.preventAutoHideAsync()
+
 
 export default function RootLayout() {
-    // const [loaded, error] = useFonts({
-    //     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    //     ...FontAwesome.font,
-    // })
-
-    // // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-    // useEffect(() => {
-    //     if (error) throw error
-    // }, [error])
-
-    // useEffect(() => {
-    //     if (loaded) {
-    //         SplashScreen.hideAsync()
-    //     }
-    // }, [loaded])
-
-    // if (!loaded) {
-    //     return null
-    // }
 
     return (
         <QueryClientProvider client={new QueryClient()}>
-            <AuthProvider>
-                <RootLayoutNav />
-            </AuthProvider>
+            <BuildingProvider>
+                <AuthProvider>
+                    <RootLayoutNav />
+                </AuthProvider>
+            </BuildingProvider>
         </QueryClientProvider>
     )
 }
@@ -73,11 +55,17 @@ function RootLayoutNav() {
                         backgroundColor: Colors.primary,
                     },
                     headerTitle: () => (
-                        <Image
-                            // eslint-disable-next-line @typescript-eslint/no-require-imports
-                            source={require('../assets/images/logo.png')}
-                            style={styles.image}
-                        />
+                        <TouchableOpacity
+                            onPress={() => {
+                                router.push('/pages/buildingPage')
+                            }}
+                        >
+                            <Image
+                                // eslint-disable-next-line @typescript-eslint/no-require-imports
+                                source={require('../assets/images/logo.png')}
+                                style={styles.image}
+                            />
+                        </TouchableOpacity>
                     ),
                     headerRight: () => (
                         <OrangeButton
@@ -95,11 +83,19 @@ function RootLayoutNav() {
                     ),
                 }}
             >
-                <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
                 <Stack.Screen
-                    name="modals/modal"
-                    options={{ presentation: 'card' }}
-                    
+                    name="(tabs)"
+                    options={{ headerShown: true, headerBackVisible: false }}
+                />
+                <Stack.Screen
+                    name="pages/buildingPage"
+                    options={{
+                        headerRight: () => {
+                            return <></>
+                        },
+                        title: 'Wybierz budynek',
+                        headerBackVisible: false,
+                    }}
                 />
             </Stack>
         </ThemeProvider>
