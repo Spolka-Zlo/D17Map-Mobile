@@ -142,6 +142,34 @@ export default function TimeSlotPicker({
         }
     }
 
+    const renderLegend = () => {
+        return (
+            <View style={styles.legendContainer}>
+                <View style={styles.legendItem}>
+                    <View
+                        style={[styles.colorBox, { backgroundColor: '#F6A200' }]}
+                    />
+                    <Text style={styles.legendText}>Dostępny</Text>
+                </View>
+                <View style={styles.legendItem}>
+                    <View
+                        style={[
+                            styles.colorBox,
+                            { backgroundColor: darkenColor('#F6A200', 0.25) },
+                        ]}
+                    />
+                    <Text style={styles.legendText}>Wybrany</Text>
+                </View>
+                <View style={styles.legendItem}>
+                    <View
+                        style={[styles.colorBox, { backgroundColor: '#d60202' }]}
+                    />
+                    <Text style={styles.legendText}>Niedostępny</Text>
+                </View>
+            </View>
+        )
+    }
+
     function renderRows(): JSX.Element[] {
         const rows = []
         for (let i = 0; i < 15; i++) {
@@ -188,7 +216,7 @@ export default function TimeSlotPicker({
         }
         rows.push(
             <View key={60} style={styles.row}>
-                <Text style={styles.label}>22</Text>
+                <Text style={[styles.label, styles.lastLabel]}>22</Text>
             </View>
         )
         return rows
@@ -196,7 +224,10 @@ export default function TimeSlotPicker({
 
     return (
         <View style={styles.container}>
-            {renderRows()}
+            {renderLegend()}
+            <View style={styles.renderRowContainer}>
+                {renderRows()}
+            </View>
             <View style={styles.submitButton}>
                 <OrangeButton
                     text="Dalej"
@@ -216,18 +247,23 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.white,
-        paddingTop: 30,
+        paddingTop: 10,
         paddingBottom: 8,
         paddingRight: 30,
         borderRadius: 10,
-        marginBottom: 20,
+        marginBottom: 20
     },
     row: {
         flexDirection: 'row',
     },
-    rowContainer: {
+    renderRowContainer: {
         flexDirection: 'column',
         marginRight: 10,
+        alignItems: 'center',
+    },
+    rowContainer: {
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     block: {
         width: 200,
@@ -254,9 +290,35 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         top: -13,
     },
+    lastLabel: {
+        left: -100,
+    },
     botton: {
         marginLeft: 30,
         marginBottom: 10,
     },
     submitButton: {},
+    legendContainer: {
+        flexDirection: 'row',
+        marginBottom: 20,
+        alignItems: 'center',
+        marginHorizontal: 'auto',
+        justifyContent: 'space-between',
+        width: 250,
+    },
+    legendItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    colorBox: {
+        width: 20,
+        height: 20,
+        marginRight: 3,
+        borderRadius: 5,
+        marginLeft: 10,
+    },
+    legendText: {
+        fontSize: 12,
+        color: Colors.primary,
+    },
 })

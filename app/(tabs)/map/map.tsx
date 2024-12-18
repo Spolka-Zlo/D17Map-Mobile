@@ -8,6 +8,7 @@ import {
     useFloors,
 } from '@/services/classroomService'
 import { Href, router } from 'expo-router'
+import React from 'react'
 import { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Dropdown } from 'react-native-element-dropdown'
@@ -36,7 +37,7 @@ export default function Map() {
         roomData && floors
             ? roomData?.find(
                   (room: Room | ExtraRoom) => room?.modelKey === selectedRoomKey
-              )?.floor.name || '1'
+              )?.floorName || '1'
             : '1'
 
     return (

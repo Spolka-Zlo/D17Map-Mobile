@@ -8,7 +8,7 @@ import { Building } from '@/constants/types'
 
 interface BuildingProps {
     buildingId: string | null
-    buildingName: string | null
+    buildingName: string
     setBuilding: (buildingId: string) => void
     availableBuildings: Building[] // Replace `Building` with your actual building type
     isBuildingsLoading: boolean
@@ -19,7 +19,7 @@ interface BuildingProps {
 const BUILDING_KEY = 'buildingId'
 const BuildingContext = createContext<BuildingProps>({
     buildingId: null,
-    buildingName: null,
+    buildingName: 'D17',
     setBuilding: () => {},
     availableBuildings: [],
     isBuildingsLoading: false,
@@ -32,7 +32,7 @@ export const useBuilding = () => {
 
 export const BuildingProvider = ({ children }: { children: ReactNode }) => {
     const [buildingId, setBuildingId] = useState<string | null>(null)
-    const [buildingName, setBuildingName] = useState<string | null>(null)
+    const [buildingName, setBuildingName] = useState<string>('D17')
 
     const fetchBuildings = async () => {
         // const response = await axios.get(`${ipaddress}/buildings`, {
@@ -66,7 +66,7 @@ export const BuildingProvider = ({ children }: { children: ReactNode }) => {
             const savedBuildingId = await SecureStore.getItemAsync(BUILDING_KEY)
             if (savedBuildingId) {
                 setBuildingId(savedBuildingId)
-                setBuildingName(availableBuildings.find((b) => b.id === savedBuildingId)?.name || null)
+                setBuildingName(availableBuildings.find((b) => b.id === savedBuildingId)?.name || 'D17')
                 router.navigate('/(tabs)')
             } else {
                 router.navigate('/pages/buildingPage')
@@ -80,7 +80,7 @@ export const BuildingProvider = ({ children }: { children: ReactNode }) => {
 
     const setBuilding = async (buildingId: string) => {
         setBuildingId(buildingId)
-        setBuildingName(availableBuildings.find((b) => b.id === buildingId)?.name || null)
+        setBuildingName(availableBuildings.find((b) => b.id === buildingId)?.name || 'D17')
         await SecureStore.setItemAsync(BUILDING_KEY, buildingId)
     }
 
