@@ -4,6 +4,17 @@ import { useBuilding } from '@/providers/BuildingProvider';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
+export const reservationTypeMapper: { [key: string]: string } = {
+    "Zajęcia": "CLASS",
+    "Egzamin": "EXAM",
+    "Kolokwium": "TEST",
+    "Wykład": "LECTURE",
+    "Konsultacje": "CONSULTATIONS",
+    "Konferencja": "CONFERENCE",
+    "Spotkanie koła naukowego": "STUDENT_CLUB_MEETING",
+    "Wydarzenie": "EVENT",
+}
+
 const fetchDayReservations = async (buildingName: string, date: Date) => {
     const day = date.toISOString().split('T')[0];
     const response = await axios.get(`buildings/${buildingName}/reservations?day=${day}`, {
@@ -56,6 +67,7 @@ export const useDeleteReservation = () => {
 };
 
 const fetchEditReservation = async (buildingName: string, reservation: Reservation) => {
+    reservation.type = reservationTypeMapper[reservation.type];
     const response = await axios.put(`buildings/${buildingName}/reservations/${reservation.id}`, reservation, {
         timeout: 2000,
     });
@@ -77,6 +89,7 @@ export const useEditReservation = () => {
 };
 
 const createReservation = async (buildingName: string, reservation: Reservation) => {
+    reservation.type = reservationTypeMapper[reservation.type];
     const response = await axios.post(`buildings/${buildingName}/reservations`, reservation, {
         timeout: 5000,
     });

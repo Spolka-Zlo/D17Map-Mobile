@@ -19,8 +19,7 @@ export type ExtraRoom = {
 
 export type Floor = {
     id: string
-    name: string
-    building: string
+    floorName: string
 }
 
 export type Builidng = {

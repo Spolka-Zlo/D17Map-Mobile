@@ -31,7 +31,7 @@ export const useEquipmentOptions = () => {
     const { data, isError, isLoading } = useQuery('equipments', fetchEquipment, {
         retry: 1,
         staleTime: 1000 * 60 * 5,
-        cacheTime: 1000 * 60,
+        cacheTime: 1000 * 60 * 5,
     });
     return {
         equipmentOptions: data || [],
@@ -115,6 +115,8 @@ export const useFloors = () => {
         ['floors', buildingName],
         () => fetchFloors(buildingName),
         {
+            cacheTime: 1000 * 60 * 5,
+            staleTime: 1000 * 60 * 5,
             retry: 1,
             enabled: !!buildingName,
         }
