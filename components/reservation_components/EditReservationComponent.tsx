@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import InfoModal from '../InfoModal'
 import { Room, ReservationWithClassRoomInfo } from '@/constants/types'
-import { reservationTypeMapper, useEditReservation } from '@/services/reservationService'
+import { reverseReservationTypeMapper, useEditReservation } from '@/services/reservationService'
 import Spinner from 'react-native-loading-spinner-overlay'
 import Colors from '@/constants/Colors'
 import { OrangeButton } from '../OrangeButton'
@@ -105,11 +105,8 @@ export default function EditReservationComponent(
           })
         : [{ label: props.reservation?.type, value: props.reservation?.type }]
 
-    const reverseReservationTypeMapper = Object.fromEntries(
-        Object.entries(reservationTypeMapper).map(([key, value]) => [value, key])
-    );
     const [selectedType, setSelectedType] = useState(
-        reverseReservationTypeMapper[props.reservation?.type] || ''
+        (reverseReservationTypeMapper && reverseReservationTypeMapper[props.reservation?.type]) || ''
     )
 
     const handleEdit = () => {

@@ -15,6 +15,10 @@ export const reservationTypeMapper: { [key: string]: string } = {
     "Wydarzenie": "EVENT",
 }
 
+export const reverseReservationTypeMapper = Object.fromEntries(
+    Object.entries(reservationTypeMapper).map(([key, value]) => [value, key])
+);
+
 const fetchDayReservations = async (buildingName: string, date: Date) => {
     const day = date.toISOString().split('T')[0];
     const response = await axios.get(`buildings/${buildingName}/reservations?day=${day}`, {
