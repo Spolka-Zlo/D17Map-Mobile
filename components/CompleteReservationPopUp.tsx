@@ -83,10 +83,8 @@ export default function CompleteReservationPopUp(
         }
         createMutation.mutate(reservation, {
             onSuccess: () => {
-                props.setSelectedRoom(null)
                 props.setScrollAvailable(true)
                 setSelectedType('Wybierz typ rezerwacji')
-                router.navigate('/reservation')
             },
             onError: () => {
                 setError(true)
@@ -107,6 +105,14 @@ export default function CompleteReservationPopUp(
                 text="Nie udało się utworzyć rezerwacji"
                 visible={createMutation.isError}
                 onClose={() => router.navigate('/(tabs)/reservation')}
+            />
+            <InfoModal
+                text="Rezerwacja utworzona pomyślnie"
+                visible={createMutation.isSuccess}
+                onClose={() => {
+                    router.navigate('/(tabs)/reservation')
+                    props.setSelectedRoom(null)
+                }}
             />
             <Modal transparent={true} animationType="fade">
                 <KeyboardAvoidingView
@@ -152,13 +158,33 @@ export default function CompleteReservationPopUp(
                             <TextInput
                                 ref={participantsInputRef}
                                 placeholder="Liczba uczestników"
-                                onChangeText={(value) =>
-                                    setNumberOfParticipants(Number(value))
+                                onChangeText={(value) => {
+                                    const numericValue = value.replace(
+                                        /[^0-9]/g,
+                                        ''
+                                    )
+                                    const number = parseInt(numericValue, 10)
+                                    const maxCapacity = props.room.capacity
+                                    if (
+                                        !isNaN(number) &&
+                                        number <= maxCapacity
+                                    ) {
+                                        setNumberOfParticipants(number)
+                                    } else if (numericValue === '') {
+                                        setNumberOfParticipants(0)
+                                    }
+                                }}
+                                value={
+                                    numberOfParticipants > 0
+                                        ? numberOfParticipants.toString()
+                                        : ''
                                 }
-                                value={numberOfParticipants.toString()}
                                 style={styles.input}
                                 keyboardType="numeric"
                                 returnKeyType="done"
+                                maxLength={
+                                    props.room.capacity.toString().length
+                                }
                             />
                             <Text style={styles.textStyle}>
                                 Typ rezerwacji:
@@ -289,6 +315,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         borderRadius: 8,
         width: '90%',
+        maxWidth: '90%',
     },
     dropdownContainer: {
         width: '90%',

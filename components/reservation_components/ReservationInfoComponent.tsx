@@ -106,6 +106,7 @@ export default function ReservationInfoComponent(
                                         -
                                         {formatTime(props.reservation?.endTime)}
                                     </Text>
+                                    <Text style={styles.type}>{props.reservation.type}</Text>
                                     <Text style={styles.classroomName}>
                                         {classroomName}
                                     </Text>
@@ -176,6 +177,11 @@ const styles = StyleSheet.create({
     dateString: {
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    type: {
+        fontSize: 20,
+        marginVertical: 5,
+        marginBottom: -5,
     },
     classroomName: {
         fontSize: 20,

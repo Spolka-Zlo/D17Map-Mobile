@@ -2,14 +2,14 @@ import Colors from '@/constants/Colors'
 import { ipaddress } from '@/constants/ip'
 import { Equipment, Room } from '@/constants/types'
 import { useEquipmentOptions } from '@/services/classroomService'
-import { useState } from 'react'
 import {
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
-    ImageBackground,
 } from 'react-native'
+import SpherePhoto from '../spherephoto_components/SpherePhoto'
+import { useBuilding } from '@/providers/BuildingProvider'
 
 type RoomInfoModalProps = {
     onClose: () => void
@@ -17,10 +17,9 @@ type RoomInfoModalProps = {
 }
 
 export const RoomInfoModal = (props: RoomInfoModalProps) => {
+    const { buildingName } = useBuilding()
     const { equipmentOptions } = useEquipmentOptions()
-    const [imageLoaded, setImageLoaded] = useState(false)
-    const [imageError, setImageError] = useState(false)
-    const imageUrl = `${ipaddress}classrooms/${props.room.id}/photo`
+    const imageUrl = `${ipaddress}buildings/${buildingName}/classrooms/${props.room.id}/photo`
 
     const roomEquipment = equipmentOptions
         .filter((equipment: Equipment) =>
@@ -32,32 +31,10 @@ export const RoomInfoModal = (props: RoomInfoModalProps) => {
     return (
         <View style={styles.container}>
             <View style={styles.innerContainer}>
-                {!imageError ? (
-                    <ImageBackground
-                        source={{ uri: imageUrl }}
-                        style={styles.image}
-                        onLoadEnd={() => setImageLoaded(true)}
-                        onError={() => {
-                            setImageLoaded(false)
-                            setImageError(true)
-                        }}
-                        testID="image-background"
-                    >
-                        {!imageLoaded && (
-                            <View style={styles.placeholder}>
-                                <Text style={styles.placeholderText}>
-                                    Ładowanie zdjęcia...
-                                </Text>
-                            </View>
-                        )}
-                    </ImageBackground>
-                ) : (
-                    <View style={styles.placeholder}>
-                        <Text style={styles.placeholderText}>Brak zdjęcia</Text>
-                    </View>
-                )}
+                <View style={styles.placeholder}/>
+                <SpherePhoto imageUrl={imageUrl} />
                 <Text style={styles.title}>{props.room.name}</Text>
-                <Text>{props.room.description}</Text>
+                <Text style={styles.description}>{props.room.description}</Text>
                 <Text>Pojemność sali: {props.room.capacity}</Text>
                 <Text>Wyposażenie: {roomEquipment || 'Brak wyposażenia'}</Text>
                 <TouchableOpacity
@@ -92,9 +69,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     placeholder: {
-        height: 400,
+        height: 410,
         width: '100%',
-        zIndex: 12,
+        zIndex: 1,
     },
     placeholderText: {
         color: Colors.primary,
@@ -112,6 +89,11 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
+    },
+    description: {
+        marginBottom: 10,
+        textAlign: 'center',
+        fontSize: 16,
     },
     closeButton: {
         marginTop: 20,

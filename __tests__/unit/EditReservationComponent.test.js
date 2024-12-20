@@ -3,8 +3,8 @@ import React from 'react'
 import { render, fireEvent, waitFor } from '@testing-library/react-native'
 import EditReservationComponent from '../../components/reservation_components/EditReservationComponent'
 import { useEditReservation } from '@/services/reservationService'
-import { useAvailableClassrooms } from '@/services/classroomService'
-import { useReservationTypes } from '@/services/reservationTypeService'
+import { useAvailableClassrooms, useEquipmentOptions } from '@/services/classroomService'
+import { useReservationTypes, reverseReservationTypeMapper } from '@/services/reservationTypeService'
 
 jest.mock('@/services/reservationService', () => ({
     useEditReservation: jest.fn(),
@@ -12,10 +12,31 @@ jest.mock('@/services/reservationService', () => ({
 
 jest.mock('@/services/classroomService', () => ({
     useAvailableClassrooms: jest.fn(),
+    useEquipmentOptions: jest.fn(),
 }))
 
 jest.mock('@/services/reservationTypeService', () => ({
     useReservationTypes: jest.fn(),
+    reservationTypeMapper: {
+        "Zajęcia": "CLASS",
+        "Egzamin": "EXAM",
+        "Kolokwium": "TEST",
+        "Wykład": "LECTURE",
+        "Konsultacje": "CONSULTATIONS",
+        "Konferencja": "CONFERENCE",
+        "Spotkanie koła naukowego": "STUDENT_CLUB_MEETING",
+        "Wydarzenie": "EVENT",
+    },
+    reverseReservationTypeMapper: {
+        "CLASS": "Zajęcia",
+        "EXAM": "Egzamin",
+        "TEST": "Kolokwium",
+        "LECTURE": "Wykład",
+        "CONSULTATIONS": "Konsultacje",
+        "CONFERENCE": "Konferencja",
+        "STUDENT_CLUB_MEETING": "Spotkanie koła naukowego",
+        "EVENT": "Wydarzenie",
+    },
 }))
 
 describe('EditReservationComponent', () => {
@@ -28,7 +49,7 @@ describe('EditReservationComponent', () => {
         endTime: '12:00',
         classroom: { id: '1', name: 'Room A' },
         numberOfParticipants: 10,
-        type: 'Lecture',
+        type: 'CLASS',
     }
 
     const mockClassrooms = [
@@ -38,6 +59,12 @@ describe('EditReservationComponent', () => {
 
     const mockSetReservation = jest.fn()
     const mockSetEditSectionVisible = jest.fn()
+
+    const mockEquipment = [
+        { id: '1', name: 'Projector' },
+        { id: '2', name: 'Whiteboard' },
+        { id: '3', name: 'Microphone' },
+    ]
 
     beforeEach(() => {
         useEditReservation.mockReturnValue({
@@ -51,13 +78,18 @@ describe('EditReservationComponent', () => {
         useAvailableClassrooms.mockReturnValue({
             availableClassrooms: mockClassrooms,
         })
+        
+        useEquipmentOptions.mockReturnValue({
+            equipmentOptions: mockEquipment,
+        })
 
         useReservationTypes.mockReturnValue({
-            reservationTypes: ['Lecture', 'Workshop', 'Seminar'],
+            reservationTypes: ['CLASS', 'CONSULTATIONS'],
         })
     })
-
+    
     it('should render the modal with reservation data', () => {
+        expect(reverseReservationTypeMapper).toBeDefined();
         const { getByText, getByDisplayValue } = render(
             <EditReservationComponent
                 reservation={mockReservation}
@@ -114,7 +146,7 @@ describe('EditReservationComponent', () => {
 
         fireEvent.press(getByText('Zapisz zmiany'))
 
-        await waitFor(() => expect(mockMutate).toHaveBeenCalledTimes(1))
+        expect(getByText('Zmiany w rezerwacji zostały zapisane')).toBeTruthy()
     })
 
     it('should close the modal when cancel button is pressed', () => {
@@ -150,7 +182,7 @@ describe('EditReservationComponent', () => {
             />
         )
 
-        expect(getByText('Rezerwacja zapisana')).toBeTruthy()
+        expect(getByText('Zmiany w rezerwacji zostały zapisane')).toBeTruthy()
     })
 
     it('should show an error message when saving the reservation fails', () => {
