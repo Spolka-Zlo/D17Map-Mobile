@@ -27,6 +27,20 @@ export type Builidng = {
     name: string
 }
 
+export enum ReccuringType {
+    DAILY = "DAILY",
+    WEEKLY = "WEEKLY",
+    BIWEEKLY = "BIWEEKLY",
+    MONTHLY = "MONTHLY"
+}
+
+export const recurringTypeMap: { [key: string]: string } = {
+    DAILY: "Codziennie",
+    WEEKLY: "Co tydzień",
+    BIWEEKLY: "Co dwa tygodnie",
+    MONTHLY: "Co miesiąc",
+};
+
 export type Reservation = {
     id: string
     title: string
@@ -37,6 +51,10 @@ export type Reservation = {
     classroomId: string
     type: string
     numberOfParticipants: number
+    recurringId?: string,
+    recurringName?: string
+    recurringEndDate?: string,
+    recurringType?: ReccuringType,
 }
 
 export type ReservationWithClassRoomInfo = {
@@ -48,7 +66,11 @@ export type ReservationWithClassRoomInfo = {
     endTime: string
     classroom: Room
     type: string
-    numberOfParticipants: number
+    numberOfParticipants: number,
+    recurringId?: string,
+    recurringName?: string
+    recurringEndDate?: string,
+    recurringType?: ReccuringType
 }
 
 export type Equipment = {

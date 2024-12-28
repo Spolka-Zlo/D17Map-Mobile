@@ -11,6 +11,7 @@ import InfoModal from '@/components/InfoModal'
 import { ReservationWithClassRoomInfo } from '@/constants/types'
 import { Spinner } from '@/components/Spinner'
 import { useAuth } from '@/providers/AuthProvider'
+import React from 'react'
 
 export default function Reservations() {
     const [reservation, setReservation] =

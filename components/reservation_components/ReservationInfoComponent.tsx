@@ -6,6 +6,7 @@ import {
     Modal,
     Dimensions,
     TouchableWithoutFeedback,
+    Alert,
 } from 'react-native'
 import { Styles } from '@/constants/Styles'
 import { formatTime } from '@/app/utils/timeUtils'
@@ -48,6 +49,24 @@ export default function ReservationInfoComponent(
         ) || []
 
     const deleteMutation = useDeleteReservation()
+
+    const confirmDeleteReservation = (reservationId: string) => {
+        Alert.alert(
+            'Potwierdzenie',
+            'Czy na pewno chcesz usunąć tę rezerwację?',
+            [
+                {
+                    text: 'Anuluj',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Usuń',
+                    style: 'destructive',
+                    onPress: () => handleDelete(reservationId),
+                },
+            ]
+        );
+    };
 
     const handleDelete = (id: string) => {
         deleteMutation.mutate(id)
@@ -133,7 +152,7 @@ export default function ReservationInfoComponent(
                                     </View>
                                     <TouchableOpacity
                                         onPress={() =>
-                                            handleDelete(props.reservation.id)
+                                            confirmDeleteReservation(props.reservation.id)
                                         }
                                         style={styles.deleteButton}
                                     >
